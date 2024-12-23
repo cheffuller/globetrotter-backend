@@ -31,6 +31,9 @@ public class TravelPlanLocation {
     @Column(name = "travel_plan_id")
     private Integer travelPlanId;
 
+    public TravelPlanLocation() {
+    }
+
     public TravelPlanLocation(Integer id, String city, String country, Date endDate, Date startDate, Integer travelPlanId) {
         this.id = id;
         this.city = city;
@@ -87,6 +90,6 @@ public class TravelPlanLocation {
     public void setTravelPlanId(Integer travelPlanId) {
         this.travelPlanId = travelPlanId;
     }
-    
+
 
 }
