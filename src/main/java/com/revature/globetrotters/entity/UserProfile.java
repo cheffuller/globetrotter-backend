@@ -1,4 +1,4 @@
-package com.revature.globetrotters.controller;
+package com.revature.globetrotters.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
