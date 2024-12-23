@@ -1,38 +1,62 @@
 package com.revature.globetrotters.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "follow_request")
 public class FollowRequest {
-    @Column(name = "follower")
-    private Integer follower;
-    @Column(name = "following")
-    private Integer following;
+    @EmbeddedId
+    private FollowRequestId id;
 
-    public FollowRequest() {
-    }
+    @Embeddable
+    public static class FollowRequestId implements Serializable {
+        @Column(name = "follower")
+        private Integer follower;
+        @Column(name = "following")
+        private Integer following;
 
-    public FollowRequest(Integer follower, Integer following) {
-        this.follower = follower;
-        this.following = following;
-    }
+        public FollowRequestId() {
+        }
 
-    public Integer getFollower() {
-        return follower;
-    }
+        public FollowRequestId(Integer follower, Integer following) {
+            this.follower = follower;
+            this.following = following;
+        }
 
-    public void setFollower(Integer follower) {
-        this.follower = follower;
-    }
+        public Integer getFollower() {
+            return follower;
+        }
 
-    public Integer getFollowing() {
-        return following;
-    }
+        public void setFollower(Integer follower) {
+            this.follower = follower;
+        }
 
-    public void setFollowing(Integer following) {
-        this.following = following;
+        public Integer getFollowing() {
+            return following;
+        }
+
+        public void setFollowing(Integer following) {
+            this.following = following;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            FollowRequestId that = (FollowRequestId) o;
+            return Objects.equals(follower, that.follower) && Objects.equals(following, that.following);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(follower, following);
+        }
     }
 }
