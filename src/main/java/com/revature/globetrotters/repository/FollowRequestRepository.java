@@ -11,9 +11,9 @@ import java.util.List;
 
 @Repository
 public interface FollowRequestRepository extends JpaRepository<FollowRequest, Integer> {
-    @Query("SELECT f.follower, f.followwing FROM FollowRequest f WHERE f.follower = :follower")
+    @Query("SELECT f.follower, f.following FROM FollowRequest f WHERE f.follower = :follower")
     List<Follow> findFollowerAndFollowingByFollower(@Param("follower") int follower);
 
-    @Query("SELECT f.follower, f.followwing FROM FollowRequest f WHERE f.following = :following")
+    @Query("SELECT f.follower, f.following FROM FollowRequest f WHERE f.following = :following")
     List<Follow> findFollowerAndFollowingByFollowing(@Param("following") int following);
 }
