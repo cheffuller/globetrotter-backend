@@ -17,12 +17,10 @@ CREATE TABLE user_account (
 );
 
 CREATE TABLE user_profile (
-	id INT AUTO_INCREMENT,
     account_id INT NOT NULL,
 	bio VARCHAR(1000),
     display_name VARCHAR(50) NOT NULL,
     is_private BOOL NOT NULL,
-    PRIMARY KEY (id),
     FOREIGN KEY (account_id) REFERENCES user_account(id)
 );
 
