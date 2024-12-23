@@ -40,6 +40,23 @@ public class PostComment {
         this.userAccount = userAccount;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    public Date getDateCommented() {
+        return commentedDate;
+    }
+
+    public void setDateCommented(Date commentedDate) {
+        this.commentedDate = commentedDate;
+    }
+
     public Post getPost() {
         return post;
     }

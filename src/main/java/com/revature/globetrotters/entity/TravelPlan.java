@@ -1,6 +1,5 @@
 package com.revature.globetrotters.entity;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +13,7 @@ public class TravelPlan {
     @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer planId;
+    private Integer id;
     @Column(name = "account_id")
     private Integer accountId;
     @Column(name = "is_favorited")
@@ -26,19 +25,19 @@ public class TravelPlan {
 
     }
 
-    public TravelPlan(Integer planId, Integer accountId, Boolean isFavorited, Boolean isPublished){
-        this.planId = planId;
+    public TravelPlan(Integer id, Integer accountId, Boolean isFavorited, Boolean isPublished){
+        this.id = id;
         this.accountId = accountId;
         this.isFavorited = isFavorited;
         this.isPublished = isPublished;
     }
 
-    public Integer getPlanId(){
-        return planId;
+    public Integer getId(){
+        return id;
     }
 
-    public void setPlanId(Integer planId){
-        this.planId = planId;
+    public void setId(Integer id){
+        this.id = id;
     }
 
     public Integer getAccountId(){
@@ -64,5 +63,4 @@ public class TravelPlan {
     public void setIsPublished(Boolean isPublished){
         this.isPublished = isPublished;
     }
-
 }   
