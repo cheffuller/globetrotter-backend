@@ -63,5 +63,4 @@ public class TravelPlan {
     public void setIsPublished(Boolean isPublished){
         this.isPublished = isPublished;
     }
-
 }   
