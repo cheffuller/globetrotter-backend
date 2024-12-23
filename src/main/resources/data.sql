@@ -1,6 +1,5 @@
 use revature;
 
-
 INSERT into user_account(id, address, city, country, email, first_name, last_name, password, password_salt, username)
 VALUES (1, '1234', 'New York', 'United States', 'test@gmail.com', 'John', 'Doe', 'password', 'password_salt', 'john_doe');
 
@@ -42,13 +41,6 @@ VALUES (3, 1)
 
 INSERT into banned_user(account_id) VALUES (4);
 
-
 INSERT into post_like(post_id, user_id) VALUES (1, 3);
 
-
 INSERT into comment_like(comment_id, user_id) VALUES (1, 3);
-
-
-
-
-
