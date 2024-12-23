@@ -23,9 +23,6 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Intege
     @Query("SELECT pc FROM PostComment pc WHERE pc.userAccount.id = :userId")
     List<PostComment> getCommentsByUserId(@Param("userId") Integer userId);
 
-    @Query("SELECT pc FROM PostComment pc WHERE LOWER(pc.content) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<PostComment> getCommentsByKeyword(@Param("keyword") String keyword);
-
     @Query("SELECT pc FROM PostComment pc WHERE pc.post = :post")
     List<PostComment> findByPost(@Param("post") Post post);
 
