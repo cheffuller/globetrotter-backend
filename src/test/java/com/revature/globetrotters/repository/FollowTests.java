@@ -33,10 +33,22 @@ public class FollowTests {
     }
 
     @Test
-    public void getFollowTest() {
+    public void findByFollowingTest() {
         int follower = 1;
         List<Follow> actualResult = followRepository.findByFollowing(follower);
         List<Follow> expectedResult = List.of(new Follow(new Follow.FollowId(2, 1)));
+
+        Assertions.assertEquals(expectedResult, actualResult,
+                "Expected: " + expectedResult + ". Actual: " + actualResult);
+    }
+
+    @Test
+    public void findByFollowerTest() {
+        int follower = 1;
+        List<Follow> actualResult = followRepository.findByFollower(follower);
+        List<Follow> expectedResult = List.of(
+                new Follow(new Follow.FollowId(1, 2)),
+                new Follow(new Follow.FollowId(1, 3)));
 
         Assertions.assertEquals(expectedResult, actualResult,
                 "Expected: " + expectedResult + ". Actual: " + actualResult);
