@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface FollowRequestRepository extends JpaRepository<FollowRequest, Integer> {
-    @Query("SELECT f.id.follower, f.id.following FROM FollowRequest f WHERE f.id.follower = :follower")
-    List<Follow> findFollowerAndFollowingByFollower(@Param("follower") int follower);
+public interface FollowRequestRepository extends JpaRepository<FollowRequest, FollowRequest.FollowRequestId> {
+    @Query("SELECT f FROM FollowRequest f WHERE f.id.follower = :follower")
+    List<Follow> findByFollower(@Param("follower") Integer follower);
 
-    @Query("SELECT f.id.follower, f.id.following FROM FollowRequest f WHERE f.id.following = :following")
-    List<Follow> findFollowerAndFollowingByFollowing(@Param("following") int following);
+    @Query("SELECT f FROM FollowRequest f WHERE f.id.following = :following")
+    List<Follow> findByFollowing(@Param("following") Integer following);
 }
