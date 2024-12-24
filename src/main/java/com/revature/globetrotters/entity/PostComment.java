@@ -33,6 +33,9 @@ public class PostComment {
     @JoinColumn(name = "made_by", nullable = false)
     private UserAccount userAccount;
 
+    public PostComment() {
+    }
+
     public PostComment(Date commentedDate, Post post, String content, UserAccount userAccount) {
         this.commentedDate = commentedDate;
         this.post = post;

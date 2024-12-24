@@ -15,6 +15,38 @@ public class Follow {
     @EmbeddedId
     private FollowId id;
 
+    public Follow() {
+    }
+
+    public Follow(FollowId id) {
+        this.id = id;
+    }
+
+    public Follow(int follower, int following) {
+        id = new FollowId(follower, following);
+    }
+
+    public FollowId getId() {
+        return id;
+    }
+
+    public void setId(FollowId id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Follow follow = (Follow) o;
+        return Objects.equals(id, follow.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
     @Embeddable
     public static class FollowId implements Serializable {
         @Column(name = "follower")
