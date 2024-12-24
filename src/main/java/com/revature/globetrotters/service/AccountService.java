@@ -25,5 +25,26 @@ public class AccountService {
         }
         return null;
     }
+
+    public UserAccount register(UserAccount account) {
+
+        if (account == null) {
+            throw new IllegalArgumentException("Account is required.");
+        }
+
+        if (account.getUsername() == null || account.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username is required.");
+        }
+
+        if (account.getPassword() == null || account.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("Password is required.");
+        }
+
+        if (userAccountRepository.findByUsername(account.getUsername()) != null) {
+            throw new IllegalArgumentException("Username is already taken.");
+        }
+
+        return userAccountRepository.save(account);
+    }
 }
 

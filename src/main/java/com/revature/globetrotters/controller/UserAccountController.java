@@ -35,5 +35,17 @@ public class UserAccountController {
             return ResponseEntity.status(500).body("An error occurred during login: " + e.getMessage());
         }
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserAccount account) {
+        try {
+            UserAccount newAccount = accountService.register(account);
+            return ResponseEntity.ok(newAccount);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred during registration: " + e.getMessage());
+        }
+    }
     
 }
