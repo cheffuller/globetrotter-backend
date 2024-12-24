@@ -2,11 +2,16 @@ package com.revature.globetrotters.service;
 
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.PostComment;
+import com.revature.globetrotters.entity.PostLike;
+import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.PostCommentRepository;
 import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
+import com.revature.globetrotters.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +24,8 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private PostLikeRepository postLikeRepository;
+    @Autowired
+    private UserAccountRepository userAccountRepository;
 
     public Post createPost(Post post) {
         return postRepository.save(post);
@@ -42,14 +49,21 @@ public class PostService {
         }
     }
 
-    // TODO: write custom postRepository method
-    public Integer getPostLikes(Integer postId) {
+    public Integer getPostLikes(Integer postId) throws NotFoundException {
+        if (!postRepository.existsById(postId)) {
+            throw new NotFoundException(String.format("Post with ID %d not found.", postId));
+        }
         return postLikeRepository.findNumberOfLikesByPostId(postId);
     }
 
-    // TODO: write custom postRepository method
-    public void likePost(Integer postId, Integer userId) {
-        postRepository.addPostLike(postId, userId);
+    public void likePost(Integer postId, Integer userId) throws NotFoundException {
+        if (!postRepository.existsById(postId)) {
+            throw new NotFoundException(String.format("Post with ID %d not found.", postId));
+        }
+        if (!userAccountRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("User with ID %d not found.", userId));
+        }
+        postLikeRepository.save(new PostLike(postId, userId));
     }
 
     // TODO: write custom postCommentRepository method

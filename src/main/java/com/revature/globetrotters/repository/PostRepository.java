@@ -25,9 +25,4 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             ON tp.accountId = ua.id
             WHERE ua.id = :userId""")
     List<Post> findAllByUserId(@Param("userId") Integer userId);
-
-
-    @Query("")
-    void addPostLike(Integer postId, Integer userId);
-
 }

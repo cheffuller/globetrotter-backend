@@ -2,6 +2,7 @@ package com.revature.globetrotters.controller;
 
 import java.util.List;
 
+import com.revature.globetrotters.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,11 @@ public class PostController {
 
     @GetMapping("posts/{postId}/likes")
     public ResponseEntity<Integer> getPostLikes(@PathVariable int postId) {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.getPostLikes(postId));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(postService.getPostLikes(postId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @PostMapping("posts/{postId}/likes")
