@@ -1,5 +1,6 @@
 package com.revature.globetrotters.service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.revature.globetrotters.entity.Follow;
+import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.repository.FollowRepository;
+import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 
@@ -21,6 +24,9 @@ public class AccountService {
 
     @Autowired
     private TravelPlanRepository planRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private FollowRepository followRepository;
@@ -106,17 +112,19 @@ public class AccountService {
 
         return planRepository.getTravelPlansByAccountId(userId);
     }
-
-    public void createPlan(int userId, TravelPlan plan) {
-
+    
+    public Post createPost(int userId, Post post) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("User ID must be greater than zero.");
+        }
+        if (post == null) {
+            throw new IllegalArgumentException("Post is required.");
+        }
+        post.setCreated_at(new Date(userId));
+    
+        return postRepository.save(post);
     }
-
-    public Object createPost(int userId, String post) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
+    
 
 }
 
