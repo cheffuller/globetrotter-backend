@@ -1,6 +1,5 @@
 package com.revature.globetrotters.service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,17 +113,7 @@ public class AccountService {
     }
     
     public Post createPost(int userId, Post post) {
-        if (userId <= 0) {
-            throw new IllegalArgumentException("User ID must be greater than zero.");
-        }
-        if (post == null) {
-            throw new IllegalArgumentException("Post is required.");
-        }
-        post.setCreated_at(new Date(userId));
-    
-        return postRepository.save(post);
+        return null;
     }
-    
-
 }
 

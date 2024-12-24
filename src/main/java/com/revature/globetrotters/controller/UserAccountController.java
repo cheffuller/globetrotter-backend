@@ -1,6 +1,5 @@
 package com.revature.globetrotters.controller;
 
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,21 +112,14 @@ public class UserAccountController {
         }
     }
 
-@PostMapping("/{user-id}/posts")
-public ResponseEntity<?> createPost(@PathVariable("user-id") int userId, @RequestBody String postContent) {
-    try {
-       
-        Post post = new Post();
-        post.setTravel_plan(Integer.parseInt(postContent));  
-        post.setCreated_at(new Date());  
-        post.setPosted_date(new Date()); 
-
-        return ResponseEntity.ok(accountService.createPost(userId, post));
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    } catch (Exception e) {
-        return ResponseEntity.status(500).body("An error occurred while creating post: " + e.getMessage());
+    @PostMapping("/{user-id}/posts")
+    public ResponseEntity<?> createPost(@PathVariable("user-id") int userId, @RequestBody Post post) {
+        try {
+            return ResponseEntity.ok(accountService.createPost(userId, post));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while creating post: " + e.getMessage());
+        }
     }
-}
-
 }
