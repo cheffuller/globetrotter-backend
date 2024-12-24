@@ -39,10 +39,46 @@ public class PostCommentRepositoryTest {
     @CsvSource({
             "1, '2019-01-01', 1, 'content', 3"
     })
-    public void findPostCommentTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
+    public void findPostCommentByIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
                                     Integer postId, String content, Integer userId) {
         PostComment expected = new PostComment(commentId, date, postId, content, userId);
         PostComment actual = postCommentRepository.findById(commentId).get();
+        Assertions.assertEquals(expected, actual,
+                "Expected: " + expected + ". Actual: " + actual);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, '2019-01-01', 1, 'content', 3"
+    })
+    public void findPostCommentByDateTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
+                                        Integer postId, String content, Integer userId) {
+        PostComment expected = new PostComment(commentId, date, postId, content, userId);
+        PostComment actual = postCommentRepository.findByCommentedDate(date).get();
+        Assertions.assertEquals(expected, actual,
+                "Expected: " + expected + ". Actual: " + actual);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, '2019-01-01', 1, 'content', 3"
+    })
+    public void findPostCommentByPostIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
+                                          Integer postId, String content, Integer userId) {
+        PostComment expected = new PostComment(commentId, date, postId, content, userId);
+        PostComment actual = postCommentRepository.findByPostId(postId).get();
+        Assertions.assertEquals(expected, actual,
+                "Expected: " + expected + ". Actual: " + actual);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, '2019-01-01', 1, 'content', 3"
+    })
+    public void findPostCommentByUserIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
+                                            Integer postId, String content, Integer userId) {
+        PostComment expected = new PostComment(commentId, date, postId, content, userId);
+        PostComment actual = postCommentRepository.findByUserId(userId).get();
         Assertions.assertEquals(expected, actual,
                 "Expected: " + expected + ". Actual: " + actual);
     }

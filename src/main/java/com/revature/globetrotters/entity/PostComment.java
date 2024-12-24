@@ -31,17 +31,17 @@ public class PostComment {
     private String content;
 
     @Column(name = "made_by", nullable = false)
-    private Integer userAccountId;
+    private Integer userId;
 
     public PostComment() {
     }
 
-    public PostComment(Integer id, Date commentedDate, Integer postId, String content, Integer userAccountId) {
+    public PostComment(Integer id, Date commentedDate, Integer postId, String content, Integer userId) {
         this.id = id;
         this.commentedDate = commentedDate;
         this.postId = postId;
         this.content = content;
-        this.userAccountId = userAccountId;
+        this.userId = userId;
     }
 
     public Integer getId() {
@@ -76,12 +76,12 @@ public class PostComment {
         this.content = content;
     }
 
-    public Integer getUserAccountId() {
-        return userAccountId;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setUserAccountId(Integer userAccountId) {
-        this.userAccountId = userAccountId;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     @Override
@@ -89,12 +89,12 @@ public class PostComment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PostComment that = (PostComment) o;
-        return Objects.equals(id, that.id) && Objects.equals(commentedDate, that.commentedDate) && Objects.equals(postId, that.postId) && Objects.equals(content, that.content) && Objects.equals(userAccountId, that.userAccountId);
+        return Objects.equals(id, that.id) && Objects.equals(commentedDate, that.commentedDate) && Objects.equals(postId, that.postId) && Objects.equals(content, that.content) && Objects.equals(userId, that.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, commentedDate, postId, content, userAccountId);
+        return Objects.hash(id, commentedDate, postId, content, userId);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class PostComment {
                 ", commentedDate=" + commentedDate +
                 ", postId=" + postId +
                 ", content='" + content + '\'' +
-                ", userAccountId=" + userAccountId +
+                ", userId=" + userId +
                 '}';
     }
 }
