@@ -87,4 +87,25 @@ public class UserAccountController {
         }
     }
     
+    @PostMapping("/users/{userId}/following")
+    public ResponseEntity<?> follow(@PathVariable int userId, @RequestBody int followingId) {
+        try {
+            return ResponseEntity.ok(accountService.follow(userId, followingId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while following user: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("users/{user-id}/plans")
+    public ResponseEntity<?> getPlans(@PathVariable("user-id") int userId) {
+        try {
+            return ResponseEntity.ok(accountService.getPlans(userId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while retrieving plans: " + e.getMessage());
+        }
+    }
 }

@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.revature.globetrotters.entity.Follow;
+import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.repository.FollowRepository;
+import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 
 @Service
@@ -16,6 +18,9 @@ public class AccountService {
 
     @Autowired
     private UserAccountRepository userAccountRepository;
+
+    @Autowired
+    private TravelPlanRepository planRepository;
 
     @Autowired
     private FollowRepository followRepository;
@@ -79,6 +84,7 @@ public class AccountService {
         return followRepository.findByFollower(userId);
     }
 
+
     public Follow follow(int followerId, int followingId) {
         if (followerId <= 0 || followingId <= 0) {
             throw new IllegalArgumentException("User IDs must be greater than zero.");
@@ -92,5 +98,14 @@ public class AccountService {
         Follow follow = new Follow(followId);
         return followRepository.save(follow);
     }
+
+    public List<TravelPlan> getPlans(int userId) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("User ID must be greater than zero.");
+        }
+
+        return planRepository.getTravelPlansByAccountId(userId);
+    }
+
 }
 
