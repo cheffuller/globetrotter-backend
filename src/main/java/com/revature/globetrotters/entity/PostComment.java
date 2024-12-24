@@ -36,6 +36,13 @@ public class PostComment {
     public PostComment() {
     }
 
+    public PostComment(Date commentedDate, Integer postId, String content, Integer userId) {
+        this.commentedDate = commentedDate;
+        this.postId = postId;
+        this.content = content;
+        this.userId = userId;
+    }
+
     public PostComment(Integer id, Date commentedDate, Integer postId, String content, Integer userId) {
         this.id = id;
         this.commentedDate = commentedDate;

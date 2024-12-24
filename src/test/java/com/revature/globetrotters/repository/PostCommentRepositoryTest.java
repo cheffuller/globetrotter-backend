@@ -82,4 +82,22 @@ public class PostCommentRepositoryTest {
         Assertions.assertEquals(expected, actual,
                 "Expected: " + expected + ". Actual: " + actual);
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2, '2019-01-01', 1, 'post commented added in test', 3, 2"
+    })
+    public void createPostCommentTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
+                                            Integer postId, String content, Integer userId, Long expectedRowCount) {
+        PostComment toCreate = new PostComment(date, postId, content, userId);
+        PostComment expected = new PostComment(commentId, date, postId, content, userId);
+        PostComment actual = postCommentRepository.save(toCreate);
+        long actualRowCount = postCommentRepository.count();
+
+        Assertions.assertEquals(expected, actual,
+                "Expected: " + expected + ". Actual: " + actual);
+
+        Assertions.assertEquals(expectedRowCount, actualRowCount,
+                "Expected number of rows: " + expected + ". Actual: " + actualRowCount);
+    }
 }
