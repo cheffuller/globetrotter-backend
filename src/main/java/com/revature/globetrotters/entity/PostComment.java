@@ -1,5 +1,6 @@
 package com.revature.globetrotters.entity;
 import java.util.Date;
+import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -82,5 +83,31 @@ public class PostComment {
 
     public void setUserAccount(UserAccount userAccount) {
         this.userAccount = userAccount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PostComment that = (PostComment) o;
+        return Objects.equals(id, that.id) && Objects.equals(commentedDate, that.commentedDate)
+                && Objects.equals(post, that.post) && Objects.equals(content, that.content)
+                && Objects.equals(userAccount, that.userAccount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, commentedDate, post, content, userAccount);
+    }
+
+    @Override
+    public String toString() {
+        return "PostComment{" +
+                "id=" + id +
+                ", commentedDate=" + commentedDate +
+                ", post=" + post +
+                ", content='" + content + '\'' +
+                ", userAccount=" + userAccount +
+                '}';
     }
 }
