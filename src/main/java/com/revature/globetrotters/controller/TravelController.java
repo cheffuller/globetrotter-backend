@@ -61,7 +61,7 @@ public class TravelController {
     }
     
     @PutMapping("")
-    public ResponseEntity<?> updateTravelPlan(@RequestBody TravelPlan travelPlan) {
+    public ResponseEntity<?> updateTravelPlan(@RequestBody TravelPlanLocation travelPlan) {
         try {
             // call travel plan service layer to update travel plan by its id
             // and then probably call travel plan location service layer to update travel plan location or times

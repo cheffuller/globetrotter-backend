@@ -12,5 +12,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TravelPlanLocationRepository extends JpaRepository<TravelPlanLocation, Integer> {
     @Query("SELECT tpl FROM TravelPlanLocation tpl WHERE tpl.travelPlanId = :travelPlanId")
-    List<TravelPlanLocation> findLocationsByTravelPlanId(@Param("travelPlanId") int travelPlanId);
+    TravelPlanLocation findLocationsByTravelPlanId(@Param("travelPlanId") int travelPlanId);
 }
