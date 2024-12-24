@@ -9,9 +9,7 @@ import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,16 +34,16 @@ public class PostService {
         return postRepository.findAllByUserId(userId);
     }
 
-    public Post findPostById(Integer postId) throws Exception {
+    public Post findPostById(Integer postId) throws NotFoundException {
         Optional<Post> optionalPost = postRepository.findById(postId);
-        return optionalPost.orElseThrow(() -> new Exception("Post not found."));
+        return optionalPost.orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
     }
 
-    public void deletePost(Integer postId) throws Exception {
+    public void deletePost(Integer postId) throws NotFoundException {
         if (postRepository.existsById(postId)) {
             postRepository.deleteById(postId);
         } else {
-            throw new Exception("Post not found.");
+            throw new NotFoundException(String.format("Post with ID %d not found.", postId));
         }
     }
 
@@ -76,16 +74,16 @@ public class PostService {
         return postCommentRepository.save(postComment);
     }
 
-    public PostComment findCommentById(Integer commentId) throws Exception {
+    public PostComment findCommentById(Integer commentId) throws NotFoundException {
         Optional<PostComment> optionalComment = postCommentRepository.findById(commentId);
-        return optionalComment.orElseThrow(() -> new Exception("Comment not found."));
+        return optionalComment.orElseThrow(() -> new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
     }
 
     public void deleteComment(Integer commentId) throws Exception {
         if (postCommentRepository.existsById(commentId)) {
             postCommentRepository.deleteById(commentId);
         } else {
-            throw new Exception();
+            throw new NotFoundException(String.format("Comment with ID %d not found.", commentId));
         }
     }
 

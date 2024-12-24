@@ -88,8 +88,12 @@ public class PostController {
     }
 
     @GetMapping("comments/{commentId}")
-    public ResponseEntity<PostComment> getCommentById(@PathVariable int commentId) throws Exception {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentById(commentId));
+    public ResponseEntity<PostComment> getCommentById(@PathVariable int commentId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentById(commentId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @DeleteMapping("comments/{commentId}")
