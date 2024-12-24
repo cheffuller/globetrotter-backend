@@ -107,5 +107,16 @@ public class AccountService {
         return planRepository.getTravelPlansByAccountId(userId);
     }
 
+    public void createPlan(int userId, TravelPlan plan) {
+
+    }
+
+    public Object createPost(int userId, String post) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+
 }
 

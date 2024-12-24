@@ -108,4 +108,16 @@ public class UserAccountController {
             return ResponseEntity.status(500).body("An error occurred while retrieving plans: " + e.getMessage());
         }
     }
+
+    @PostMapping("users/{user-id}/posts")
+    public ResponseEntity<?> createPost(@PathVariable("user-id") int userId, @RequestBody String post) {
+        try {
+            return ResponseEntity.ok(accountService.createPost(userId, post));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while creating post: " + e.getMessage());
+        }
+    }
+
 }
