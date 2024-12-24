@@ -6,7 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "travel_plan_location")
@@ -91,5 +93,30 @@ public class TravelPlanLocation {
         this.travelPlanId = travelPlanId;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TravelPlanLocation that = (TravelPlanLocation) o;
+        return Objects.equals(id, that.id) && Objects.equals(city, that.city) && Objects.equals(country, that.country)
+                && Objects.equals(endDate, that.endDate) && Objects.equals(startDate, that.startDate)
+                && Objects.equals(travelPlanId, that.travelPlanId);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, city, country, endDate, startDate, travelPlanId);
+    }
+
+    @Override
+    public String toString() {
+        return "TravelPlanLocation{" +
+                "id=" + id +
+                ", city='" + city + '\'' +
+                ", country='" + country + '\'' +
+                ", endDate=" + endDate +
+                ", startDate=" + startDate +
+                ", travelPlanId=" + travelPlanId +
+                '}';
+    }
 }

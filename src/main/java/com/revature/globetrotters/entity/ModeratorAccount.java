@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "moderator_account")
 public class ModeratorAccount {
@@ -28,11 +30,11 @@ public class ModeratorAccount {
     private String username;
 
 
-    public ModeratorAccount(){
+    public ModeratorAccount() {
 
     }
 
-    public ModeratorAccount(Integer id, String email, String firstName, String lastName, String password, String passwordSalt, String username){
+    public ModeratorAccount(Integer id, String email, String firstName, String lastName, String password, String passwordSalt, String username) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
@@ -42,59 +44,85 @@ public class ModeratorAccount {
         this.username = username;
     }
 
-    public Integer getId(){
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id){
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email){
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getFirstName(){
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName){
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getLastName(){
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName){
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password){
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public String setPasswordSalt(){
+    public String setPasswordSalt() {
         return passwordSalt;
     }
 
-    public void getPasswordSalt(String passwordSalt){
+    public void getPasswordSalt(String passwordSalt) {
         this.passwordSalt = passwordSalt;
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username){
+    public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ModeratorAccount that = (ModeratorAccount) o;
+        return Objects.equals(id, that.id) && Objects.equals(email, that.email) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(password, that.password) && Objects.equals(passwordSalt, that.passwordSalt) && Objects.equals(username, that.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, firstName, lastName, password, passwordSalt, username);
+    }
+
+    @Override
+    public String toString() {
+        return "ModeratorAccount{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", password='" + password + '\'' +
+                ", passwordSalt='" + passwordSalt + '\'' +
+                ", username='" + username + '\'' +
+                '}';
     }
 }
