@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "user_profile")
 public class UserProfile {
@@ -58,5 +60,29 @@ public class UserProfile {
 
     public void setPrivate(boolean aPrivate) {
         isPrivate = aPrivate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserProfile that = (UserProfile) o;
+        return isPrivate == that.isPrivate && Objects.equals(accountId, that.accountId) && Objects.equals(bio, that.bio)
+                && Objects.equals(displayName, that.displayName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountId, bio, displayName, isPrivate);
+    }
+
+    @Override
+    public String toString() {
+        return "UserProfile{" +
+                "accountId=" + accountId +
+                ", bio='" + bio + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", isPrivate=" + isPrivate +
+                '}';
     }
 }
