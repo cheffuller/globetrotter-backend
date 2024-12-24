@@ -1,7 +1,7 @@
 package com.revature.globetrotters.repository;
 
 import com.revature.globetrotters.GlobeTrottersApplication;
-import com.revature.globetrotters.entity.Follow;
+import com.revature.globetrotters.entity.FollowRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +14,9 @@ import org.springframework.context.ApplicationContext;
 import java.util.List;
 
 @SpringBootTest
-public class FollowTests {
+public class FollowRequestRepositoryTests {
     @Autowired
-    FollowRepository followRepository;
+    FollowRequestRepository followRequestRepository;
     ApplicationContext app;
 
     @BeforeEach
@@ -34,9 +34,12 @@ public class FollowTests {
 
     @Test
     public void findByFollowingTest() {
-        int follower = 1;
-        List<Follow> actualResult = followRepository.findByFollowing(follower);
-        List<Follow> expectedResult = List.of(new Follow(new Follow.FollowId(2, 1)));
+        int following = 4;
+        List<FollowRequest> actualResult = followRequestRepository.findByFollowing(following);
+        List<FollowRequest> expectedResult = List.of(
+                new FollowRequest(new FollowRequest.FollowRequestId(1, 4)),
+                new FollowRequest(new FollowRequest.FollowRequestId(2, 4)),
+                new FollowRequest(new FollowRequest.FollowRequestId(3, 4)));
 
         Assertions.assertEquals(expectedResult, actualResult,
                 "Expected: " + expectedResult + ". Actual: " + actualResult);
@@ -45,10 +48,8 @@ public class FollowTests {
     @Test
     public void findByFollowerTest() {
         int follower = 1;
-        List<Follow> actualResult = followRepository.findByFollower(follower);
-        List<Follow> expectedResult = List.of(
-                new Follow(new Follow.FollowId(1, 2)),
-                new Follow(new Follow.FollowId(1, 3)));
+        List<FollowRequest> actualResult = followRequestRepository.findByFollower(follower);
+        List<FollowRequest> expectedResult = List.of(new FollowRequest(new FollowRequest.FollowRequestId(1, 4)));
 
         Assertions.assertEquals(expectedResult, actualResult,
                 "Expected: " + expectedResult + ". Actual: " + actualResult);
