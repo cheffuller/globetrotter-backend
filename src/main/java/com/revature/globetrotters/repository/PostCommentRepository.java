@@ -12,12 +12,17 @@ import java.util.Optional;
 @Repository
 public interface PostCommentRepository extends JpaRepository<PostComment, Integer> {
     Optional<PostComment> findByCommentedDate(Date date);
+
     Optional<PostComment> findByPostId(Integer postId);
+
     Optional<PostComment> findByUserId(Integer madeBy);
+
     @Query("")
     List<PostComment> findAllByPostId(Integer postId);
+
     @Query("")
     Integer findCommentLikes(Integer commentId);
+
     @Query("")
     void addCommentLike(Integer commentId, Integer userId);
 }

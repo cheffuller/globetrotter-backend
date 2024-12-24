@@ -3,6 +3,7 @@ package com.revature.globetrotters.service;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.PostComment;
 import com.revature.globetrotters.repository.PostCommentRepository;
+import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,11 @@ import java.util.Optional;
 @Service
 public class PostService {
     @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
     private PostCommentRepository postCommentRepository;
+    @Autowired
+    private PostRepository postRepository;
+    @Autowired
+    private PostLikeRepository postLikeRepository;
 
     public Post createPost(Post post) {
         return postRepository.save(post);
@@ -42,7 +44,7 @@ public class PostService {
 
     // TODO: write custom postRepository method
     public Integer getPostLikes(Integer postId) {
-        return postRepository.findNumberOfLikesByPostId(postId);
+        return postLikeRepository.findNumberOfLikesByPostId(postId);
     }
 
     // TODO: write custom postRepository method

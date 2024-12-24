@@ -13,7 +13,9 @@ import java.util.Optional;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
     Optional<Post> findByPostedDate(Date date);
+
     Optional<Post> findByTravelPlan(Integer travelPlan);
+
     @Query("""
             SELECT p 
             FROM Post p
@@ -23,10 +25,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             ON tp.accountId = ua.id
             WHERE ua.id = :userId""")
     List<Post> findAllByUserId(@Param("userId") Integer userId);
-    @Query("""
-            
-            """)
-    Integer findNumberOfLikesByPostId(Integer postId);
+
+
     @Query("")
     void addPostLike(Integer postId, Integer userId);
 
