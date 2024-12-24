@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "travel_plan")
 public class TravelPlan {
@@ -63,4 +65,28 @@ public class TravelPlan {
     public void setIsPublished(Boolean isPublished){
         this.isPublished = isPublished;
     }
-}   
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TravelPlan that = (TravelPlan) o;
+        return Objects.equals(id, that.id) && Objects.equals(accountId, that.accountId)
+                && Objects.equals(isFavorited, that.isFavorited) && Objects.equals(isPublished, that.isPublished);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, accountId, isFavorited, isPublished);
+    }
+
+    @Override
+    public String toString() {
+        return "TravelPlan{" +
+                "id=" + id +
+                ", accountId=" + accountId +
+                ", isFavorited=" + isFavorited +
+                ", isPublished=" + isPublished +
+                '}';
+    }
+}
