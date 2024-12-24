@@ -22,6 +22,10 @@ public class FollowRequest {
         this.id = id;
     }
 
+    public FollowRequest(int follower, int following) {
+        id = new FollowRequestId(follower, following);
+    }
+
     public FollowRequestId getId() {
         return id;
     }

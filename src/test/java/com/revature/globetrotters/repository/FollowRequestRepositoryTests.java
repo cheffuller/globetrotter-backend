@@ -37,9 +37,9 @@ public class FollowRequestRepositoryTests {
         int following = 4;
         List<FollowRequest> actualResult = followRequestRepository.findByFollowing(following);
         List<FollowRequest> expectedResult = List.of(
-                new FollowRequest(new FollowRequest.FollowRequestId(1, 4)),
-                new FollowRequest(new FollowRequest.FollowRequestId(2, 4)),
-                new FollowRequest(new FollowRequest.FollowRequestId(3, 4)));
+                new FollowRequest(1, 4),
+                new FollowRequest(2, 4),
+                new FollowRequest(3, 4));
 
         Assertions.assertEquals(expectedResult, actualResult,
                 "Expected: " + expectedResult + ". Actual: " + actualResult);
@@ -49,7 +49,7 @@ public class FollowRequestRepositoryTests {
     public void findByFollowerTest() {
         int follower = 1;
         List<FollowRequest> actualResult = followRequestRepository.findByFollower(follower);
-        List<FollowRequest> expectedResult = List.of(new FollowRequest(new FollowRequest.FollowRequestId(1, 4)));
+        List<FollowRequest> expectedResult = List.of(new FollowRequest(1, 4));
 
         Assertions.assertEquals(expectedResult, actualResult,
                 "Expected: " + expectedResult + ". Actual: " + actualResult);
