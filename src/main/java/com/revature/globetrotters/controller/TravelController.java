@@ -7,24 +7,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.ResponseEntity;
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
 
 
+//no need for path variable in the post 
+// no need to have path variable for travelPlan
+
 @Controller
-@RequestMapping("/travels")
+@RequestMapping("/plans")
 @CrossOrigin(origins = "http://localhost:5173/")
 public class TravelController {
-    @PostMapping("/plans")
-    public ResponseEntity<?> createTravelPlan(@PathVariable TravelPlan travelPlan) {
+    @PostMapping("")
+    public ResponseEntity<?> createTravelPlan(@RequestBody TravelPlan travelPlan) {
         try {
-
             //call travel plan service layer to create travel plan
             //and then call travel plan location service layer to create travel plan location
             //however that may be a bit weird in terms of referencing where the information for travel plan location is coming from
@@ -34,8 +35,8 @@ public class TravelController {
         }
     }
 
-    @GetMapping("/plans/{id}")
-    public ResponseEntity<?> getTravelPlansById(@PathVariable TravelPlan travelPlanId) {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getTravelPlansById(@PathVariable int travelPlanId) {
         try {
             // call service layer to get travel plan by id
             // and then probably call travel plan location service layer to get travel plan location 
@@ -45,8 +46,8 @@ public class TravelController {
         }
     }
     
-    @PutMapping("plans/{id}")
-    public ResponseEntity<?> updateTravelPlan(@PathVariable TravelPlan travelPlanId) {
+    @PutMapping("")
+    public ResponseEntity<?> updateTravelPlan(@RequestBody TravelPlan travelPlan) {
         try {
             // call travel plan service layer to update travel plan by its id
             // and then probably call travel plan location service layer to update travel plan location or times
@@ -56,8 +57,8 @@ public class TravelController {
         }
     }
 
-    @DeleteMapping("plans/{id}")
-    public ResponseEntity<?> deleteTravelPlan(@PathVariable TravelPlan travelPlanId) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteTravelPlan(@PathVariable int travelPlanId) {
         try {
             // call travel plan service layer to delete travel plan by its id
             // and then probably call travel plan location service layer to delete travel plan location
