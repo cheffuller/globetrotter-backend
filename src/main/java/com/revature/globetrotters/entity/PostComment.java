@@ -96,7 +96,8 @@ public class PostComment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PostComment that = (PostComment) o;
-        return Objects.equals(id, that.id) && Objects.equals(commentedDate, that.commentedDate) && Objects.equals(postId, that.postId) && Objects.equals(content, that.content) && Objects.equals(userId, that.userId);
+        return Objects.equals(id, that.id) && Objects.equals(commentedDate, that.commentedDate) &&
+                Objects.equals(postId, that.postId) && Objects.equals(content, that.content) && Objects.equals(userId, that.userId);
     }
 
     @Override
