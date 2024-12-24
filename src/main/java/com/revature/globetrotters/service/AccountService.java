@@ -1,9 +1,12 @@
 package com.revature.globetrotters.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.repository.FollowRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 
 @Service
@@ -11,6 +14,9 @@ public class AccountService {
 
     @Autowired
     private UserAccountRepository userAccountRepository;
+
+    @Autowired
+    private FollowRepository followRepository;
 
     public UserAccount authenticate(String username, String password) {
 
@@ -46,5 +52,15 @@ public class AccountService {
 
         return userAccountRepository.save(account);
     }
+
+    public Optional<UserAccount> getUser(int userId) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("User ID must be greater than zero.");
+        }
+        return userAccountRepository.findById(userId);
+    }
+    
+
+    
 }
 
