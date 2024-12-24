@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import org.springframework.data.annotation.CreatedDate;
+
 @Entity
 @Table(name = "post")
 public class Post {
@@ -18,11 +20,10 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "created_at")
+    @CreatedDate
     private Date created_at;
     @Column(name = "travel_plan")
     private int travel_plan;
-    @Column(name = "posted_date")
-    private Date posted_date;
 
     public Post() {
     }
@@ -31,7 +32,6 @@ public class Post {
         this.id = id;
         this.created_at = created_at;
         this.travel_plan = travel_plan;
-        this.posted_date = posted_date;
     }
 
     public int getId() {
@@ -56,14 +56,6 @@ public class Post {
 
     public void setTravel_plan(int travel_plan) {
         this.travel_plan = travel_plan;
-    }
-
-    public Date getPosted_date() {
-        return posted_date;
-    }
-
-    public void setPosted_date(Date posted_date) {
-        this.posted_date = posted_date;
     }
 
 }
