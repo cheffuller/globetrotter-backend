@@ -73,10 +73,10 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentsByPostId(postId));
     }
 
-    @PostMapping("posts/{postId}/comments")
-    public ResponseEntity<PostComment> postComment(@PathVariable int postId, @RequestBody PostComment postComment) {
+    @PostMapping("comments")
+    public ResponseEntity<PostComment> postComment(@RequestBody PostComment postComment) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(postService.postComment(postId, postComment));
+            return ResponseEntity.status(HttpStatus.OK).body(postService.postComment(postComment));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

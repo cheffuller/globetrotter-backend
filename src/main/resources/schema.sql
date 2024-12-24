@@ -47,7 +47,6 @@ CREATE TABLE moderator_account (
 CREATE TABLE post (
 	id INT AUTO_INCREMENT,
     created_at DATE NOT NULL,
-    posted_date DATE,
     travel_plan INT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (travel_plan) REFERENCES travel_plan(id)

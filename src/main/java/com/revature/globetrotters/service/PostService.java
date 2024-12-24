@@ -1,15 +1,14 @@
 package com.revature.globetrotters.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.PostComment;
 import com.revature.globetrotters.repository.PostCommentRepository;
 import com.revature.globetrotters.repository.PostRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -18,48 +17,47 @@ public class PostService {
 
     @Autowired
     private PostCommentRepository postCommentRepository;
-    
+
     public Post createPost(Post post) {
         return postRepository.save(post);
     }
 
     // TODO: write custom postRepository method
     public List<Post> findPostsByUserId(Integer userId) {
-        return postRepository.findByUserId(userId);
+        return postRepository.findAllByUserId(userId);
     }
 
     public Post findPostById(Integer postId) throws Exception {
         Optional<Post> optionalPost = postRepository.findById(postId);
-       return optionalPost.orElseThrow(() -> new Exception("Post not found."));
+        return optionalPost.orElseThrow(() -> new Exception("Post not found."));
     }
 
-    public void deletePost(Integer postId) throws Exception{
+    public void deletePost(Integer postId) throws Exception {
         if (postRepository.existsById(postId)) {
             postRepository.deleteById(postId);
         } else {
-            throw new Exception();
+            throw new Exception("Post not found.");
         }
-        
     }
 
     // TODO: write custom postRepository method
     public Integer getPostLikes(Integer postId) {
-        return postRepository.getPostLikes(postId);
+        return postRepository.findNumberOfLikesByPostId(postId);
     }
-    
+
     // TODO: write custom postRepository method
-    public void likePost(Integer postId) {
-        postRepository.likePost(postId);
+    public void likePost(Integer postId, Integer userId) {
+        postRepository.addPostLike(postId, userId);
     }
 
     // TODO: write custom postCommentRepository method
     public List<PostComment> findCommentsByPostId(Integer postId) {
-        return postCommentRepository.findCommentsByPostId(postId);
+        return postCommentRepository.findAllByPostId(postId);
     }
 
     // TODO: write custom postCommentRepository method
-    public PostComment postComment(Integer postId, PostComment postComment) {
-        return postCommentRepository.createPostComment(postId, postComment);
+    public PostComment postComment(PostComment postComment) {
+        return postCommentRepository.save(postComment);
     }
 
     public PostComment findCommentById(Integer commentId) throws Exception {
@@ -77,6 +75,6 @@ public class PostService {
 
     // TODO: write custom postCommentRepository method
     public Integer getCommentLikes(Integer commentId) {
-        return postCommentRepository.getCommentLikes(commentId);
+        return postCommentRepository.findCommentLikes(commentId);
     }
 }
