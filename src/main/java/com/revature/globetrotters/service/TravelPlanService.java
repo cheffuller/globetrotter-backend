@@ -8,6 +8,8 @@ import com.revature.globetrotters.entity.TravelPlanLocation;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 
+import java.util.Optional;
+
 @Service
 public class TravelPlanService {
     @Autowired
@@ -28,15 +30,17 @@ public class TravelPlanService {
     }
 
     public TravelPlanLocation updateTravelPlan(TravelPlanLocation travelPlan){
-        TravelPlanLocation existingTravelPlan = travelPlanLocationRepository.findLocationsByTravelPlanId(travelPlan.getId());
+        Optional<TravelPlanLocation> existingTravelPlan = travelPlanLocationRepository.findById(travelPlan.getId());
+        System.out.println(existingTravelPlan);
         if (existingTravelPlan == null) {
             throw new IllegalArgumentException("Travel plan not found");
         }
-        TravelPlanLocation updatedTravelPlan = existingTravelPlan;
-        updatedTravelPlan.setStartDate(travelPlan.getStartDate());
-        updatedTravelPlan.setEndDate(travelPlan.getEndDate());
-        updatedTravelPlan.setCity(travelPlan.getCity());
-        updatedTravelPlan.setCountry(travelPlan.getCountry());
+
+        TravelPlanLocation updatedTravelPlan = existingTravelPlan.get();
+
+        if(updatedTravelPlan.getCity().isEmpty() || updatedTravelPlan.getCountry().isEmpty() || updatedTravelPlan.getStartDate() == null || updatedTravelPlan.getEndDate() == null) {
+            throw new IllegalArgumentException("Invalid travel plan location");
+        }
 
         return travelPlanLocationRepository.save(updatedTravelPlan);
     }

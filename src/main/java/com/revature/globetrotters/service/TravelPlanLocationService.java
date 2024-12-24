@@ -22,6 +22,11 @@ public class TravelPlanLocationService {
     @Autowired
     TravelPlanLocationRepository travelPlanLocationRepository;
 
+    public TravelPlanLocationService(TravelPlanLocationRepository travelPlanLocationRepository, TravelPlanRepository travelPlanRepository) {
+        this.travelPlanLocationRepository = travelPlanLocationRepository;
+        this.travelPlanRepository = travelPlanRepository;
+    }
+
     public TravelPlanLocation createTravelPlanLocation(TravelPlanLocation travelPlanLocation) throws BadRequestException {
         if(travelPlanLocation.getCity().isEmpty() || travelPlanLocation.getCountry().isEmpty() || travelPlanLocation.getStartDate() == null || travelPlanLocation.getEndDate() == null) {
             throw new BadRequestException("Invalid travel plan location");

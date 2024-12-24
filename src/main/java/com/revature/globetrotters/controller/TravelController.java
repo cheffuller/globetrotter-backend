@@ -37,6 +37,8 @@ public class TravelController {
     @Autowired
     TravelPlanLocationService travelPlanLocationService;
 
+
+
     @PostMapping("")
     public ResponseEntity<?> createTravelPlan(@RequestBody TravelPlan travelPlan) {
         try {
@@ -61,11 +63,12 @@ public class TravelController {
     }
     
     @PutMapping("")
-    public ResponseEntity<?> updateTravelPlan(@RequestBody TravelPlanLocation travelPlan) {
+    public ResponseEntity<TravelPlanLocation> updateTravelPlan(@RequestBody TravelPlanLocation travelPlan) {
         try {
             // call travel plan service layer to update travel plan by its id
             // and then probably call travel plan location service layer to update travel plan location or times
-            return ResponseEntity.status(HttpStatus.OK).body(null);
+            TravelPlanLocation updatedTravelPlan = travelPlanService.updateTravelPlan(travelPlan);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
