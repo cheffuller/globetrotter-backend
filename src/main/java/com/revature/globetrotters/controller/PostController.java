@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.PostComment;
@@ -46,9 +47,10 @@ public class PostController {
     @DeleteMapping("posts/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable int postId) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(postService.deletePost(postId));
+            postService.deletePost(postId);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
@@ -72,7 +74,7 @@ public class PostController {
     }
 
     @PostMapping("posts/{postId}/comments")
-    public ResponseEntity<PostComment> postComment(@PathVariable int postId, PostComment postComment) {
+    public ResponseEntity<PostComment> postComment(@PathVariable int postId, @RequestBody PostComment postComment) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(postService.postComment(postId, postComment));
         } catch (Exception e) {
@@ -88,9 +90,10 @@ public class PostController {
     @DeleteMapping("comments/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable int commentId) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(postService.deleteComment(commentId));
+            postService.deleteComment(commentId);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 

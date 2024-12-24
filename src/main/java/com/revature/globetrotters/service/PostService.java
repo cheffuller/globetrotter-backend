@@ -33,10 +33,13 @@ public class PostService {
        return optionalPost.orElseThrow(() -> new Exception("Post not found."));
     }
 
-    public String deletePost(Integer postId) {
-        postRepository.deleteById(postId);
-        String message = "Post deleted";
-        return message;
+    public void deletePost(Integer postId) throws Exception{
+        if (postRepository.existsById(postId)) {
+            postRepository.deleteById(postId);
+        } else {
+            throw new Exception();
+        }
+        
     }
 
     // TODO: write custom postRepository method
@@ -64,10 +67,12 @@ public class PostService {
         return optionalComment.orElseThrow(() -> new Exception("Comment not found."));
     }
 
-    public String deleteComment(Integer commentId) {
-        postCommentRepository.deleteById(commentId);
-        String message = "Comment deleted";
-        return message;
+    public void deleteComment(Integer commentId) throws Exception {
+        if (postCommentRepository.existsById(commentId)) {
+            postCommentRepository.deleteById(commentId);
+        } else {
+            throw new Exception();
+        }
     }
 
     // TODO: write custom postCommentRepository method
