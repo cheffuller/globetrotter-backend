@@ -19,20 +19,17 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "created_at")
-    private Date created_at;
+    private Date postedDate;
     @Column(name = "travel_plan")
-    private int travel_plan;
-    @Column(name = "posted_date")
-    private Date posted_date;
+    private int travelPlanId;
 
     public Post() {
     }
 
-    public Post(int id, Date created_at, int travel_plan, Date posted_date) {
+    public Post(int id, Date postedDate, int travelPlanId) {
         this.id = id;
-        this.created_at = created_at;
-        this.travel_plan = travel_plan;
-        this.posted_date = posted_date;
+        this.postedDate = postedDate;
+        this.travelPlanId = travelPlanId;
     }
 
     public int getId() {
@@ -43,28 +40,20 @@ public class Post {
         this.id = id;
     }
 
-    public Date getCreated_at() {
-        return created_at;
+    public Date getPostedDate() {
+        return postedDate;
     }
 
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
+    public void setPostedDate(Date postedDate) {
+        this.postedDate = postedDate;
     }
 
-    public int getTravel_plan() {
-        return travel_plan;
+    public int getTravelPlanId() {
+        return travelPlanId;
     }
 
-    public void setTravel_plan(int travel_plan) {
-        this.travel_plan = travel_plan;
-    }
-
-    public Date getPosted_date() {
-        return posted_date;
-    }
-
-    public void setPosted_date(Date posted_date) {
-        this.posted_date = posted_date;
+    public void setTravelPlanId(int travelPlanId) {
+        this.travelPlanId = travelPlanId;
     }
 
     @Override
@@ -72,22 +61,20 @@ public class Post {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return id == post.id && travel_plan == post.travel_plan && Objects.equals(created_at, post.created_at)
-                && Objects.equals(posted_date, post.posted_date);
+        return id == post.id && travelPlanId == post.travelPlanId && Objects.equals(postedDate, post.postedDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, created_at, travel_plan, posted_date);
+        return Objects.hash(id, postedDate, travelPlanId);
     }
 
     @Override
     public String toString() {
         return "Post{" +
                 "id=" + id +
-                ", created_at=" + created_at +
-                ", travel_plan=" + travel_plan +
-                ", posted_date=" + posted_date +
+                ", postedDate=" + postedDate +
+                ", travelPlanId=" + travelPlanId +
                 '}';
     }
 }

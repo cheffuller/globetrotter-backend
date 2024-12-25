@@ -1,7 +1,7 @@
 package com.revature.globetrotters.repository;
 
 import com.revature.globetrotters.GlobeTrottersApplication;
-import com.revature.globetrotters.entity.PostComment;
+import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.util.DateArgumentConverter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -17,9 +17,9 @@ import org.springframework.context.ApplicationContext;
 import java.util.Date;
 
 @SpringBootTest
-public class PostCommentRepositoryTest {
+public class CommentRepositoryTest {
     @Autowired
-    PostCommentRepository postCommentRepository;
+    CommentRepository commentRepository;
     ApplicationContext app;
 
     @BeforeEach
@@ -41,8 +41,8 @@ public class PostCommentRepositoryTest {
     })
     public void findPostCommentByIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
                                     Integer postId, String content, Integer userId) {
-        PostComment expected = new PostComment(commentId, date, postId, content, userId);
-        PostComment actual = postCommentRepository.findById(commentId).get();
+        Comment expected = new Comment(commentId, date, postId, content, userId);
+        Comment actual = commentRepository.findById(commentId).get();
         Assertions.assertEquals(expected, actual,
                 "Expected: " + expected + ". Actual: " + actual);
     }
@@ -53,8 +53,8 @@ public class PostCommentRepositoryTest {
     })
     public void findPostCommentByDateTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
                                         Integer postId, String content, Integer userId) {
-        PostComment expected = new PostComment(commentId, date, postId, content, userId);
-        PostComment actual = postCommentRepository.findByCommentedDate(date).get();
+        Comment expected = new Comment(commentId, date, postId, content, userId);
+        Comment actual = commentRepository.findByCommentedDate(date).get();
         Assertions.assertEquals(expected, actual,
                 "Expected: " + expected + ". Actual: " + actual);
     }
@@ -65,8 +65,8 @@ public class PostCommentRepositoryTest {
     })
     public void findPostCommentByPostIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
                                           Integer postId, String content, Integer userId) {
-        PostComment expected = new PostComment(commentId, date, postId, content, userId);
-        PostComment actual = postCommentRepository.findByPostId(postId).get();
+        Comment expected = new Comment(commentId, date, postId, content, userId);
+        Comment actual = commentRepository.findByPostId(postId).get();
         Assertions.assertEquals(expected, actual,
                 "Expected: " + expected + ". Actual: " + actual);
     }
@@ -77,8 +77,8 @@ public class PostCommentRepositoryTest {
     })
     public void findPostCommentByUserIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
                                             Integer postId, String content, Integer userId) {
-        PostComment expected = new PostComment(commentId, date, postId, content, userId);
-        PostComment actual = postCommentRepository.findByUserId(userId).get();
+        Comment expected = new Comment(commentId, date, postId, content, userId);
+        Comment actual = commentRepository.findByUserId(userId).get();
         Assertions.assertEquals(expected, actual,
                 "Expected: " + expected + ". Actual: " + actual);
     }
@@ -89,10 +89,10 @@ public class PostCommentRepositoryTest {
     })
     public void createPostCommentTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
                                             Integer postId, String content, Integer userId, Long expectedRowCount) {
-        PostComment toCreate = new PostComment(date, postId, content, userId);
-        PostComment expected = new PostComment(commentId, date, postId, content, userId);
-        PostComment actual = postCommentRepository.save(toCreate);
-        long actualRowCount = postCommentRepository.count();
+        Comment toCreate = new Comment(date, postId, content, userId);
+        Comment expected = new Comment(commentId, date, postId, content, userId);
+        Comment actual = commentRepository.save(toCreate);
+        long actualRowCount = commentRepository.count();
 
         Assertions.assertEquals(expected, actual,
                 "Expected: " + expected + ". Actual: " + actual);

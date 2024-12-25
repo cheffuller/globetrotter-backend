@@ -25,8 +25,8 @@ VALUES (1, 1, false, false);
 INSERT INTO moderator_account (id, email, first_name, last_name, password, password_salt, username)
 VALUES (10, 'admin@gmail.com', 'Barry', 'Allen', 'password1', 'password1_salt', 'admin');
 
-INSERT INTO post (id, created_at, posted_date, travel_plan)
-VALUES (1, '2019-01-01', '2019-01-01', 1);
+INSERT INTO post (id, created_at, travel_plan)
+VALUES (1, '2019-01-01', 1);
 
 INSERT INTO post_comment (id, commented_date, commented_on, content, made_by)
 VALUES (1, '2019-01-01', 1, 'content', 3);
