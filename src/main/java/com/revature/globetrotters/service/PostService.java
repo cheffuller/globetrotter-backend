@@ -1,10 +1,11 @@
 package com.revature.globetrotters.service;
 
 import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.PostComment;
+import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.PostLike;
 import com.revature.globetrotters.exception.NotFoundException;
-import com.revature.globetrotters.repository.PostCommentRepository;
+import com.revature.globetrotters.repository.CommentLikeRepository;
+import com.revature.globetrotters.repository.CommentRepository;
 import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
@@ -17,7 +18,9 @@ import java.util.Optional;
 @Service
 public class PostService {
     @Autowired
-    private PostCommentRepository postCommentRepository;
+    private CommentRepository commentRepository;
+    @Autowired
+    private CommentLikeRepository commentLikeRepository;
     @Autowired
     private PostRepository postRepository;
     @Autowired
@@ -65,23 +68,23 @@ public class PostService {
     }
 
     // TODO: write custom postCommentRepository method
-    public List<PostComment> findCommentsByPostId(Integer postId) {
-        return postCommentRepository.findAllByPostId(postId);
+    public List<Comment> findCommentsByPostId(Integer postId) {
+        return commentRepository.findAllByPostId(postId);
     }
 
     // TODO: write custom postCommentRepository method
-    public PostComment postComment(PostComment postComment) {
-        return postCommentRepository.save(postComment);
+    public Comment postComment(Comment comment) {
+        return commentRepository.save(comment);
     }
 
-    public PostComment findCommentById(Integer commentId) throws NotFoundException {
-        Optional<PostComment> optionalComment = postCommentRepository.findById(commentId);
+    public Comment findCommentById(Integer commentId) throws NotFoundException {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
         return optionalComment.orElseThrow(() -> new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
     }
 
     public void deleteComment(Integer commentId) throws Exception {
-        if (postCommentRepository.existsById(commentId)) {
-            postCommentRepository.deleteById(commentId);
+        if (commentRepository.existsById(commentId)) {
+            commentRepository.deleteById(commentId);
         } else {
             throw new NotFoundException(String.format("Comment with ID %d not found.", commentId));
         }
@@ -89,6 +92,6 @@ public class PostService {
 
     // TODO: write custom postCommentRepository method
     public Integer getCommentLikes(Integer commentId) {
-        return postCommentRepository.findCommentLikes(commentId);
+        return commentLikeRepository.findNumberOfLikesByCommentId(commentId);
     }
 }

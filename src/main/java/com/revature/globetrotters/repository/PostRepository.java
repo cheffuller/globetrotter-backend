@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Integer> {
     Optional<Post> findByPostedDate(Date date);
 
-    Optional<Post> findByTravelPlan(Integer travelPlan);
+    Optional<Post> findByTravelPlanId(Integer travelPlanId);
 
     @Query("""
             SELECT p 

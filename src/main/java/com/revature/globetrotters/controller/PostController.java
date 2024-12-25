@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.PostComment;
+import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.service.PostService;
 
 @Controller
@@ -30,7 +30,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findPostsByUserId(userId));
     }
 
-    @PostMapping("post")
+    @PostMapping("posts")
     public ResponseEntity<Post> postPost(Post newPost) {
         try {
             Post post = postService.createPost(newPost);
@@ -74,21 +74,21 @@ public class PostController {
     }
 
     @GetMapping("posts/{postId}/comments")
-    public ResponseEntity<List<PostComment>> getCommentsByPostId(@PathVariable int postId) {
+    public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable int postId) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentsByPostId(postId));
     }
 
     @PostMapping("comments")
-    public ResponseEntity<PostComment> postComment(@RequestBody PostComment postComment) {
+    public ResponseEntity<Comment> postComment(@RequestBody Comment comment) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(postService.postComment(postComment));
+            return ResponseEntity.status(HttpStatus.OK).body(postService.postComment(comment));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
     @GetMapping("comments/{commentId}")
-    public ResponseEntity<PostComment> getCommentById(@PathVariable int commentId) {
+    public ResponseEntity<Comment> getCommentById(@PathVariable int commentId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentById(commentId));
         } catch (Exception e) {

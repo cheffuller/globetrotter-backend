@@ -10,27 +10,27 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "post_like")
-public class PostLike {
+@Table(name = "comment_like")
+public class CommentLike {
     @EmbeddedId
-    private PostLikeId id;
+    private CommentLikeId id;
 
-    public PostLike() {
+    public CommentLike() {
     }
 
-    public PostLike(Integer postId, Integer userId) {
-        id = new PostLikeId(postId, userId);
+    public CommentLike(Integer commentId, Integer userId) {
+        id = new CommentLikeId(commentId, userId);
     }
 
-    public PostLike(PostLikeId id) {
+    public CommentLike(CommentLikeId id) {
         this.id = id;
     }
 
-    public PostLikeId getId() {
+    public CommentLikeId getId() {
         return id;
     }
 
-    public void setId(PostLikeId id) {
+    public void setId(CommentLikeId id) {
         this.id = id;
     }
 
@@ -38,8 +38,8 @@ public class PostLike {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PostLike postLike = (PostLike) o;
-        return Objects.equals(id, postLike.id);
+        CommentLike that = (CommentLike) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
@@ -49,32 +49,32 @@ public class PostLike {
 
     @Override
     public String toString() {
-        return "PostLike{" +
+        return "CommentLike{" +
                 "id=" + id +
                 '}';
     }
 
     @Embeddable
-    public static class PostLikeId implements Serializable {
+    public static class CommentLikeId implements Serializable {
         @Column(name = "post_id")
-        private Integer postId;
+        private Integer commentId;
         @Column(name = "user_id")
         private Integer userId;
 
-        public PostLikeId() {
+        public CommentLikeId() {
         }
 
-        public PostLikeId(Integer postId, Integer userId) {
-            this.postId = postId;
+        public CommentLikeId(Integer commentId, Integer userId) {
+            this.commentId = commentId;
             this.userId = userId;
         }
 
-        public Integer getPostId() {
-            return postId;
+        public Integer getCommentId() {
+            return commentId;
         }
 
-        public void setPostId(Integer postId) {
-            this.postId = postId;
+        public void setCommentId(Integer commentId) {
+            this.commentId = commentId;
         }
 
         public Integer getUserId() {
@@ -89,22 +89,21 @@ public class PostLike {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            PostLikeId that = (PostLikeId) o;
-            return Objects.equals(postId, that.postId) && Objects.equals(userId, that.userId);
+            CommentLikeId that = (CommentLikeId) o;
+            return Objects.equals(commentId, that.commentId) && Objects.equals(userId, that.userId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(postId, userId);
+            return Objects.hash(commentId, userId);
         }
 
         @Override
         public String toString() {
-            return "PostLikeId{" +
-                    "postId=" + postId +
-                    ", userId=" + userId +
+            return "CommentLikeId{" +
+                    "postId=" + commentId +
+                    ", commentId=" + userId +
                     '}';
         }
     }
-
 }

@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "post_comment")
-public class PostComment {
+public class Comment {
     @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,17 +33,17 @@ public class PostComment {
     @Column(name = "made_by", nullable = false)
     private Integer userId;
 
-    public PostComment() {
+    public Comment() {
     }
 
-    public PostComment(Date commentedDate, Integer postId, String content, Integer userId) {
+    public Comment(Date commentedDate, Integer postId, String content, Integer userId) {
         this.commentedDate = commentedDate;
         this.postId = postId;
         this.content = content;
         this.userId = userId;
     }
 
-    public PostComment(Integer id, Date commentedDate, Integer postId, String content, Integer userId) {
+    public Comment(Integer id, Date commentedDate, Integer postId, String content, Integer userId) {
         this.id = id;
         this.commentedDate = commentedDate;
         this.postId = postId;
@@ -95,7 +95,7 @@ public class PostComment {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PostComment that = (PostComment) o;
+        Comment that = (Comment) o;
         return Objects.equals(id, that.id) && Objects.equals(commentedDate, that.commentedDate) &&
                 Objects.equals(postId, that.postId) && Objects.equals(content, that.content) && Objects.equals(userId, that.userId);
     }
@@ -107,7 +107,7 @@ public class PostComment {
 
     @Override
     public String toString() {
-        return "PostComment{" +
+        return "Comment{" +
                 "id=" + id +
                 ", commentedDate=" + commentedDate +
                 ", postId=" + postId +
