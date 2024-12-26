@@ -58,7 +58,7 @@ public class UserAccountController {
     public ResponseEntity<?> getUser(@PathVariable int userId) {
         try {
             Optional<UserAccount> account = accountService.getUser(userId);
-            if (account == null) {
+            if (account.isEmpty()) {
                 return ResponseEntity.status(404).body("User not found");
             }
             return ResponseEntity.ok(account);

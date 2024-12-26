@@ -159,7 +159,7 @@ public void testCreatePost() throws Exception {
     Post post = new Post();
  
     post.setTravelPlanId(123);  
-    post.setPostedDate(new Date(System.currentTimeMillis()));  // Set a sample date
+    post.setPostedDate(new Date(System.currentTimeMillis())); 
 
     when(accountService.createPost(userId, post)).thenReturn(post);
 
