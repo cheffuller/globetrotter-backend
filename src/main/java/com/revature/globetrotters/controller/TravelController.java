@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
@@ -21,9 +20,6 @@ import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
 import com.revature.globetrotters.service.TravelPlanService;
 import com.revature.globetrotters.service.TravelPlanLocationService;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
 
 //no need for path variable in the post 
 // no need to have path variable for travelPlan
@@ -86,7 +82,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}/locations")
-    public ResponseEntity<List<TravelPlanLocation>> getTravelPlanLocations(@PathVariable int travelPlanId) {
+    public ResponseEntity<List<TravelPlanLocation>> getTravelPlanLocations(@PathVariable("planId") int travelPlanId) {
         try {
             // call travel plan location service layer to get travel plan location by its id
             List<TravelPlanLocation> locations = travelPlanLocationService.getTravelPlanLocationsByTravelPlanId(travelPlanId);
@@ -97,7 +93,7 @@ public class TravelController {
     }
 
     @PostMapping("/{planId}/locations")
-    public ResponseEntity<TravelPlanLocation> createTravelPlanLocation(@PathVariable int travelPlanId, @RequestBody TravelPlanLocation travelPlanLocation) {
+    public ResponseEntity<TravelPlanLocation> createTravelPlanLocation(@PathVariable("planId") int travelPlanId, @RequestBody TravelPlanLocation travelPlanLocation) {
         try {
             // call travel plan location service layer to create travel plan location
             TravelPlanLocation newLocation = travelPlanLocationService.createTravelPlanLocation(travelPlanLocation);
@@ -108,7 +104,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}/locations/{locationId}")
-    public ResponseEntity<TravelPlanLocation> getTravelPlanLocationsById(@PathVariable int travelPlanId, @PathVariable int locationId) {
+    public ResponseEntity<TravelPlanLocation> getTravelPlanLocationsById(@PathVariable("locationId") int travelPlanId, @PathVariable("planId") int locationId) {
         try {
             // call travel plan location service layer to get travel plan location by its id
             TravelPlanLocation location = travelPlanLocationService.getTravelPlanLocationById(travelPlanId, locationId);
