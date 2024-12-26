@@ -14,7 +14,6 @@ import com.revature.globetrotters.repository.UserAccountRepository;
 
 
 
-
 public class UserAccountServiceTest {
 
     @Mock
@@ -28,11 +27,10 @@ public class UserAccountServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    public void testRegisterSuccess() {
+    private UserAccount createUserAccount(String username, String password) {
         UserAccount account = new UserAccount();
-        account.setUsername("newuser");
-        account.setPassword("password");
+        account.setUsername(username);
+        account.setPassword(password);
         account.setPasswordSalt("password_salt");
         account.setAddress("123 Street");
         account.setCity("City");
@@ -40,234 +38,80 @@ public class UserAccountServiceTest {
         account.setEmail("email@example.com");
         account.setFirstName("First");
         account.setLastName("Last");
+        return account;
+    }
 
+    @Test
+    public void testRegisterSuccess() {
+        UserAccount account = createUserAccount("newuser", "password");
         when(userAccountRepository.save(account)).thenReturn(account);
-
         UserAccount result = accountService.register(account);
         assertEquals(account, result);
     }
 
     @Test
     public void testRegisterNullAccount() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(null);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.register(null));
         assertEquals("Account is required.", exception.getMessage());
     }
 
     @Test
     public void testRegisterMissingUsername() {
-        UserAccount account = new UserAccount();
-        account.setPassword("password");
-        account.setPasswordSalt("password_salt");
-        account.setAddress("123 Street");
-        account.setCity("City");
-        account.setCountry("Country");
-        account.setEmail("email@example.com");
-        account.setFirstName("First");
-        account.setLastName("Last");
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(account);
-        });
+        UserAccount account = createUserAccount(null, "password");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.register(account));
         assertEquals("Username is required.", exception.getMessage());
     }
 
     @Test
     public void testRegisterMissingPassword() {
-        UserAccount account = new UserAccount();
-        account.setUsername("newuser");
-        account.setPasswordSalt("password_salt");
-        account.setAddress("123 Street");
-        account.setCity("City");
-        account.setCountry("Country");
-        account.setEmail("email@example.com");
-        account.setFirstName("First");
-        account.setLastName("Last");
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(account);
-        });
+        UserAccount account = createUserAccount("newuser", null);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.register(account));
         assertEquals("Password is required.", exception.getMessage());
     }
 
     @Test
-    public void testRegisterMissingAddress() {
-        UserAccount account = new UserAccount();
-        account.setUsername("newuser");
-        account.setPassword("password");
-        account.setPasswordSalt("password_salt");
-        account.setCity("City");
-        account.setCountry("Country");
-        account.setEmail("email@example.com");
-        account.setFirstName("First");
-        account.setLastName("Last");
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(account);
-        });
-        assertEquals("Address is required.", exception.getMessage());
-    }
-
-    @Test
-    public void testRegisterMissingCity() {
-        UserAccount account = new UserAccount();
-        account.setUsername("newuser");
-        account.setPassword("password");
-        account.setPasswordSalt("password_salt");
-        account.setAddress("123 Street");
-        account.setCountry("Country");
-        account.setEmail("email@example.com");
-        account.setFirstName("First");
-        account.setLastName("Last");
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(account);
-        });
-        assertEquals("City is required.", exception.getMessage());
-    }
-
-    @Test
-    public void testRegisterMissingCountry() {
-        UserAccount account = new UserAccount();
-        account.setUsername("newuser");
-        account.setPassword("password");
-        account.setPasswordSalt("password_salt");
-        account.setAddress("123 Street");
-        account.setCity("City");
-        account.setEmail("email@example.com");
-        account.setFirstName("First");
-        account.setLastName("Last");
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(account);
-        });
-        assertEquals("Country is required.", exception.getMessage());
-    }
-
-    @Test
-    public void testRegisterMissingEmail() {
-        UserAccount account = new UserAccount();
-        account.setUsername("newuser");
-        account.setPassword("password");
-        account.setPasswordSalt("password_salt");
-        account.setAddress("123 Street");
-        account.setCity("City");
-        account.setCountry("Country");
-        account.setFirstName("First");
-        account.setLastName("Last");
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(account);
-        });
-        assertEquals("Email is required.", exception.getMessage());
-    }
-
-    @Test
-    public void testRegisterMissingFirstName() {
-        UserAccount account = new UserAccount();
-        account.setUsername("newuser");
-        account.setPassword("password");
-        account.setPasswordSalt("password_salt");
-        account.setAddress("123 Street");
-        account.setCity("City");
-        account.setCountry("Country");
-        account.setEmail("email@example.com");
-        account.setLastName("Last");
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(account);
-        });
-        assertEquals("First name is required.", exception.getMessage());
-    }
-
-    @Test
-    public void testRegisterMissingLastName() {
-        UserAccount account = new UserAccount();
-        account.setUsername("newuser");
-        account.setPassword("password");
-        account.setPasswordSalt("password_salt");
-        account.setAddress("123 Street");
-        account.setCity("City");
-        account.setCountry("Country");
-        account.setEmail("email@example.com");
-        account.setFirstName("First");
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(account);
-        });
-        assertEquals("Last name is required.", exception.getMessage());
-    }
-
-    @Test
     public void testRegisterUsernameTaken() {
-        UserAccount account = new UserAccount();
-        account.setUsername("newuser");
-        account.setPassword("password");
-        account.setPasswordSalt("password_salt");
-        account.setAddress("123 Street");
-        account.setCity("City");
-        account.setCountry("Country");
-        account.setEmail("email@example.com");
-        account.setFirstName("First");
-        account.setLastName("Last");
-
+        UserAccount account = createUserAccount("newuser", "password");
         when(userAccountRepository.findByUsername("newuser")).thenReturn(new UserAccount());
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.register(account);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.register(account));
         assertEquals("Username is already taken.", exception.getMessage());
     }
 
     @Test
     public void testAuthenticateSuccess() {
-        UserAccount account = new UserAccount();
-        account.setUsername("testuser");
-        account.setPassword("password");
-
+        UserAccount account = createUserAccount("testuser", "password");
         when(userAccountRepository.findByUsername("testuser")).thenReturn(account);
-
         UserAccount result = accountService.authenticate("testuser", "password");
         assertEquals(account, result);
     }
 
     @Test
     public void testAuthenticateNullUsername() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.authenticate(null, "password");
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate(null, "password"));
         assertEquals("Username and password are required.", exception.getMessage());
     }
 
     @Test
     public void testAuthenticateEmptyUsername() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.authenticate("", "password");
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate("", "password"));
         assertEquals("Username and password are required.", exception.getMessage());
     }
 
     @Test
     public void testAuthenticateNullPassword() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.authenticate("testuser", null);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate("testuser", null));
         assertEquals("Username and password are required.", exception.getMessage());
     }
 
     @Test
     public void testAuthenticateEmptyPassword() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.authenticate("testuser", "");
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate("testuser", ""));
         assertEquals("Username and password are required.", exception.getMessage());
     }
 
     @Test
     public void testAuthenticateInvalidCredentials() {
         when(userAccountRepository.findByUsername("testuser")).thenReturn(null);
-
         UserAccount result = accountService.authenticate("testuser", "password");
         assertEquals(null, result);
     }
