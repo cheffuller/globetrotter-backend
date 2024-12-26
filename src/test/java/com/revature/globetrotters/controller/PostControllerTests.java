@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.Comment;
@@ -49,20 +50,17 @@ public class PostControllerTests {
         })
         public void postPostTest(@ConvertWith(DateArgumentConverter.class) Date date, Integer travelPlanId)
                         throws IOException, InterruptedException, Exception {
-                // JSONObject jsonObject = new JSONObject();
-                // jsonObject.put("postedDate", date);
-                // jsonObject.put("travelPlanId", travelPlanId);
-
                 Post newPost = new Post();
                 newPost.setPostedDate(date);
                 newPost.setTravelPlanId(travelPlanId);
                 HttpRequest request = HttpRequest.newBuilder()
                                 .uri(URI.create("http://localhost:8080/posts"))
-                                .POST(HttpRequest.BodyPublishers.ofString(newPost.toString()))
+                                .header("Content-Type", "application/json")
+                                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(newPost)))
                                 .build();
                 HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-                // int status = response.statusCode();
-                // Assertions.assertEquals(200, status);
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
 
                 Post actualPost = objectMapper.readValue(response.body(), Post.class);
                 Post expectedPost = new Post(actualPost.getId(), date, travelPlanId);
@@ -117,4 +115,33 @@ public class PostControllerTests {
                 Comment actualComment = objectMapper.readValue(response.body(), Comment.class);
                 Assertions.assertEquals(expectedComment, actualComment);
         }
+
+        @ParameterizedTest
+        @CsvSource({
+                        "1"
+        })
+        public void deletePostSuccesfulTest(Integer postId) throws IOException, InterruptedException, Exception {
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/posts/" + postId))
+                                .DELETE()
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
+        }
+
+        // TODO: Resolve Foreign key constraint
+        // @ParameterizedTest
+        // @CsvSource({
+        //                 "12345"
+        // })
+        // public void deletePostNotFoundTest(Integer postId) throws IOException, InterruptedException, Exception {
+        //         HttpRequest request = HttpRequest.newBuilder()
+        //                         .uri(URI.create("http://localhost:8080/posts/" + postId))
+        //                         .DELETE()
+        //                         .build();
+        //         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        //         int status = response.statusCode();
+        //         Assertions.assertEquals(404, status);
+        // }
 }
