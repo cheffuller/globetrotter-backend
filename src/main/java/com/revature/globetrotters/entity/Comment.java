@@ -6,8 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 import java.util.Date;
 import java.util.Objects;
@@ -21,7 +19,6 @@ public class Comment {
     private Integer id;
 
     @Column(name = "commented_date", nullable = false)
-    @Temporal(TemporalType.DATE)
     private Date commentedDate;
 
     @Column(name = "commented_on", nullable = false)
