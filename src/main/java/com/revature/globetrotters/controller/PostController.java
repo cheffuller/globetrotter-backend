@@ -45,8 +45,12 @@ public class PostController {
     }
 
     @GetMapping("posts/{postId}")
-    public ResponseEntity<Post> getPostById(@PathVariable int postId) throws Exception {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.findPostById(postId));
+    public ResponseEntity<Post> getPostById(@PathVariable int postId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(postService.findPostById(postId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @DeleteMapping("posts/{postId}")
