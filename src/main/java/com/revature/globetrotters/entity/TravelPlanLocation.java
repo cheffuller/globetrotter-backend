@@ -26,11 +26,9 @@ public class TravelPlanLocation {
     @Column(name = "country")
     private String country;
     
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Column(name = "end_date")
     private Date endDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Column(name = "start_date")
     private Date startDate;
 
@@ -38,6 +36,14 @@ public class TravelPlanLocation {
     private Integer travelPlanId;
 
     public TravelPlanLocation() {
+    }
+
+    public TravelPlanLocation(String city, String country, Date endDate, Date startDate, Integer travelPlanId) {
+        this.city = city;
+        this.country = country;
+        this.endDate = endDate;
+        this.startDate = startDate;
+        this.travelPlanId = travelPlanId;
     }
 
     public TravelPlanLocation(Integer id, String city, String country, Date endDate, Date startDate, Integer travelPlanId) {
@@ -73,7 +79,6 @@ public class TravelPlanLocation {
         this.country = country;
     }
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     public Date getEndDate() {
         return endDate;
     }
@@ -82,7 +87,7 @@ public class TravelPlanLocation {
         this.endDate = endDate;
     }
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+
     public Date getStartDate() {
         return startDate;
     }

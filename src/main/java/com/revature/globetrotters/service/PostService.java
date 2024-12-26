@@ -10,6 +10,7 @@ import com.revature.globetrotters.repository.CommentLikeRepository;
 import com.revature.globetrotters.repository.CommentRepository;
 import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
+import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,14 +29,21 @@ public class PostService {
     @Autowired
     private PostLikeRepository postLikeRepository;
     @Autowired
+    private TravelPlanRepository travelPlanRepository;
+    @Autowired
     private UserAccountRepository userAccountRepository;
 
-    public Post createPost(Post post) {
+    public Post createPost(Post post) throws BadRequestException {
+        if (!travelPlanRepository.existsById(post.getTravelPlanId())) {
+            throw new BadRequestException(String.format("Travel plan with ID %d does not exist.", post.getTravelPlanId()));
+        }
         return postRepository.save(post);
     }
 
-    // TODO: write custom postRepository method
-    public List<Post> findPostsByUserId(Integer userId) {
+    public List<Post> findPostsByUserId(Integer userId) throws NotFoundException {
+        if (!userAccountRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
         return postRepository.findAllByUserId(userId);
     }
 
@@ -69,21 +77,24 @@ public class PostService {
         postLikeRepository.save(new PostLike(postId, userId));
     }
 
-    public void unlikePost(Integer postId, Integer userId) throws BadRequestException {
-        PostLike likeToDelete = new PostLike(postId, userId);
-        if (!postLikeRepository.existsById(likeToDelete.getId())) {
-            throw new BadRequestException(String.format("User with ID %d has not liked post with ID %d.", userId, postId));
-        }
-        postLikeRepository.delete(likeToDelete);
+    public void unlikePost(Integer postId, Integer userId) {
+        postLikeRepository.delete(new PostLike(postId, userId));
     }
 
-    // TODO: write custom postCommentRepository method
-    public List<Comment> findCommentsByPostId(Integer postId) {
+    public List<Comment> findCommentsByPostId(Integer postId) throws NotFoundException {
+        if (!postRepository.existsById(postId)) {
+            throw new NotFoundException(String.format("Post with ID %d does not exist.", postId));
+        }
         return commentRepository.findAllByPostId(postId);
     }
 
-    // TODO: write custom postCommentRepository method
-    public Comment postComment(Comment comment) {
+    public Comment postComment(Comment comment) throws BadRequestException {
+        if (!userAccountRepository.existsById(comment.getUserId())) {
+            throw new BadRequestException(String.format("User with ID %d does not exist.", comment.getUserId()));
+        }
+        if (!postRepository.existsById(comment.getPostId())) {
+            throw new BadRequestException(String.format("Post with ID %d does not exist.", comment.getPostId()));
+        }
         return commentRepository.save(comment);
     }
 
@@ -92,7 +103,7 @@ public class PostService {
         return optionalComment.orElseThrow(() -> new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
     }
 
-    public void deleteComment(Integer commentId) throws Exception {
+    public void deleteComment(Integer commentId) throws NotFoundException {
         if (commentRepository.existsById(commentId)) {
             commentRepository.deleteById(commentId);
         } else {
@@ -100,8 +111,10 @@ public class PostService {
         }
     }
 
-    // TODO: write custom postCommentRepository method
-    public Integer getCommentLikes(Integer commentId) {
+    public Integer getCommentLikes(Integer commentId) throws NotFoundException {
+        if (!commentRepository.existsById(commentId)) {
+            throw new NotFoundException(String.format("Comment with ID %d does not exist.", commentId));
+        }
         return commentLikeRepository.findNumberOfLikesByCommentId(commentId);
     }
 
@@ -115,12 +128,7 @@ public class PostService {
         commentLikeRepository.save(new CommentLike(commentId, userId));
     }
 
-    public void unlikeComment(Integer commentId, Integer userId) throws BadRequestException {
-        CommentLike likeToDelete = new CommentLike(commentId, userId);
-        if (!commentLikeRepository.existsById(likeToDelete.getId())) {
-            throw new BadRequestException(String.format("User with ID %d has not liked comment with ID %d.",
-                    userId, commentId));
-        }
-        commentLikeRepository.deleteById(likeToDelete.getId());
+    public void unlikeComment(Integer commentId, Integer userId) {
+        commentLikeRepository.delete(new CommentLike(commentId, userId));
     }
 }
