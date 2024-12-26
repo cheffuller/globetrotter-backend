@@ -1,5 +1,6 @@
 package com.revature.globetrotters.service;
 
+import com.revature.globetrotters.entity.CommentLike;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.PostLike;
@@ -67,6 +68,14 @@ public class PostService {
         postLikeRepository.save(new PostLike(postId, userId));
     }
 
+    public void unlikePost(Integer postId, Integer userId) throws NotFoundException {
+        PostLike likeToDelete = new PostLike(postId, userId);
+        if (!postLikeRepository.existsById(likeToDelete.getId())) {
+            throw new NotFoundException(String.format("Post with post ID %d and user ID %d not found.", postId, userId));
+        }
+        postLikeRepository.delete(likeToDelete);
+    }
+
     // TODO: write custom postCommentRepository method
     public List<Comment> findCommentsByPostId(Integer postId) {
         return commentRepository.findAllByPostId(postId);
@@ -93,5 +102,24 @@ public class PostService {
     // TODO: write custom postCommentRepository method
     public Integer getCommentLikes(Integer commentId) {
         return commentLikeRepository.findNumberOfLikesByCommentId(commentId);
+    }
+
+    public void likeComment(Integer commentId, Integer userId) throws NotFoundException {
+        if (!commentRepository.existsById(commentId)) {
+            throw new NotFoundException(String.format("Comment with ID %d not found.", commentId));
+        }
+        if (!userAccountRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("User with ID %d not found.", userId));
+        }
+        commentLikeRepository.save(new CommentLike(commentId, userId));
+    }
+
+    public void unlikeComment(Integer commentId, Integer userId) throws NotFoundException {
+        CommentLike likeToDelete = new CommentLike(commentId, userId);
+        if (!commentLikeRepository.existsById(likeToDelete.getId())) {
+            throw new NotFoundException(String.format("Comment Like with comment ID %d and user ID %d not found.",
+                    commentId, userId));
+        }
+        commentLikeRepository.deleteById(likeToDelete.getId());
     }
 }
