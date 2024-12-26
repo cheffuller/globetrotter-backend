@@ -1,9 +1,11 @@
 package com.revature.globetrotters.controller;
 
-import java.util.List;
-
+import com.revature.globetrotters.entity.Comment;
+import com.revature.globetrotters.entity.Post;
+import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +17,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.Comment;
-import com.revature.globetrotters.service.PostService;
+import java.util.List;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:5173")
 public class PostController {
-
     @Autowired
     private PostService postService;
 
     @GetMapping("users/{userId}/posts")
     public ResponseEntity<List<Post>> getAllPosts(@PathVariable int userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.findPostsByUserId(userId));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(postService.findPostsByUserId(userId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @PostMapping("posts")
@@ -66,24 +69,29 @@ public class PostController {
     }
 
     @PostMapping("posts/{postId}/likes")
-    public ResponseEntity<String> postLikePost(@PathVariable int postId) {
+    public ResponseEntity<String> postLikePost(@PathVariable int postId, @RequestBody UserAccount account) {
         try {
+            postService.likePost(postId, account.getId());
             return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     @GetMapping("posts/{postId}/comments")
     public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable int postId) {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentsByPostId(postId));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentsByPostId(postId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @PostMapping("comments")
     public ResponseEntity<Comment> postComment(@RequestBody Comment comment) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(postService.postComment(comment));
-        } catch (Exception e) {
+        } catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
@@ -102,13 +110,17 @@ public class PostController {
         try {
             postService.deleteComment(commentId);
             return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     @GetMapping("comments/{commentId}/likes")
     public ResponseEntity<Integer> getCommentLikes(@PathVariable int commentId) {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.getCommentLikes(commentId));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(postService.getCommentLikes(commentId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }
