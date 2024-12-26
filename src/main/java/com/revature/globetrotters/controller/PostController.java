@@ -64,19 +64,9 @@ public class PostController {
     }
 
     @GetMapping("posts/{postId}/likes")
-    public ResponseEntity<Integer> getPostLikes(@PathVariable int postId) {
+    public ResponseEntity<Integer> getNumberOfLikesOnPostById(@PathVariable int postId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(postService.getPostLikes(postId));
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-    @PostMapping("posts/{postId}/likes")
-    public ResponseEntity<String> postLikePost(@PathVariable int postId, @RequestBody UserAccount account) {
-        try {
-            postService.likePost(postId, account.getId());
-            return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -120,11 +110,43 @@ public class PostController {
     }
 
     @GetMapping("comments/{commentId}/likes")
-    public ResponseEntity<Integer> getCommentLikes(@PathVariable int commentId) {
+    public ResponseEntity<Integer> getNumberOfLikesOnCommentById(@PathVariable int commentId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(postService.getCommentLikes(commentId));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    @PostMapping("comments/{commentId}/likes")
+    public ResponseEntity likeComment(@PathVariable int commentId, @RequestBody UserAccount account) {
+        try {
+            postService.likeComment(commentId, account.getId());
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @DeleteMapping("comments/{commentId}/likes")
+    public ResponseEntity unlikeComment(@PathVariable int commentId, @RequestBody UserAccount account) {
+        postService.unlikeComment(commentId, account.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @PostMapping("posts/{postId}/likes")
+    public ResponseEntity likePost(@PathVariable int postId, @RequestBody UserAccount account) {
+        try {
+            postService.likePost(postId, account.getId());
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @DeleteMapping("posts/{postId}/likes")
+    public ResponseEntity unlikePost(@PathVariable int postId, @RequestBody UserAccount account) {
+        postService.unlikePost(postId, account.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }
