@@ -21,7 +21,7 @@ CREATE TABLE user_profile (
 	bio VARCHAR(1000),
     display_name VARCHAR(50) NOT NULL,
     is_private BOOL NOT NULL,
-    FOREIGN KEY (account_id) REFERENCES user_account(id)
+    FOREIGN KEY (account_id) REFERENCES user_account(id) ON DELETE CASCADE
 );
 
 CREATE TABLE travel_plan (
@@ -30,7 +30,7 @@ CREATE TABLE travel_plan (
     is_favorited BOOL NOT NULL,
     is_published BOOL NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (account_id) REFERENCES user_account(id)
+    FOREIGN KEY (account_id) REFERENCES user_account(id) ON DELETE CASCADE
 );
 
 CREATE TABLE moderator_account (
@@ -49,7 +49,7 @@ CREATE TABLE post (
     created_at DATE NOT NULL,
     travel_plan INT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (travel_plan) REFERENCES travel_plan(id)
+    FOREIGN KEY (travel_plan) REFERENCES travel_plan(id) ON DELETE CASCADE
 );
 
 CREATE TABLE post_comment (
@@ -59,22 +59,22 @@ CREATE TABLE post_comment (
     content VARCHAR(1000) NOT NULL,
     made_by INT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (commented_on) REFERENCES post(id),
-    FOREIGN KEY (made_by) REFERENCES user_account(id)
+    FOREIGN KEY (commented_on) REFERENCES post(id) ON DELETE CASCADE,
+    FOREIGN KEY (made_by) REFERENCES user_account(id) ON DELETE CASCADE
 );
 
 CREATE TABLE follow (
 	follower INT NOT NULL,
     following INT NOT NULL,
-    FOREIGN KEY (follower) REFERENCES user_account(id),
-    FOREIGN KEY (following) REFERENCES user_account(id)
+    FOREIGN KEY (follower) REFERENCES user_account(id) ON DELETE CASCADE,
+    FOREIGN KEY (following) REFERENCES user_account(id) ON DELETE CASCADE
 );
 
 CREATE TABLE follow_request (
 	follower INT NOT NULL,
     following INT NOT NULL,
-    FOREIGN KEY (follower) REFERENCES user_account(id),
-    FOREIGN KEY (following) REFERENCES user_account(id)
+    FOREIGN KEY (follower) REFERENCES user_account(id) ON DELETE CASCADE,
+    FOREIGN KEY (following) REFERENCES user_account(id) ON DELETE CASCADE
 );
 
 CREATE TABLE travel_plan_location (
@@ -85,31 +85,31 @@ CREATE TABLE travel_plan_location (
     start_date DATE NOT NULL,
     travel_plan_id INT NOT NULL,
     PRIMARY KEY(id),
-    FOREIGN KEY(travel_plan_id) REFERENCES travel_plan(id)
+    FOREIGN KEY(travel_plan_id) REFERENCES travel_plan(id) ON DELETE CASCADE
 );
 
 CREATE TABLE travel_plan_collaborator (
 	collaborator_id INT NOT NULL,
 	travel_plan_id INT NOT NULL,
-	FOREIGN KEY (collaborator_id) REFERENCES user_account(id),
-    FOREIGN KEY (travel_plan_id) REFERENCES travel_plan(id)
+	FOREIGN KEY (collaborator_id) REFERENCES user_account(id) ON DELETE CASCADE,
+    FOREIGN KEY (travel_plan_id) REFERENCES travel_plan(id) ON DELETE CASCADE
 );
 
 CREATE TABLE banned_user (
 	account_id INT NOT NULL,
-    FOREIGN KEY (account_id) REFERENCES user_account(id)
+    FOREIGN KEY (account_id) REFERENCES user_account(id) ON DELETE CASCADE
 );
 
 CREATE TABLE post_like (
     post_id	INT NOT NULL,
     user_id INT NOT NULL,
-    FOREIGN KEY (post_id) REFERENCES post(id),
-    FOREIGN KEY (user_id) REFERENCES user_account(id)
+    FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user_account(id) ON DELETE CASCADE
 );
     
 CREATE TABLE comment_like (
     comment_id	INT NOT NULL,
     user_id INT NOT NULL,
-    FOREIGN KEY (comment_id) REFERENCES post_comment(id),
-    FOREIGN KEY (user_id) REFERENCES user_account(id)
+    FOREIGN KEY (comment_id) REFERENCES post_comment(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user_account(id) ON DELETE CASCADE
 );
