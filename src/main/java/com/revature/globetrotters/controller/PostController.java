@@ -148,7 +148,7 @@ public class PostController {
         }
     }
 
-    @PostMapping("posts/{postId}/likes")
+    @DeleteMapping("posts/{postId}/likes")
     public ResponseEntity unlikePost(@PathVariable int postId, @RequestBody UserAccount account) {
         try {
             postService.unlikePost(postId, account.getId());
