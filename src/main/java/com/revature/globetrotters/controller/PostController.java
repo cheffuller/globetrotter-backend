@@ -130,12 +130,8 @@ public class PostController {
 
     @DeleteMapping("comments/{commentId}/likes")
     public ResponseEntity unlikeComment(@PathVariable int commentId, @RequestBody UserAccount account) {
-        try {
-            postService.unlikeComment(commentId, account.getId());
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (BadRequestException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        postService.unlikeComment(commentId, account.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PostMapping("posts/{postId}/likes")
@@ -150,11 +146,7 @@ public class PostController {
 
     @DeleteMapping("posts/{postId}/likes")
     public ResponseEntity unlikePost(@PathVariable int postId, @RequestBody UserAccount account) {
-        try {
-            postService.unlikePost(postId, account.getId());
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (BadRequestException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        postService.unlikePost(postId, account.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

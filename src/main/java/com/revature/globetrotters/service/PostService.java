@@ -77,12 +77,8 @@ public class PostService {
         postLikeRepository.save(new PostLike(postId, userId));
     }
 
-    public void unlikePost(Integer postId, Integer userId) throws BadRequestException {
-        PostLike likeToDelete = new PostLike(postId, userId);
-        if (!postLikeRepository.existsById(likeToDelete.getId())) {
-            throw new BadRequestException(String.format("User with ID %d has not liked post with ID %d.", userId, postId));
-        }
-        postLikeRepository.delete(likeToDelete);
+    public void unlikePost(Integer postId, Integer userId) {
+        postLikeRepository.delete(new PostLike(postId, userId));
     }
 
     public List<Comment> findCommentsByPostId(Integer postId) throws NotFoundException {
@@ -132,12 +128,7 @@ public class PostService {
         commentLikeRepository.save(new CommentLike(commentId, userId));
     }
 
-    public void unlikeComment(Integer commentId, Integer userId) throws BadRequestException {
-        CommentLike likeToDelete = new CommentLike(commentId, userId);
-        if (!commentLikeRepository.existsById(likeToDelete.getId())) {
-            throw new BadRequestException(String.format("User with ID %d has not liked comment with ID %d.",
-                    userId, commentId));
-        }
-        commentLikeRepository.deleteById(likeToDelete.getId());
+    public void unlikeComment(Integer commentId, Integer userId) {
+        commentLikeRepository.delete(new CommentLike(commentId, userId));
     }
 }
