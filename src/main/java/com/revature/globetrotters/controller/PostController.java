@@ -72,16 +72,6 @@ public class PostController {
         }
     }
 
-    @PostMapping("posts/{postId}/likes")
-    public ResponseEntity<String> postLikePost(@PathVariable int postId, @RequestBody UserAccount account) {
-        try {
-            postService.likePost(postId, account.getId());
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
     @GetMapping("posts/{postId}/comments")
     public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable int postId) {
         try {
