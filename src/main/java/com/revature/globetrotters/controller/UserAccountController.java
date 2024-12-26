@@ -1,8 +1,10 @@
 package com.revature.globetrotters.controller;
 
-import java.util.Optional;
-
+import com.revature.globetrotters.entity.Post;
+import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,9 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.UserAccount;
-import com.revature.globetrotters.service.AccountService;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/users")
@@ -28,7 +28,7 @@ public class UserAccountController {
     public ResponseEntity<?> login(@RequestBody UserAccount account) {
         try {
             UserAccount authenticatedAccount = accountService.authenticate(account.getUsername(), account.getPassword());
-    
+
             if (authenticatedAccount != null) {
                 return ResponseEntity.ok(authenticatedAccount);
             } else {
@@ -78,7 +78,7 @@ public class UserAccountController {
             return ResponseEntity.status(500).body("An error occurred while retrieving followers: " + e.getMessage());
         }
     }
-    
+
     @GetMapping("/{userId}/following")
     public ResponseEntity<?> getFollowing(@PathVariable int userId) {
         try {
@@ -89,11 +89,12 @@ public class UserAccountController {
             return ResponseEntity.status(500).body("An error occurred while retrieving following: " + e.getMessage());
         }
     }
-    
+
     @PostMapping("/{userId}/following")
     public ResponseEntity<?> follow(@PathVariable int userId, @RequestBody int followingId) {
         try {
-            return ResponseEntity.ok(accountService.follow(userId, followingId));
+            accountService.followUser(userId, followingId);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
