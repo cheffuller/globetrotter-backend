@@ -1,8 +1,10 @@
 package com.revature.globetrotters.service;
 
-import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.Comment;
+import com.revature.globetrotters.entity.CommentLike;
+import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.PostLike;
+import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.CommentLikeRepository;
 import com.revature.globetrotters.repository.CommentRepository;
@@ -67,6 +69,14 @@ public class PostService {
         postLikeRepository.save(new PostLike(postId, userId));
     }
 
+    public void unlikePost(Integer postId, Integer userId) throws BadRequestException {
+        PostLike likeToDelete = new PostLike(postId, userId);
+        if (!postLikeRepository.existsById(likeToDelete.getId())) {
+            throw new BadRequestException(String.format("User with ID %d has not liked post with ID %d.", userId, postId));
+        }
+        postLikeRepository.delete(likeToDelete);
+    }
+
     // TODO: write custom postCommentRepository method
     public List<Comment> findCommentsByPostId(Integer postId) {
         return commentRepository.findAllByPostId(postId);
@@ -93,5 +103,24 @@ public class PostService {
     // TODO: write custom postCommentRepository method
     public Integer getCommentLikes(Integer commentId) {
         return commentLikeRepository.findNumberOfLikesByCommentId(commentId);
+    }
+
+    public void likeComment(Integer commentId, Integer userId) throws NotFoundException {
+        if (!commentRepository.existsById(commentId)) {
+            throw new NotFoundException(String.format("Comment with ID %d not found.", commentId));
+        }
+        if (!userAccountRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("User with ID %d not found.", userId));
+        }
+        commentLikeRepository.save(new CommentLike(commentId, userId));
+    }
+
+    public void unlikeComment(Integer commentId, Integer userId) throws BadRequestException {
+        CommentLike likeToDelete = new CommentLike(commentId, userId);
+        if (!commentLikeRepository.existsById(likeToDelete.getId())) {
+            throw new BadRequestException(String.format("User with ID %d has not liked comment with ID %d.",
+                    userId, commentId));
+        }
+        commentLikeRepository.deleteById(likeToDelete.getId());
     }
 }

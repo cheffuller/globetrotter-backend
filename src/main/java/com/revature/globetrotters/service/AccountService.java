@@ -1,39 +1,45 @@
 package com.revature.globetrotters.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.revature.globetrotters.entity.Follow;
+import com.revature.globetrotters.entity.FollowRequest;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.entity.UserProfile;
+import com.revature.globetrotters.exception.BadRequestException;
+import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.FollowRepository;
+import com.revature.globetrotters.repository.FollowRequestRepository;
 import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
+import com.revature.globetrotters.repository.UserProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AccountService {
-
-    @Autowired
-    private UserAccountRepository userAccountRepository;
-
-    @Autowired
-    private TravelPlanRepository planRepository;
-
-    @Autowired
-    private PostRepository postRepository;
-
     @Autowired
     private FollowRepository followRepository;
+    @Autowired
+    private FollowRequestRepository followRequestRepository;
+    @Autowired
+    private PostRepository postRepository;
+    @Autowired
+    private TravelPlanRepository planRepository;
+    @Autowired
+    private UserAccountRepository userAccountRepository;
+    @Autowired
+    private UserProfileRepository userProfileRepository;
+
 
     public UserAccount authenticate(String username, String password) {
 
         if (username == null || username.trim().isEmpty() ||
-            password == null || password.trim().isEmpty()) {
+                password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("Username and password are required.");
         }
 
@@ -90,18 +96,43 @@ public class AccountService {
     }
 
 
-    public Follow follow(int followerId, int followingId) {
-        if (followerId <= 0 || followingId <= 0) {
-            throw new IllegalArgumentException("User IDs must be greater than zero.");
+    public void followUser(int followerId, int followingId) throws NotFoundException, BadRequestException {
+        if (!userProfileRepository.existsById(followerId)) {
+            throw new NotFoundException(String.format("User with ID %d not found", followerId));
         }
 
-        Follow.FollowId followId = new Follow.FollowId(followerId, followingId);
-        if (followRepository.findById(followId).isPresent()) {
-            throw new IllegalArgumentException("Already following user.");
+        if (!userProfileRepository.existsById(followingId)) {
+            throw new NotFoundException(String.format("User with ID %d not found", followerId));
         }
 
-        Follow follow = new Follow(followId);
-        return followRepository.save(follow);
+        if (followRepository.existsById(new Follow.FollowId(followerId, followingId)) ||
+                followRequestRepository.existsById(new FollowRequest.FollowRequestId(followerId, followingId))) {
+            throw new BadRequestException(String.format("User with ID %d is already following or requested to " +
+                    "follow user with id %d.", followingId, followingId));
+        }
+
+        UserProfile accountToFollow = userProfileRepository.findById(followingId).get();
+        if (accountToFollow.isPrivate()) {
+            followRequestRepository.save(new FollowRequest(followerId, followingId));
+        } else {
+            followRepository.save(new Follow(followerId, followingId));
+        }
+    }
+
+    public void unfollowUser(int followerId, int followingId) throws BadRequestException {
+        Follow followToDelete = new Follow(followerId, followingId);
+        if (followRepository.existsById(followToDelete.getId())) {
+            followRepository.delete(followToDelete);
+            return;
+        }
+
+        FollowRequest followRequestToDelete = new FollowRequest(followerId, followingId);
+        if (followRequestRepository.existsById(followRequestToDelete.getId())) {
+            followRequestRepository.delete(followRequestToDelete);
+        }
+
+        throw new BadRequestException(String.format("User with ID %d is not following and has not requested to " +
+                "follow user with id %d.", followingId, followingId));
     }
 
     public List<TravelPlan> getPlans(int userId) {
@@ -111,7 +142,7 @@ public class AccountService {
 
         return planRepository.getTravelPlansByAccountId(userId);
     }
-    
+
     public Post createPost(int userId, Post post) {
         return null;
     }
