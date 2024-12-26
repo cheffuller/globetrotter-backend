@@ -29,6 +29,11 @@ public class Post {
     public Post() {
     }
 
+    public Post(Date postedDate, int travelPlanId) {
+        this.postedDate = postedDate;
+        this.travelPlanId = travelPlanId;
+    }
+
     public Post(int id, Date postedDate, int travelPlanId) {
         this.id = id;
         this.postedDate = postedDate;

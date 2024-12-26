@@ -56,7 +56,7 @@ public class CommentLike {
 
     @Embeddable
     public static class CommentLikeId implements Serializable {
-        @Column(name = "post_id")
+        @Column(name = "comment_id")
         private Integer commentId;
         @Column(name = "user_id")
         private Integer userId;
