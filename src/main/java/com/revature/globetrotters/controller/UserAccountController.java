@@ -1,8 +1,7 @@
 package com.revature.globetrotters.controller;
 
-import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.UserAccount;
-import com.revature.globetrotters.service.AccountService;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Optional;
+import com.revature.globetrotters.entity.Post;
+import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.service.AccountService;
 
 @Controller
 @RequestMapping("/users")

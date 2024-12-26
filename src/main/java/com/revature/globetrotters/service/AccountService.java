@@ -1,5 +1,11 @@
 package com.revature.globetrotters.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.FollowRequest;
 import com.revature.globetrotters.entity.Post;
@@ -14,11 +20,6 @@ import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import com.revature.globetrotters.repository.UserProfileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AccountService {
@@ -55,19 +56,43 @@ public class AccountService {
         if (account == null) {
             throw new IllegalArgumentException("Account is required.");
         }
-
+    
         if (account.getUsername() == null || account.getUsername().trim().isEmpty()) {
             throw new IllegalArgumentException("Username is required.");
         }
-
+    
         if (account.getPassword() == null || account.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("Password is required.");
         }
-
+    
+        if (account.getAddress() == null || account.getAddress().trim().isEmpty()) {
+            throw new IllegalArgumentException("Address is required.");
+        }
+    
+        if (account.getCity() == null || account.getCity().trim().isEmpty()) {
+            throw new IllegalArgumentException("City is required.");
+        }
+    
+        if (account.getCountry() == null || account.getCountry().trim().isEmpty()) {
+            throw new IllegalArgumentException("Country is required.");
+        }
+    
+        if (account.getEmail() == null || account.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email is required.");
+        }
+    
+        if (account.getFirstName() == null || account.getFirstName().trim().isEmpty()) {
+            throw new IllegalArgumentException("First name is required.");
+        }
+    
+        if (account.getLastName() == null || account.getLastName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Last name is required.");
+        }
+    
         if (userAccountRepository.findByUsername(account.getUsername()) != null) {
             throw new IllegalArgumentException("Username is already taken.");
         }
-
+    
         return userAccountRepository.save(account);
     }
 
