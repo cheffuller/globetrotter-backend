@@ -2,6 +2,7 @@ package com.revature.globetrotters.controller;
 
 import java.util.List;
 
+import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,7 @@ public class PostController {
         try {
             Post post = postService.createPost(newPost);
             return ResponseEntity.status(HttpStatus.OK).body(post);
-        } catch (Exception e) {
+        } catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
@@ -50,7 +51,7 @@ public class PostController {
         try {
             postService.deletePost(postId);
             return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -91,7 +92,7 @@ public class PostController {
     public ResponseEntity<Comment> getCommentById(@PathVariable int commentId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentById(commentId));
-        } catch (Exception e) {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }

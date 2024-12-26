@@ -10,6 +10,7 @@ import com.revature.globetrotters.repository.CommentLikeRepository;
 import com.revature.globetrotters.repository.CommentRepository;
 import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
+import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,9 +29,14 @@ public class PostService {
     @Autowired
     private PostLikeRepository postLikeRepository;
     @Autowired
+    private TravelPlanRepository travelPlanRepository;
+    @Autowired
     private UserAccountRepository userAccountRepository;
 
-    public Post createPost(Post post) {
+    public Post createPost(Post post) throws BadRequestException {
+        if (!travelPlanRepository.existsById(post.getTravelPlanId())) {
+            throw new BadRequestException(String.format("Travel plan with ID %d does not exist.", post.getTravelPlanId()));
+        }
         return postRepository.save(post);
     }
 
