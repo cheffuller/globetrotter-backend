@@ -60,7 +60,7 @@ public class PostService {
         }
     }
 
-    public Integer getPostLikes(Integer postId) throws NotFoundException {
+    public Integer getNumberOfLikesOnPostById(Integer postId) throws NotFoundException {
         if (!postRepository.existsById(postId)) {
             throw new NotFoundException(String.format("Post with ID %d not found.", postId));
         }
@@ -111,7 +111,7 @@ public class PostService {
         }
     }
 
-    public Integer getCommentLikes(Integer commentId) throws NotFoundException {
+    public Integer getNumberOfLikesOnCommentById(Integer commentId) throws NotFoundException {
         if (!commentRepository.existsById(commentId)) {
             throw new NotFoundException(String.format("Comment with ID %d does not exist.", commentId));
         }

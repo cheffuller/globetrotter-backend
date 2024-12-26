@@ -66,7 +66,7 @@ public class PostController {
     @GetMapping("posts/{postId}/likes")
     public ResponseEntity<Integer> getNumberOfLikesOnPostById(@PathVariable int postId) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(postService.getPostLikes(postId));
+            return ResponseEntity.status(HttpStatus.OK).body(postService.getNumberOfLikesOnPostById(postId));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -112,7 +112,7 @@ public class PostController {
     @GetMapping("comments/{commentId}/likes")
     public ResponseEntity<Integer> getNumberOfLikesOnCommentById(@PathVariable int commentId) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(postService.getCommentLikes(commentId));
+            return ResponseEntity.status(HttpStatus.OK).body(postService.getNumberOfLikesOnCommentById(commentId));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
