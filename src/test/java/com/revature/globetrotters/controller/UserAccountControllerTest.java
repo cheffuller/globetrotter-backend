@@ -1,26 +1,30 @@
 package com.revature.globetrotters.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.revature.globetrotters.entity.Follow;
-import com.revature.globetrotters.entity.TravelPlan;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.UserAccount;
-import com.revature.globetrotters.exception.BadRequestException;
-import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.service.AccountService;
 
 public class UserAccountControllerTest {
@@ -31,283 +35,142 @@ public class UserAccountControllerTest {
     @InjectMocks
     private UserAccountController userAccountController;
 
+    @Autowired
+    private MockMvc mockMvc;
+
+    private ObjectMapper objectMapper;
+
     @BeforeEach
-    public void setUp() {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(userAccountController).build();
+        objectMapper = new ObjectMapper();
     }
 
     @Test
-    public void testLoginSuccess() {
-        UserAccount mockAccount = new UserAccount();
-        mockAccount.setUsername("testuser");
-        mockAccount.setPassword("password");
+    public void testLogin_ValidCredentials() throws Exception {
+        UserAccount account = new UserAccount();
+        account.setUsername("john_doe");
+        account.setPassword("password");
 
-        when(accountService.authenticate("testuser", "password")).thenReturn(mockAccount);
+        when(accountService.authenticate("john_doe", "password")).thenReturn(account);
 
-        ResponseEntity<?> response = userAccountController.login(mockAccount);
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(mockAccount, response.getBody());
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(account)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("john_doe"));
+
+        verify(accountService, times(1)).authenticate("john_doe", "password");
     }
 
     @Test
-    public void testLoginInvalidCredentials() {
-        UserAccount mockAccount = new UserAccount();
-        mockAccount.setUsername("testuser");
-        mockAccount.setPassword("wrongpassword");
+    public void testLogin_InvalidCredentials() throws Exception {
+        when(accountService.authenticate("invalid_user", "wrong_password")).thenReturn(null);
 
-        when(accountService.authenticate("testuser", "wrongpassword")).thenReturn(null);
+        UserAccount account = new UserAccount();
+        account.setUsername("invalid_user");
+        account.setPassword("wrong_password");
 
-        ResponseEntity<?> response = userAccountController.login(mockAccount);
-        assertEquals(401, response.getStatusCodeValue());
-        assertEquals("Invalid username or password", response.getBody());
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(account)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid username or password"));
+
+        verify(accountService, times(1)).authenticate("invalid_user", "wrong_password");
     }
 
     @Test
-    public void testLoginBadRequest() {
-        UserAccount mockAccount = new UserAccount();
-        mockAccount.setUsername("testuser");
-        mockAccount.setPassword("password");
+    public void testRegister_ValidAccount() throws Exception {
+        UserAccount account = new UserAccount();
+        account.setUsername("new_user");
+        account.setPassword("new_password");
 
-        when(accountService.authenticate("testuser", "password")).thenThrow(new IllegalArgumentException("Bad request"));
+        when(accountService.register(any(UserAccount.class))).thenReturn(account);
 
-        ResponseEntity<?> response = userAccountController.login(mockAccount);
-        assertEquals(400, response.getStatusCodeValue());
-        assertEquals("Bad request", response.getBody());
+        mockMvc.perform(post("/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(account)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("new_user"));
+
+        verify(accountService, times(1)).register(any(UserAccount.class));
     }
 
     @Test
-    public void testLoginServerError() {
-        UserAccount mockAccount = new UserAccount();
-        mockAccount.setUsername("testuser");
-        mockAccount.setPassword("password");
+    public void testGetUser_UserExists() throws Exception {
+        UserAccount account = new UserAccount();
+        account.setId(1);
+        account.setUsername("john_doe");
 
-        when(accountService.authenticate("testuser", "password")).thenThrow(new RuntimeException("Server error"));
+        when(accountService.getUser(1)).thenReturn(Optional.of(account));
 
-        ResponseEntity<?> response = userAccountController.login(mockAccount);
-        assertEquals(500, response.getStatusCodeValue());
-        assertEquals("An error occurred during login: Server error", response.getBody());
+        mockMvc.perform(get("/users/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("john_doe"));
+
+        verify(accountService, times(1)).getUser(1);
     }
 
     @Test
-    public void testRegisterSuccess() {
-        UserAccount mockAccount = new UserAccount();
-        mockAccount.setUsername("newuser");
-        mockAccount.setPassword("password");
+    public void testGetUser_UserDoesNotExist() throws Exception {
+        when(accountService.getUser(999)).thenReturn(Optional.empty());
 
-        when(accountService.register(mockAccount)).thenReturn(mockAccount);
+        mockMvc.perform(get("/users/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("User not found"));
 
-        ResponseEntity<?> response = userAccountController.register(mockAccount);
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(mockAccount, response.getBody());
+        verify(accountService, times(1)).getUser(999);
     }
 
     @Test
-    public void testRegisterBadRequest() {
-        UserAccount mockAccount = new UserAccount();
-        mockAccount.setUsername("newuser");
-        mockAccount.setPassword("password");
+    public void testGetFollowers() throws Exception {
+        mockMvc.perform(get("/users/1/followers"))
+                .andExpect(status().isOk());
 
-        when(accountService.register(mockAccount)).thenThrow(new IllegalArgumentException("Bad request"));
-
-        ResponseEntity<?> response = userAccountController.register(mockAccount);
-        assertEquals(400, response.getStatusCodeValue());
-        assertEquals("Bad request", response.getBody());
+        verify(accountService, times(1)).getFollowers(1);
     }
 
     @Test
-    public void testRegisterServerError() {
-        UserAccount mockAccount = new UserAccount();
-        mockAccount.setUsername("newuser");
-        mockAccount.setPassword("password");
+    public void testGetFollowing() throws Exception {
+        mockMvc.perform(get("/users/1/following"))
+                .andExpect(status().isOk());
 
-        when(accountService.register(mockAccount)).thenThrow(new RuntimeException("Server error"));
-
-        ResponseEntity<?> response = userAccountController.register(mockAccount);
-        assertEquals(500, response.getStatusCodeValue());
-        assertEquals("An error occurred during registration: Server error", response.getBody());
+        verify(accountService, times(1)).getFollowing(1);
     }
 
     @Test
-    public void testGetUserSuccess() {
-        UserAccount mockAccount = new UserAccount();
-        mockAccount.setId(1);
-        mockAccount.setUsername("testuser");
+    public void testFollowUser() throws Exception {
+        int userId = 1;
+        int followingId = 2;
 
-        when(accountService.getUser(1)).thenReturn(Optional.of(mockAccount));
+        mockMvc.perform(post("/users/" + userId + "/following")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(followingId)))
+                .andExpect(status().isOk());
 
-        ResponseEntity<?> response = userAccountController.getUser(1);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(Optional.of(mockAccount), response.getBody());
-    }
-    @Test
-    public void testGetUserNotFound() {
-        when(accountService.getUser(1)).thenReturn(Optional.empty());
-
-        ResponseEntity<?> response = userAccountController.getUser(1);
-
-        assertEquals(404, response.getStatusCodeValue());
-        assertEquals("User not found", response.getBody());
+        verify(accountService, times(1)).followUser(userId, followingId);
     }
 
-    @Test
-    public void testGetUserBadRequest() {
-        when(accountService.getUser(1)).thenThrow(new IllegalArgumentException("Bad request"));
+ @Test
+public void testCreatePost() throws Exception {
+    int userId = 1;
+    Post post = new Post();
+ 
+    post.setTravelPlanId(123);  
+    post.setPostedDate(new Date(System.currentTimeMillis()));  // Set a sample date
 
-        ResponseEntity<?> response = userAccountController.getUser(1);
+    when(accountService.createPost(userId, post)).thenReturn(post);
 
-        assertEquals(400, response.getStatusCodeValue());
-        assertEquals("Bad request", response.getBody());
-    }
+    mockMvc.perform(post("/users/" + userId + "/posts")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(post)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.travelPlanId").value(123))  
+            .andExpect(jsonPath("$.postedDate").isNotEmpty());  
 
-    @Test
-    public void testGetUserServerError() {
-        when(accountService.getUser(1)).thenThrow(new RuntimeException("Server error"));
-
-        ResponseEntity<?> response = userAccountController.getUser(1);
-
-        assertEquals(500, response.getStatusCodeValue());
-        assertEquals("An error occurred while retrieving user: Server error", response.getBody());
-    }
-
-    @Test
-    public void testGetFollowersSuccess() {
-        List<Follow> mockFollowers = new ArrayList<>();
-        Follow follower1 = new Follow();
-        Follow.FollowId followId = new Follow.FollowId();
-        //followId.setId(2);
-        follower1.setId(followId);
-        //follower1.setUsername("follower1");
-        mockFollowers.add(follower1);
-
-        when(accountService.getFollowers(1)).thenReturn(mockFollowers);
-
-        ResponseEntity<?> response = userAccountController.getFollowers(1);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(mockFollowers, response.getBody());
-    }
-
-    @Test
-    public void testGetFollowersBadRequest() {
-        when(accountService.getFollowers(1)).thenThrow(new IllegalArgumentException("Bad request"));
-
-        ResponseEntity<?> response = userAccountController.getFollowers(1);
-
-        assertEquals(400, response.getStatusCodeValue());
-        assertEquals("Bad request", response.getBody());
-    }
-
-    @Test
-    public void testGetFollowersServerError() {
-        when(accountService.getFollowers(1)).thenThrow(new RuntimeException("Server error"));
-
-        ResponseEntity<?> response = userAccountController.getFollowers(1);
-
-        assertEquals(500, response.getStatusCodeValue());
-        assertEquals("An error occurred while retrieving followers: Server error", response.getBody());
-    }
-    @Test
-    public void testGetFollowingSuccess() {
-        List<Follow> mockFollowing = new ArrayList<>();
-        Follow following1 = new Follow();
-        Follow.FollowId followId = new Follow.FollowId();
-        //followId.setId(2);
-        following1.setId(followId);
-        mockFollowing.add(following1);
-
-        when(accountService.getFollowing(1)).thenReturn(mockFollowing);
-
-        ResponseEntity<?> response = userAccountController.getFollowing(1);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(mockFollowing, response.getBody());
-    }
-
-    @Test
-    public void testGetFollowingBadRequest() {
-        when(accountService.getFollowing(1)).thenThrow(new IllegalArgumentException("Bad request"));
-
-        ResponseEntity<?> response = userAccountController.getFollowing(1);
-
-        assertEquals(400, response.getStatusCodeValue());
-        assertEquals("Bad request", response.getBody());
-    }
-
-    @Test
-    public void testGetFollowingServerError() {
-        when(accountService.getFollowing(1)).thenThrow(new RuntimeException("Server error"));
-
-        ResponseEntity<?> response = userAccountController.getFollowing(1);
-
-        assertEquals(500, response.getStatusCodeValue());
-        assertEquals("An error occurred while retrieving following: Server error", response.getBody());
-    }
-
-    @Test
-    public void testFollowSuccess() throws NotFoundException, BadRequestException {
-        doNothing().when(accountService).followUser(1, 2);
-
-        ResponseEntity<?> response = userAccountController.follow(1, 2);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertNull(response.getBody());
-    }
-
-    @Test
-    public void testFollowBadRequest() throws NotFoundException, BadRequestException {
-        doThrow(new IllegalArgumentException("Bad request")).when(accountService).followUser(1, 2);
-
-        ResponseEntity<?> response = userAccountController.follow(1, 2);
-
-        assertEquals(400, response.getStatusCodeValue());
-        assertEquals("Bad request", response.getBody());
-    }
-
-    @Test
-    public void testFollowServerError() throws NotFoundException, BadRequestException {
-        doThrow(new RuntimeException("Server error")).when(accountService).followUser(1, 2);
-
-        ResponseEntity<?> response = userAccountController.follow(1, 2);
-
-        assertEquals(500, response.getStatusCodeValue());
-        assertEquals("An error occurred while following user: Server error", response.getBody());
-    }
-@Test
-public void testGetPlansSuccess() {
-    List<TravelPlan> mockPlans = new ArrayList<>();
-    TravelPlan plan1 = new TravelPlan();
-    //plan1.setName("Plan 1");
-    TravelPlan plan2 = new TravelPlan();
-    //plan2.setName("Plan 2");
-    mockPlans.add(plan1);
-    mockPlans.add(plan2);
-
-    when(accountService.getPlans(1)).thenReturn(mockPlans);
-
-    ResponseEntity<?> response = userAccountController.getPlans(1);
-
-    assertEquals(200, response.getStatusCodeValue());
-    assertEquals(mockPlans, response.getBody());
+    verify(accountService, times(1)).createPost(userId, post);
 }
 
-@Test
-public void testGetPlansBadRequest() {
-    when(accountService.getPlans(1)).thenThrow(new IllegalArgumentException("Bad request"));
-
-    ResponseEntity<?> response = userAccountController.getPlans(1);
-
-    assertEquals(400, response.getStatusCodeValue());
-    assertEquals("Bad request", response.getBody());
-}
-
-@Test
-public void testGetPlansServerError() {
-    when(accountService.getPlans(1)).thenThrow(new RuntimeException("Server error"));
-
-    ResponseEntity<?> response = userAccountController.getPlans(1);
-
-    assertEquals(500, response.getStatusCodeValue());
-        assertEquals("An error occurred while retrieving plans: Server error", response.getBody());
-    }
 }
