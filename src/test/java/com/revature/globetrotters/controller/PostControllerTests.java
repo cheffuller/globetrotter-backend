@@ -5,9 +5,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.Comment;
@@ -130,18 +131,39 @@ public class PostControllerTests {
                 Assertions.assertEquals(200, status);
         }
 
-        // TODO: Resolve Foreign key constraint
-        // @ParameterizedTest
-        // @CsvSource({
-        //                 "12345"
-        // })
-        // public void deletePostNotFoundTest(Integer postId) throws IOException, InterruptedException, Exception {
-        //         HttpRequest request = HttpRequest.newBuilder()
-        //                         .uri(URI.create("http://localhost:8080/posts/" + postId))
-        //                         .DELETE()
-        //                         .build();
-        //         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        //         int status = response.statusCode();
-        //         Assertions.assertEquals(404, status);
-        // }
+        @ParameterizedTest
+        @CsvSource({
+                        "12345"
+        })
+        public void deletePostNotFoundTest(Integer postId) throws IOException, InterruptedException, Exception {
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/posts/" + postId))
+                                .DELETE()
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(404, status);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "1, '2019-01-01', 1, 'content', 3"
+        })
+        public void getCommentsByPostIdTest (Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
+        Integer postId, String content, Integer userId) throws IOException, InterruptedException, Exception {
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/posts/" + postId + "/comments"))
+                                .GET()
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
+
+                Comment comment = new Comment(commentId, date, postId, content, userId);
+                List<Comment> expectedComments = new ArrayList<>();
+                expectedComments.add(comment);
+
+                List<Comment> actualComments = objectMapper.readValue(response.body(), new TypeReference<>() {});
+                Assertions.assertEquals(expectedComments, actualComments);
+        }
 }
