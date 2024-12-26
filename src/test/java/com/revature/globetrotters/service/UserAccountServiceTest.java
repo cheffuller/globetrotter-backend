@@ -1,5 +1,8 @@
 package com.revature.globetrotters.service;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +12,9 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
+import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.repository.FollowRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 
 
@@ -21,6 +26,9 @@ public class UserAccountServiceTest {
 
     @InjectMocks
     private AccountService accountService;
+
+    @Mock
+    private FollowRepository followRepository;
 
     @BeforeEach
     public void setUp() {
@@ -114,5 +122,37 @@ public class UserAccountServiceTest {
         when(userAccountRepository.findByUsername("testuser")).thenReturn(null);
         UserAccount result = accountService.authenticate("testuser", "password");
         assertEquals(null, result);
+    }
+
+       @Test
+    public void testGetFollowersSuccess() {
+        int userId = 1;
+        List<Follow> followers = Arrays.asList(new Follow(2, userId), new Follow(3, userId));
+        when(followRepository.findByFollowing(userId)).thenReturn(followers);
+
+        List<Follow> result = accountService.getFollowers(userId);
+        assertEquals(followers, result);
+    }
+
+    @Test
+    public void testGetFollowersInvalidUserId() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.getFollowers(0));
+        assertEquals("User ID must be greater than zero.", exception.getMessage());
+    }
+
+    @Test
+    public void testGetFollowingSuccess() {
+        int userId = 1;
+        List<Follow> following = Arrays.asList(new Follow(userId, 2), new Follow(userId, 3));
+        when(followRepository.findByFollower(userId)).thenReturn(following);
+
+        List<Follow> result = accountService.getFollowing(userId);
+        assertEquals(following, result);
+    }
+
+    @Test
+    public void testGetFollowingInvalidUserId() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.getFollowing(0));
+        assertEquals("User ID must be greater than zero.", exception.getMessage());
     }
 }
