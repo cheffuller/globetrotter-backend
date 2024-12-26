@@ -64,6 +64,10 @@ public class AccountService {
         if (account.getPassword() == null || account.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("Password is required.");
         }
+
+        if (account.getPasswordSalt() == null || account.getPasswordSalt().trim().isEmpty()) {
+            throw new IllegalArgumentException("Password Salt is required.");
+        }
     
         if (account.getAddress() == null || account.getAddress().trim().isEmpty()) {
             throw new IllegalArgumentException("Address is required.");
