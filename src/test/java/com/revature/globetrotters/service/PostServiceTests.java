@@ -97,7 +97,7 @@ public class PostServiceTests {
     public void getPostLikesTest(int postId, int userId) throws NotFoundException {
         int expectedLike = 1;
         
-        Integer actualLiked = postService.getPostLikes(postId);
+        Integer actualLiked = postService.getNumberOfLikesOnPostById(postId);
 
         Assertions.assertEquals(expectedLike, actualLiked);
     }
@@ -106,7 +106,7 @@ public class PostServiceTests {
     public void likePostTest() throws NotFoundException {
         postService.likePost(1, 1);
         int expectedLike = 2;
-        Integer actualLiked = postService.getPostLikes(1);
+        Integer actualLiked = postService.getNumberOfLikesOnPostById(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
@@ -114,7 +114,7 @@ public class PostServiceTests {
     public void unlikePostTest() throws BadRequestException, NotFoundException {
         postService.unlikePost(1, 3);
         int expectedLike = 0;
-        Integer actualLiked = postService.getPostLikes(1);
+        Integer actualLiked = postService.getNumberOfLikesOnPostById(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
@@ -168,7 +168,7 @@ public class PostServiceTests {
     })
     public void getCommentLikesTest(Integer commentId, Integer userId) throws NotFoundException {
         int expectedLike = 1;
-        Integer actualLiked = postService.getCommentLikes(commentId);
+        Integer actualLiked = postService.getNumberOfLikesOnCommentById(commentId);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
     
@@ -176,7 +176,7 @@ public class PostServiceTests {
     public void likeCommentTest() throws NotFoundException {
         postService.likeComment(1, 1);
         int expectedLike = 2;
-        Integer actualLiked = postService.getCommentLikes(1);
+        Integer actualLiked = postService.getNumberOfLikesOnCommentById(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
@@ -184,7 +184,7 @@ public class PostServiceTests {
     public void unlikeCommentTest() throws BadRequestException, NotFoundException {
         postService.unlikeComment(1, 3);
         int expectedLike = 0;
-        Integer actualLiked = postService.getCommentLikes(1);
+        Integer actualLiked = postService.getNumberOfLikesOnCommentById(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 }
