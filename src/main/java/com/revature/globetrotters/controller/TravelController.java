@@ -110,7 +110,7 @@ public class TravelController {
         }
     }
 
-    @GetMapping("/plans/recent/{limit}")
+    @GetMapping("/recent/{limit}")
     public ResponseEntity<List<TravelPlan>> findRecentPublishedPlans(@PathVariable("limit") int limit) {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.findMostRecentPublicTravelPlan(limit));
     }
