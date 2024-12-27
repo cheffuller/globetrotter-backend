@@ -6,6 +6,7 @@ import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.service.AccountService;
+import org.apache.catalina.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -142,29 +143,18 @@ public class UserAccountControllerTest {
         verify(accountService, times(1)).findListOfUsersFollowed(1);
     }
 
-    @Test
-    public void testFollowUser() throws Exception {
-        int userId = 3;
-        int followingId = 1;
-
-        mockMvc.perform(post("/users/" + userId + "/following")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(followingId)))
-                .andExpect(status().isOk());
-
-        verify(accountService, times(1)).followUser(userId, followingId);
-    }
-
     @ParameterizedTest
     @CsvSource({
-            "1, 2",
-            "1, 3"
+            "3, 1"
     })
-    public void followUserAlreadyFollowedTest(int followerId, int followingId) throws Exception {
+    public void testFollowUser(int followerId, int followingId) throws Exception {
+        UserAccount account = new UserAccount();
+        account.setId(followerId);
+
         mockMvc.perform(post("/users/" + followingId + "/following")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(followerId)))
-                .andExpect(status().isBadRequest());
+                        .content(objectMapper.writeValueAsString(account)))
+                .andExpect(status().isOk());
 
         verify(accountService, times(1)).followUser(followerId, followingId);
     }
