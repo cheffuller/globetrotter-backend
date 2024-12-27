@@ -96,7 +96,7 @@ public class ModeratorAccount {
         ModeratorAccount that = (ModeratorAccount) o;
         return Objects.equals(id, that.id) && Objects.equals(email, that.email) &&
                 Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) &&
-                Objects.equals(password, that.password) && Objects.equals(username, that.username);
+                Objects.equals(username, that.username);
     }
 
     @Override
