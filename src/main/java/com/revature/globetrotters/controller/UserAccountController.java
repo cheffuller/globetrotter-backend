@@ -1,8 +1,7 @@
 package com.revature.globetrotters.controller;
 
-import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.UserAccount;
-import com.revature.globetrotters.service.AccountService;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Optional;
+import com.revature.globetrotters.entity.Post;
+import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.exception.BadRequestException;
+import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.service.AccountService;
 
 @Controller
 @RequestMapping("/users")
@@ -32,12 +35,12 @@ public class UserAccountController {
             if (authenticatedAccount != null) {
                 return ResponseEntity.ok(authenticatedAccount);
             } else {
-                return ResponseEntity.status(401).body("Invalid username or password");
+                throw new BadRequestException("Invalid username or password");
             }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred during login: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during login");
         }
     }
 
@@ -46,10 +49,8 @@ public class UserAccountController {
         try {
             UserAccount newAccount = accountService.register(account);
             return ResponseEntity.ok(newAccount);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred during registration: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during registration");
         }
     }
 
@@ -57,14 +58,14 @@ public class UserAccountController {
     public ResponseEntity<?> getUser(@PathVariable int userId) {
         try {
             Optional<UserAccount> account = accountService.getUser(userId);
-            if (account == null) {
-                return ResponseEntity.status(404).body("User not found");
+            if (account.isEmpty()) {
+                throw new NotFoundException("User not found");
             }
             return ResponseEntity.ok(account);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while retrieving user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving user");
         }
     }
 
@@ -72,10 +73,8 @@ public class UserAccountController {
     public ResponseEntity<?> getFollowers(@PathVariable int userId) {
         try {
             return ResponseEntity.ok(accountService.getFollowers(userId));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while retrieving followers: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving followers");
         }
     }
 
@@ -83,10 +82,8 @@ public class UserAccountController {
     public ResponseEntity<?> getFollowing(@PathVariable int userId) {
         try {
             return ResponseEntity.ok(accountService.getFollowing(userId));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while retrieving following: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving following");
         }
     }
 
@@ -95,10 +92,8 @@ public class UserAccountController {
         try {
             accountService.followUser(userId, followingId);
             return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while following user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while following user");
         }
     }
 
@@ -106,10 +101,8 @@ public class UserAccountController {
     public ResponseEntity<?> getPlans(@PathVariable("user-id") int userId) {
         try {
             return ResponseEntity.ok(accountService.getPlans(userId));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while retrieving plans: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving plans");
         }
     }
 
@@ -117,10 +110,8 @@ public class UserAccountController {
     public ResponseEntity<?> createPost(@PathVariable("user-id") int userId, @RequestBody Post post) {
         try {
             return ResponseEntity.ok(accountService.createPost(userId, post));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while creating post: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating post");
         }
     }
 }
