@@ -24,8 +24,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class AccountService {
+
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
@@ -81,43 +83,32 @@ public class AccountService {
     }
 
     public Optional<UserAccount> getUser(int userId) {
-        if (userId <= 0) {
-            throw new IllegalArgumentException("User ID must be greater than zero.");
-        }
+        if (!userAccountRepository.existsById(userId))
+            throw new IllegalArgumentException("User ID does not exist.");
         return userAccountRepository.findById(userId);
     }
 
-
     public List<Follow> getFollowers(int userId) {
-        if (userId <= 0) {
-            throw new IllegalArgumentException("User ID must be greater than zero.");
-        }
-
+        if (!userAccountRepository.existsById(userId))
+            throw new IllegalArgumentException("User ID does not exist.");
         return followRepository.findByFollowing(userId);
     }
 
     public List<Follow> getFollowing(int userId) {
-        if (userId <= 0) {
-            throw new IllegalArgumentException("User ID must be greater than zero.");
-        }
-
+        if (!userAccountRepository.existsById(userId))
+            throw new IllegalArgumentException("User ID does not exist.");
         return followRepository.findByFollower(userId);
     }
 
 
     public void followUser(int followerId, int followingId) throws NotFoundException, BadRequestException {
-        if (!userProfileRepository.existsById(followerId)) {
-            throw new NotFoundException(String.format("User with ID %d not found", followerId));
-        }
-
-        if (!userProfileRepository.existsById(followingId)) {
-            throw new NotFoundException(String.format("User with ID %d not found", followerId));
+        if (!userProfileRepository.existsById(followerId) || !userProfileRepository.existsById(followingId)) {
+            throw new NotFoundException("User(s) not found.");
         }
 
         if (followRepository.existsById(new Follow.FollowId(followerId, followingId)) ||
                 followRequestRepository.existsById(new FollowRequest.FollowRequestId(followerId, followingId))) {
-            throw new BadRequestException(String.format("User with ID %d is already following or requested to " +
-                    "follow user with id %d.", followingId, followingId));
+            throw new BadRequestException("Follow request already exists.");
         }
 
         UserProfile accountToFollow = userProfileRepository.findById(followingId).get();
@@ -138,22 +129,17 @@ public class AccountService {
         FollowRequest followRequestToDelete = new FollowRequest(followerId, followingId);
         if (followRequestRepository.existsById(followRequestToDelete.getId())) {
             followRequestRepository.delete(followRequestToDelete);
+        } else {
+            throw new BadRequestException("Not following or requested to follow.");
         }
-
-        throw new BadRequestException(String.format("User with ID %d is not following and has not requested to " +
-                "follow user with id %d.", followingId, followingId));
     }
 
     public List<TravelPlan> getPlans(int userId) {
-        if (userId <= 0) {
-            throw new IllegalArgumentException("User ID must be greater than zero.");
-        }
-
+        if (userId <= 0) throw new IllegalArgumentException("User ID must be greater than zero.");
         return planRepository.getTravelPlansByAccountId(userId);
     }
 
     public Post createPost(int userId, Post post) {
-        return null;
+        return postRepository.save(post); // Assuming the createPost method should save the post
     }
 }
-

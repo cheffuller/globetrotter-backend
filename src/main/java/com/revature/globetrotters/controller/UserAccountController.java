@@ -54,14 +54,14 @@ public class UserAccountController {
     public ResponseEntity<?> getUser(@PathVariable int userId) {
         try {
             Optional<UserAccount> account = accountService.getUser(userId);
-            if (account == null) {
-                return ResponseEntity.status(404).body("User not found");
+            if (account.isEmpty()) {
+                throw new NotFoundException("User not found");
             }
             return ResponseEntity.ok(account);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while retrieving user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving user");
         }
     }
 
@@ -69,10 +69,8 @@ public class UserAccountController {
     public ResponseEntity<?> getFollowers(@PathVariable int userId) {
         try {
             return ResponseEntity.ok(accountService.getFollowers(userId));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while retrieving followers: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving followers");
         }
     }
 
@@ -80,10 +78,8 @@ public class UserAccountController {
     public ResponseEntity<?> getFollowing(@PathVariable int userId) {
         try {
             return ResponseEntity.ok(accountService.getFollowing(userId));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while retrieving following: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving following");
         }
     }
 
@@ -92,10 +88,8 @@ public class UserAccountController {
         try {
             accountService.followUser(userId, followingId);
             return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while following user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while following user");
         }
     }
 
@@ -103,10 +97,8 @@ public class UserAccountController {
     public ResponseEntity<?> getPlans(@PathVariable("user-id") int userId) {
         try {
             return ResponseEntity.ok(accountService.getPlans(userId));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while retrieving plans: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving plans");
         }
     }
 
@@ -114,10 +106,8 @@ public class UserAccountController {
     public ResponseEntity<?> createPost(@PathVariable("user-id") int userId, @RequestBody Post post) {
         try {
             return ResponseEntity.ok(accountService.createPost(userId, post));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while creating post: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating post");
         }
     }
 }
