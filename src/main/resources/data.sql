@@ -1,16 +1,16 @@
 use revature;
 
-INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, password_salt, username)
-VALUES (1, '1234', 'New York', 'United States', 'test@gmail.com', 'John', 'Doe', 'password', 'password_salt', 'john_doe');
+INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, username)
+VALUES (1, '1234', 'New York', 'United States', 'test@gmail.com', 'John', 'Doe', 'password', 'john_doe');
 
-INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, password_salt, username)
-VALUES (2, '567', 'Los Angeles', 'United States', 'example@gmail.com', 'Jane', 'Doe', 'password', 'password_salt', 'jane_doe');
+INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, username)
+VALUES (2, '567', 'Los Angeles', 'United States', 'example@gmail.com', 'Jane', 'Doe', 'password', 'jane_doe');
 
-INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, password_salt, username)
-VALUES (3, '910', 'Paris', 'France', 'france@gmail.com', 'Clark', 'Kent', 'password', 'password_salt', 'clark_kent');
+INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, username)
+VALUES (3, '910', 'Paris', 'France', 'france@gmail.com', 'Clark', 'Kent', 'password', 'clark_kent');
 
-INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, password_salt, username)
-VALUES (4, '1112', 'London', 'United Kingdom', 'evil@gmail.com', 'Lex', 'Luthor', 'password', 'password_salt', 'lex_luthor');
+INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, username)
+VALUES (4, '1112', 'London', 'United Kingdom', 'evil@gmail.com', 'Lex', 'Luthor', 'password', 'lex_luthor');
 
 INSERT INTO user_profile (account_id, bio, display_name, is_private)
 VALUES
@@ -22,8 +22,8 @@ VALUES
 INSERT INTO travel_plan (id, account_id, is_favorited, is_published)
 VALUES (1, 1, false, false);
 
-INSERT INTO moderator_account (id, email, first_name, last_name, password, password_salt, username)
-VALUES (10, 'admin@gmail.com', 'Barry', 'Allen', 'password1', 'password1_salt', 'admin');
+INSERT INTO moderator_account (id, email, first_name, last_name, password, username)
+VALUES (10, 'admin@gmail.com', 'Barry', 'Allen', 'password1', 'admin');
 
 INSERT INTO post (id, created_at, travel_plan)
 VALUES (1, '2019-01-01', 1);

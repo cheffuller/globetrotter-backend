@@ -15,6 +15,7 @@ import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import com.revature.globetrotters.repository.UserProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,8 @@ import java.util.Optional;
 
 @Service
 public class AccountService {
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private FollowRepository followRepository;
     @Autowired
@@ -34,7 +37,6 @@ public class AccountService {
     private UserAccountRepository userAccountRepository;
     @Autowired
     private UserProfileRepository userProfileRepository;
-
 
     public UserAccount authenticate(String username, String password) {
 
@@ -51,7 +53,6 @@ public class AccountService {
     }
 
     public UserAccount register(UserAccount account) {
-
         if (account == null) {
             throw new IllegalArgumentException("Account is required.");
         }
@@ -67,6 +68,9 @@ public class AccountService {
         if (userAccountRepository.findByUsername(account.getUsername()) != null) {
             throw new IllegalArgumentException("Username is already taken.");
         }
+
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+
 
         return userAccountRepository.save(account);
     }
