@@ -45,18 +45,15 @@ public class AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     public UserAccount authenticate(String username, String password) throws NotFoundException, BadRequestException {
-        logger.info("CREDENTIALS CHECK");
         if (StringUtil.isNullOrEmpty(username.trim()) ||
                 StringUtil.isNullOrEmpty(password.trim())) {
             throw new IllegalArgumentException("Username and password are required.");
         }
-        logger.info("CREDENTIALS NOT NULL OR EMPTY");
 
         Optional<UserAccount> account = userAccountRepository.findByUsername(username);
         if (account.isEmpty()) {
             throw new NotFoundException(String.format("User with ID %s not found.", username));
         }
-        logger.info("ACCOUNT FOUND WITH USERNAME {}: {}", username, account.get());
 
         if (!passwordEncoder.matches(password, account.get().getPassword())) {
             throw new BadRequestException("Invalid login credentials.");
