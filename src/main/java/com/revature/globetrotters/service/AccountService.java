@@ -128,16 +128,23 @@ public class AccountService {
         }
     }
 
-    public void unfollowUser(int followerId, int followingId) {
+    public void unfollowUser(int followerId, int followingId) throws BadRequestException {
         Follow followToDelete = new Follow(followerId, followingId);
+
         if (followRepository.existsById(followToDelete.getId())) {
             followRepository.delete(followToDelete);
+            return;
         }
 
         FollowRequest followRequestToDelete = new FollowRequest(followerId, followingId);
         if (followRequestRepository.existsById(followRequestToDelete.getId())) {
             followRequestRepository.delete(followRequestToDelete);
+            return;
         }
+
+        throw new BadRequestException(String.format(
+                "User with ID %d is not following or has not requested to follow user with ID %d.",
+                followerId, followingId));
     }
 
     public List<TravelPlan> getPlans(int userId) throws NotFoundException {

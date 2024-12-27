@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,13 +83,24 @@ public class UserAccountController {
     }
 
     @PostMapping("/{userId}/following")
-    public ResponseEntity<?> follow(@PathVariable int userId, @RequestBody int followingId) {
+    public ResponseEntity<?> follow(@PathVariable int userId, @RequestBody UserAccount account) {
         try {
-            accountService.followUser(userId, followingId);
+            accountService.followUser(userId, account.getId());
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (NotFoundException e) {
             logger.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (BadRequestException e) {
+            logger.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @DeleteMapping("/{userId}/following")
+    public ResponseEntity<?> unfollow(@PathVariable int userId, @RequestBody UserAccount account) {
+        try {
+            accountService.unfollowUser(userId, account.getId());
+            return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (BadRequestException e) {
             logger.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
