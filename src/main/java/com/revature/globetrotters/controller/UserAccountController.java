@@ -85,7 +85,7 @@ public class UserAccountController {
     @PostMapping("/{userId}/following")
     public ResponseEntity<?> follow(@PathVariable int userId, @RequestBody UserAccount account) {
         try {
-            accountService.followUser(userId, account.getId());
+            accountService.followUser(account.getId(), userId);
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (NotFoundException e) {
             logger.info(e.getMessage());
@@ -99,7 +99,7 @@ public class UserAccountController {
     @DeleteMapping("/{userId}/following")
     public ResponseEntity<?> unfollow(@PathVariable int userId, @RequestBody UserAccount account) {
         try {
-            accountService.unfollowUser(userId, account.getId());
+            accountService.unfollowUser(account.getId(), userId);
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (BadRequestException e) {
             logger.info(e.getMessage());

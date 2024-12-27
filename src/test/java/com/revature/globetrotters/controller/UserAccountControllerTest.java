@@ -1,30 +1,34 @@
 package com.revature.globetrotters.controller;
 
-import java.sql.Date;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.revature.globetrotters.entity.Post;
+import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.sql.Date;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.UserAccount;
-import com.revature.globetrotters.service.AccountService;
 
 public class UserAccountControllerTest {
 
@@ -114,11 +118,10 @@ public class UserAccountControllerTest {
 
     @Test
     public void testGetUser_UserDoesNotExist() throws Exception {
-        when(accountService.getUser(999)).thenReturn(null);
+        when(accountService.getUser(999)).thenThrow(new NotFoundException("Not found"));
 
         mockMvc.perform(get("/users/999"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("User not found"));
+                .andExpect(status().isNotFound());
 
         verify(accountService, times(1)).getUser(999);
     }
@@ -141,8 +144,8 @@ public class UserAccountControllerTest {
 
     @Test
     public void testFollowUser() throws Exception {
-        int userId = 1;
-        int followingId = 2;
+        int userId = 3;
+        int followingId = 1;
 
         mockMvc.perform(post("/users/" + userId + "/following")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -152,24 +155,38 @@ public class UserAccountControllerTest {
         verify(accountService, times(1)).followUser(userId, followingId);
     }
 
- @Test
-public void testCreatePost() throws Exception {
-    int userId = 1;
-    Post post = new Post();
- 
-    post.setTravelPlanId(123);  
-    post.setPostedDate(new Date(System.currentTimeMillis())); 
+    @ParameterizedTest
+    @CsvSource({
+            "1, 2",
+            "1, 3"
+    })
+    public void followUserAlreadyFollowedTest(int followerId, int followingId) throws Exception {
+        mockMvc.perform(post("/users/" + followingId + "/following")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(followerId)))
+                .andExpect(status().isBadRequest());
 
-    when(accountService.createPost(userId, post)).thenReturn(post);
+        verify(accountService, times(1)).followUser(followerId, followingId);
+    }
 
-    mockMvc.perform(post("/users/" + userId + "/posts")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(post)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.travelPlanId").value(123))  
-            .andExpect(jsonPath("$.postedDate").isNotEmpty());  
+    @Test
+    public void testCreatePost() throws Exception {
+        int userId = 1;
+        Post post = new Post();
 
-    verify(accountService, times(1)).createPost(userId, post);
-}
+        post.setTravelPlanId(123);
+        post.setPostedDate(new Date(System.currentTimeMillis()));
+
+        when(accountService.createPost(userId, post)).thenReturn(post);
+
+        mockMvc.perform(post("/users/" + userId + "/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(post)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.travelPlanId").value(123))
+                .andExpect(jsonPath("$.postedDate").isNotEmpty());
+
+        verify(accountService, times(1)).createPost(userId, post);
+    }
 
 }
