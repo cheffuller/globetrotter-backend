@@ -10,8 +10,7 @@ CREATE TABLE user_account (
     email VARCHAR(100) NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    password_salt VARCHAR(100) NOT NULL,
+    password VARCHAR(60) NOT NULL, -- Bcrypt generates a string of length 60. Salt is included in this string
     username VARCHAR(40) NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
@@ -38,8 +37,7 @@ CREATE TABLE moderator_account (
     email VARCHAR(100) NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    password_salt VARCHAR(100) NOT NULL,
+    password VARCHAR(60) NOT NULL,
     username VARCHAR(40) NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );

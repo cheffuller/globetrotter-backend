@@ -10,8 +10,6 @@ import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 @Entity
 @Table(name = "travel_plan_location")
 public class TravelPlanLocation {
@@ -25,7 +23,7 @@ public class TravelPlanLocation {
 
     @Column(name = "country")
     private String country;
-    
+
     @Column(name = "end_date")
     private Date endDate;
 

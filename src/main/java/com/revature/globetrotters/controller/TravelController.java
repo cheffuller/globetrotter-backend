@@ -1,25 +1,23 @@
 package com.revature.globetrotters.controller;
 
+import com.revature.globetrotters.entity.TravelPlan;
+import com.revature.globetrotters.entity.TravelPlanLocation;
+import com.revature.globetrotters.service.TravelPlanLocationService;
+import com.revature.globetrotters.service.TravelPlanService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-
-import com.revature.globetrotters.entity.TravelPlan;
-import com.revature.globetrotters.entity.TravelPlanLocation;
-import com.revature.globetrotters.service.TravelPlanService;
-import com.revature.globetrotters.service.TravelPlanLocationService;
 
 //no need for path variable in the post 
 // no need to have path variable for travelPlan
@@ -28,12 +26,10 @@ import com.revature.globetrotters.service.TravelPlanLocationService;
 @RequestMapping("/plans")
 @CrossOrigin(origins = "http://localhost:5173/")
 public class TravelController {
-    @Autowired 
+    @Autowired
     TravelPlanService travelPlanService;
     @Autowired
     TravelPlanLocationService travelPlanLocationService;
-
-
 
     @PostMapping("")
     public ResponseEntity<?> createTravelPlan(@RequestBody TravelPlan travelPlan) {
@@ -57,7 +53,7 @@ public class TravelController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     @PutMapping("")
     public ResponseEntity<TravelPlanLocation> updateTravelPlan(@RequestBody TravelPlanLocation travelPlan) {
         try {
@@ -113,5 +109,5 @@ public class TravelController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    
+
 }

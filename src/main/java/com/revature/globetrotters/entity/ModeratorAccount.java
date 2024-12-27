@@ -24,8 +24,6 @@ public class ModeratorAccount {
     private String lastName;
     @Column(name = "password")
     private String password;
-    @Column(name = "password_salt")
-    private String passwordSalt;
     @Column(name = "username")
     private String username;
 
@@ -34,13 +32,12 @@ public class ModeratorAccount {
 
     }
 
-    public ModeratorAccount(Integer id, String email, String firstName, String lastName, String password, String passwordSalt, String username) {
+    public ModeratorAccount(Integer id, String email, String firstName, String lastName, String password, String username) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.passwordSalt = passwordSalt;
         this.username = username;
     }
 
@@ -84,14 +81,6 @@ public class ModeratorAccount {
         this.password = password;
     }
 
-    public String setPasswordSalt() {
-        return passwordSalt;
-    }
-
-    public void getPasswordSalt(String passwordSalt) {
-        this.passwordSalt = passwordSalt;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -105,12 +94,14 @@ public class ModeratorAccount {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ModeratorAccount that = (ModeratorAccount) o;
-        return Objects.equals(id, that.id) && Objects.equals(email, that.email) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(password, that.password) && Objects.equals(passwordSalt, that.passwordSalt) && Objects.equals(username, that.username);
+        return Objects.equals(id, that.id) && Objects.equals(email, that.email) &&
+                Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) &&
+                Objects.equals(password, that.password) && Objects.equals(username, that.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, firstName, lastName, password, passwordSalt, username);
+        return Objects.hash(id, email, firstName, lastName, password, username);
     }
 
     @Override
@@ -121,7 +112,6 @@ public class ModeratorAccount {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", password='" + password + '\'' +
-                ", passwordSalt='" + passwordSalt + '\'' +
                 ", username='" + username + '\'' +
                 '}';
     }

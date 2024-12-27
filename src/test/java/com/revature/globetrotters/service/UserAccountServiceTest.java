@@ -55,7 +55,6 @@ public class UserAccountServiceTest {
         UserAccount account = new UserAccount();
         account.setUsername(username);
         account.setPassword(password);
-        account.setPasswordSalt("password_salt");
         account.setAddress("123 Street");
         account.setCity("City");
         account.setCountry("Country");
@@ -66,7 +65,7 @@ public class UserAccountServiceTest {
     }
 
     @Test
-    public void testRegisterSuccess() {
+    public void testRegisterSuccess() throws BadRequestException {
         UserAccount account = createUserAccount("newuser", "password");
         when(userAccountRepository.save(account)).thenReturn(account);
         UserAccount result = accountService.register(account);
@@ -96,15 +95,15 @@ public class UserAccountServiceTest {
     @Test
     public void testRegisterUsernameTaken() {
         UserAccount account = createUserAccount("newuser", "password");
-        when(userAccountRepository.findByUsername("newuser")).thenReturn(new UserAccount());
+        when(userAccountRepository.findByUsername("newuser")).thenReturn(Optional.of(new UserAccount()));
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.register(account));
         assertEquals("Username is already taken.", exception.getMessage());
     }
 
     @Test
-    public void testAuthenticateSuccess() {
+    public void testAuthenticateSuccess() throws NotFoundException, BadRequestException {
         UserAccount account = createUserAccount("testuser", "password");
-        when(userAccountRepository.findByUsername("testuser")).thenReturn(account);
+        when(userAccountRepository.findByUsername("testuser")).thenReturn(Optional.of(account));
         UserAccount result = accountService.authenticate("testuser", "password");
         assertEquals(account, result);
     }
@@ -134,14 +133,14 @@ public class UserAccountServiceTest {
     }
 
     @Test
-    public void testAuthenticateInvalidCredentials() {
+    public void testAuthenticateInvalidCredentials() throws NotFoundException, BadRequestException {
         when(userAccountRepository.findByUsername("testuser")).thenReturn(null);
         UserAccount result = accountService.authenticate("testuser", "password");
         assertEquals(null, result);
     }
 
     @Test
-    public void testGetFollowersSuccess() {
+    public void testFindListOfUsersFollowingSuccess() throws NotFoundException {
         int userId = 1;
         List<Follow> followers = Arrays.asList(new Follow(2, userId), new Follow(3, userId));
         
@@ -149,13 +148,13 @@ public class UserAccountServiceTest {
         when(userAccountRepository.existsById(userId)).thenReturn(true);
         when(followRepository.findByFollowing(userId)).thenReturn(followers);
     
-        List<Follow> result = accountService.getFollowers(userId);
+        List<Follow> result = accountService.findListOfUsersFollowing(userId);
         assertEquals(followers, result);
         verify(userAccountRepository, times(1)).existsById(userId);
     }
     
     @Test
-    public void testGetFollowersNonExistentUserId() {
+    public void testFindListOfUsersFollowingNonExistentUserId() {
         int userId = 1;
         
         // Mock non-existence of the user
@@ -163,14 +162,14 @@ public class UserAccountServiceTest {
     
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class, 
-            () -> accountService.getFollowers(userId)
+            () -> accountService.findListOfUsersFollowing(userId)
         );
         assertEquals("User ID does not exist.", exception.getMessage());
         verify(userAccountRepository, times(1)).existsById(userId);
     }
     
     @Test
-    public void testGetFollowingSuccess() {
+    public void testGetFollowingSuccess() throws NotFoundException {
         int userId = 1;
         List<Follow> following = Arrays.asList(new Follow(userId, 2), new Follow(userId, 3));
         
@@ -178,7 +177,7 @@ public class UserAccountServiceTest {
         when(userAccountRepository.existsById(userId)).thenReturn(true);
         when(followRepository.findByFollower(userId)).thenReturn(following);
     
-        List<Follow> result = accountService.getFollowing(userId);
+        List<Follow> result = accountService.findListOfUsersFollowed(userId);
         assertEquals(following, result);
         verify(userAccountRepository, times(1)).existsById(userId);
     }
@@ -192,7 +191,7 @@ public class UserAccountServiceTest {
     
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class, 
-            () -> accountService.getFollowing(userId)
+            () -> accountService.findListOfUsersFollowed(userId)
         );
         assertEquals("User ID does not exist.", exception.getMessage());
         verify(userAccountRepository, times(1)).existsById(userId);
@@ -278,12 +277,11 @@ public class UserAccountServiceTest {
         Follow follow = new Follow(followerId, followingId);
         FollowRequest followRequest = new FollowRequest(followerId, followingId);
 
-        when(followRepository.existsById(follow.getId())).thenReturn(false);
+        when(followRepository.existsById(follow.getId())).thenThrow(new NotFoundException("User does not exist"));
         when(followRequestRepository.existsById(followRequest.getId())).thenReturn(true);
 
         accountService.unfollowUser(followerId, followingId);
 
         verify(followRequestRepository, times(1)).delete(followRequest);
     }
-    
 }

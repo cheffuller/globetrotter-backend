@@ -35,13 +35,13 @@ public class ModeratorAccountTests {
 
     @ParameterizedTest
     @CsvSource({
-            "10, 'admin@gmail.com', 'Barry', 'Allen', 'password1', 'password1_salt', 'admin'"
+            "10, 'admin@gmail.com', 'Barry', 'Allen', 'password1', 'admin'"
     })
     public void findModeratorAccount(Integer id, String email, String firstName, String lastName, String password,
-                                     String passwordSalt, String username) {
+                                     String username) {
 
         ModeratorAccount expectedAccount = new ModeratorAccount(id, email, firstName, lastName, password,
-                passwordSalt, username);
+                username);
         Optional<ModeratorAccount> actualAccount = moderatorAccountRepository.findById(10);
         Assertions.assertEquals(expectedAccount, actualAccount.get(),
                 "Expected: " + expectedAccount + ". Actual: " + actualAccount);

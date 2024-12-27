@@ -30,8 +30,6 @@ public class UserAccount {
     private String lastName;
     @Column(name = "password")
     private String password;
-    @Column(name = "password_salt")
-    private String passwordSalt;
     @Column(name = "username")
     private String username;
 
@@ -40,7 +38,7 @@ public class UserAccount {
     }
 
     public UserAccount(Integer id, String address, String city, String country, String email, String firstName,
-                       String lastName, String password, String passwordSalt, String username) {
+                       String lastName, String password, String username) {
         this.id = id;
         this.address = address;
         this.city = city;
@@ -49,7 +47,6 @@ public class UserAccount {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.passwordSalt = passwordSalt;
         this.username = username;
     }
 
@@ -117,14 +114,6 @@ public class UserAccount {
         this.password = password;
     }
 
-    public String getPasswordSalt() {
-        return passwordSalt;
-    }
-
-    public void setPasswordSalt(String passwordSalt) {
-        this.passwordSalt = passwordSalt;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -141,13 +130,12 @@ public class UserAccount {
         return Objects.equals(id, that.id) && Objects.equals(address, that.address) && Objects.equals(city, that.city)
                 && Objects.equals(country, that.country) && Objects.equals(email, that.email)
                 && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName)
-                && Objects.equals(password, that.password) && Objects.equals(passwordSalt, that.passwordSalt)
-                && Objects.equals(username, that.username);
+                && Objects.equals(password, that.password) && Objects.equals(username, that.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, address, city, country, email, firstName, lastName, password, passwordSalt, username);
+        return Objects.hash(id, address, city, country, email, firstName, lastName, password, username);
     }
 
     @Override
@@ -161,7 +149,6 @@ public class UserAccount {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", password='" + password + '\'' +
-                ", passwordSalt='" + passwordSalt + '\'' +
                 ", username='" + username + '\'' +
                 '}';
     }
