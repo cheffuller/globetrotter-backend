@@ -1,5 +1,6 @@
 package com.revature.globetrotters.service;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.FollowRequest;
 import com.revature.globetrotters.entity.Post;
@@ -14,6 +15,8 @@ import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import com.revature.globetrotters.repository.UserProfileRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,41 +40,43 @@ public class AccountService {
     private UserAccountRepository userAccountRepository;
     @Autowired
     private UserProfileRepository userProfileRepository;
+    private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
-    public UserAccount authenticate(String username, String password) {
-
+    public UserAccount authenticate(String username, String password) throws NotFoundException, BadRequestException {
         if (username == null || username.trim().isEmpty() ||
                 password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("Username and password are required.");
         }
 
-        UserAccount account = userAccountRepository.findByUsername(username);
-        if (account != null && account.getPassword().equals(password)) {
-            return account;
+        Optional<UserAccount> account = userAccountRepository.findByUsername(username);
+        if (account.isEmpty()) {
+            throw new NotFoundException(String.format("User with ID %d not found.", username));
         }
-        return null;
+
+        if (!passwordEncoder.matches(password, account.get().getPassword())) {
+            throw new BadRequestException("Invalid login credentials.");
+        }
+
+        return account.get();
     }
 
-    public UserAccount register(UserAccount account) {
-        if (account == null) {
-            throw new IllegalArgumentException("Account is required.");
-        }
-
-        if (account.getUsername() == null || account.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("Username is required.");
-        }
-
-        if (account.getPassword() == null || account.getPassword().trim().isEmpty()) {
-            throw new IllegalArgumentException("Password is required.");
-        }
-
-        if (userAccountRepository.findByUsername(account.getUsername()) != null) {
-            throw new IllegalArgumentException("Username is already taken.");
+    public UserAccount register(UserAccount account) throws BadRequestException {
+        if (account == null ||
+                StringUtil.isNullOrEmpty(account.getUsername()) ||
+                userAccountRepository.findByUsername(account.getUsername()).isPresent() ||
+                StringUtil.isNullOrEmpty(account.getEmail()) ||
+                userAccountRepository.findByUsername(account.getEmail()).isPresent() ||
+                StringUtil.isNullOrEmpty(account.getPassword()) ||
+                StringUtil.isNullOrEmpty(account.getAddress()) ||
+                StringUtil.isNullOrEmpty(account.getCity()) ||
+                StringUtil.isNullOrEmpty(account.getCountry()) ||
+                StringUtil.isNullOrEmpty(account.getFirstName()) ||
+                StringUtil.isNullOrEmpty(account.getLastName())
+        ) {
+            throw new BadRequestException("Invalid details for account creation.");
         }
 
         account.setPassword(passwordEncoder.encode(account.getPassword()));
-
-
         return userAccountRepository.save(account);
     }
 

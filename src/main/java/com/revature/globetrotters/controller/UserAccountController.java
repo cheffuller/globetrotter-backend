@@ -2,7 +2,11 @@ package com.revature.globetrotters.controller;
 
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.exception.BadRequestException;
+import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.service.AccountService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,21 +26,17 @@ import java.util.Optional;
 public class UserAccountController {
     @Autowired
     private AccountService accountService;
+    private static final Logger logger = LoggerFactory.getLogger(UserAccountController.class);
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserAccount account) {
         try {
             UserAccount authenticatedAccount = accountService.authenticate(account.getUsername(), account.getPassword());
-
-            if (authenticatedAccount != null) {
-                return ResponseEntity.ok(authenticatedAccount);
-            } else {
-                return ResponseEntity.status(401).body("Invalid username or password");
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred during login: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.OK).body(authenticatedAccount);
+        } catch (IllegalArgumentException | BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
@@ -45,10 +45,8 @@ public class UserAccountController {
         try {
             UserAccount newAccount = accountService.register(account);
             return ResponseEntity.ok(newAccount);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred during registration: " + e.getMessage());
+        } catch (BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
