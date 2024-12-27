@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/users")
 @CrossOrigin(origins = "http://localhost:5173/")
@@ -34,8 +32,10 @@ public class UserAccountController {
             UserAccount authenticatedAccount = accountService.authenticate(account.getUsername(), account.getPassword());
             return ResponseEntity.status(HttpStatus.OK).body(authenticatedAccount);
         } catch (IllegalArgumentException | BadRequestException e) {
+            logger.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (NotFoundException e) {
+            logger.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -46,6 +46,7 @@ public class UserAccountController {
             UserAccount newAccount = accountService.register(account);
             return ResponseEntity.ok(newAccount);
         } catch (BadRequestException e) {
+            logger.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
@@ -53,33 +54,30 @@ public class UserAccountController {
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUser(@PathVariable int userId) {
         try {
-            Optional<UserAccount> account = accountService.getUser(userId);
-            if (account.isEmpty()) {
-                throw new NotFoundException("User not found");
-            }
-            return ResponseEntity.ok(account);
+            return ResponseEntity.status(HttpStatus.OK).body(accountService.getUser(userId));
         } catch (NotFoundException e) {
+            logger.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving user");
         }
     }
 
     @GetMapping("/{userId}/followers")
     public ResponseEntity<?> getFollowers(@PathVariable int userId) {
         try {
-            return ResponseEntity.ok(accountService.getFollowers(userId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving followers");
+            return ResponseEntity.ok(accountService.findListOfUsersFollowing(userId));
+        } catch (NotFoundException e) {
+            logger.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     @GetMapping("/{userId}/following")
     public ResponseEntity<?> getFollowing(@PathVariable int userId) {
         try {
-            return ResponseEntity.ok(accountService.getFollowing(userId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving following");
+            return ResponseEntity.ok(accountService.findListOfUsersFollowed(userId));
+        } catch (NotFoundException e) {
+            logger.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
@@ -88,8 +86,12 @@ public class UserAccountController {
         try {
             accountService.followUser(userId, followingId);
             return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while following user");
+        } catch (NotFoundException e) {
+            logger.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (BadRequestException e) {
+            logger.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
@@ -97,8 +99,9 @@ public class UserAccountController {
     public ResponseEntity<?> getPlans(@PathVariable("user-id") int userId) {
         try {
             return ResponseEntity.ok(accountService.getPlans(userId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving plans");
+        } catch (NotFoundException e) {
+            logger.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
@@ -106,8 +109,9 @@ public class UserAccountController {
     public ResponseEntity<?> createPost(@PathVariable("user-id") int userId, @RequestBody Post post) {
         try {
             return ResponseEntity.ok(accountService.createPost(userId, post));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating post");
+        } catch (NotFoundException e) {
+            logger.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 }

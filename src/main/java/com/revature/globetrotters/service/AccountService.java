@@ -45,15 +45,18 @@ public class AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     public UserAccount authenticate(String username, String password) throws NotFoundException, BadRequestException {
-        if (username == null || username.trim().isEmpty() ||
-                password == null || password.trim().isEmpty()) {
+        logger.info("CREDENTIALS CHECK");
+        if (StringUtil.isNullOrEmpty(username.trim()) ||
+                StringUtil.isNullOrEmpty(password.trim())) {
             throw new IllegalArgumentException("Username and password are required.");
         }
+        logger.info("CREDENTIALS NOT NULL OR EMPTY");
 
         Optional<UserAccount> account = userAccountRepository.findByUsername(username);
         if (account.isEmpty()) {
-            throw new NotFoundException(String.format("User with ID %d not found.", username));
+            throw new NotFoundException(String.format("User with ID %s not found.", username));
         }
+        logger.info("ACCOUNT FOUND WITH USERNAME {}: {}", username, account.get());
 
         if (!passwordEncoder.matches(password, account.get().getPassword())) {
             throw new BadRequestException("Invalid login credentials.");
@@ -82,33 +85,39 @@ public class AccountService {
         return userAccountRepository.save(account);
     }
 
-    public Optional<UserAccount> getUser(int userId) {
-        if (!userAccountRepository.existsById(userId))
-            throw new IllegalArgumentException("User ID does not exist.");
-        return userAccountRepository.findById(userId);
+    public UserAccount getUser(int userId) throws NotFoundException {
+        return userAccountRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User ID does not exist."));
     }
 
-    public List<Follow> getFollowers(int userId) {
-        if (!userAccountRepository.existsById(userId))
-            throw new IllegalArgumentException("User ID does not exist.");
+    public List<Follow> findListOfUsersFollowing(int userId) throws NotFoundException {
+        if (!userAccountRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
         return followRepository.findByFollowing(userId);
     }
 
-    public List<Follow> getFollowing(int userId) {
-        if (!userAccountRepository.existsById(userId))
-            throw new IllegalArgumentException("User ID does not exist.");
+    public List<Follow> findListOfUsersFollowed(int userId) throws NotFoundException {
+        if (!userAccountRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
         return followRepository.findByFollower(userId);
     }
 
 
     public void followUser(int followerId, int followingId) throws NotFoundException, BadRequestException {
-        if (!userProfileRepository.existsById(followerId) || !userProfileRepository.existsById(followingId)) {
-            throw new NotFoundException("User(s) not found.");
+        if (!userAccountRepository.existsById(followerId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", followerId));
+        }
+
+        if (!userAccountRepository.existsById(followingId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", followerId));
         }
 
         if (followRepository.existsById(new Follow.FollowId(followerId, followingId)) ||
                 followRequestRepository.existsById(new FollowRequest.FollowRequestId(followerId, followingId))) {
-            throw new BadRequestException("Follow request already exists.");
+            throw new BadRequestException(String.format("User with ID %d is already following or requested to " +
+                    "follow user with id %d.", followingId, followingId));
         }
 
         UserProfile accountToFollow = userProfileRepository.findById(followingId).get();
@@ -119,27 +128,29 @@ public class AccountService {
         }
     }
 
-    public void unfollowUser(int followerId, int followingId) throws BadRequestException {
+    public void unfollowUser(int followerId, int followingId) {
         Follow followToDelete = new Follow(followerId, followingId);
         if (followRepository.existsById(followToDelete.getId())) {
             followRepository.delete(followToDelete);
-            return;
         }
 
         FollowRequest followRequestToDelete = new FollowRequest(followerId, followingId);
         if (followRequestRepository.existsById(followRequestToDelete.getId())) {
             followRequestRepository.delete(followRequestToDelete);
-        } else {
-            throw new BadRequestException("Not following or requested to follow.");
         }
     }
 
-    public List<TravelPlan> getPlans(int userId) {
-        if (userId <= 0) throw new IllegalArgumentException("User ID must be greater than zero.");
+    public List<TravelPlan> getPlans(int userId) throws NotFoundException {
+        if (!userAccountRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
         return planRepository.getTravelPlansByAccountId(userId);
     }
 
-    public Post createPost(int userId, Post post) {
+    public Post createPost(int userId, Post post) throws NotFoundException {
+        if (!userAccountRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
         return postRepository.save(post); // Assuming the createPost method should save the post
     }
 }

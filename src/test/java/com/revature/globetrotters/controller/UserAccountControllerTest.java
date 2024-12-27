@@ -1,7 +1,6 @@
 package com.revature.globetrotters.controller;
 
 import java.sql.Date;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -104,7 +103,7 @@ public class UserAccountControllerTest {
         account.setId(1);
         account.setUsername("john_doe");
 
-        when(accountService.getUser(1)).thenReturn(Optional.of(account));
+        when(accountService.getUser(1)).thenReturn(account);
 
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
@@ -115,7 +114,7 @@ public class UserAccountControllerTest {
 
     @Test
     public void testGetUser_UserDoesNotExist() throws Exception {
-        when(accountService.getUser(999)).thenReturn(Optional.empty());
+        when(accountService.getUser(999)).thenReturn(null);
 
         mockMvc.perform(get("/users/999"))
                 .andExpect(status().isNotFound())
@@ -129,7 +128,7 @@ public class UserAccountControllerTest {
         mockMvc.perform(get("/users/1/followers"))
                 .andExpect(status().isOk());
 
-        verify(accountService, times(1)).getFollowers(1);
+        verify(accountService, times(1)).findListOfUsersFollowing(1);
     }
 
     @Test
@@ -137,7 +136,7 @@ public class UserAccountControllerTest {
         mockMvc.perform(get("/users/1/following"))
                 .andExpect(status().isOk());
 
-        verify(accountService, times(1)).getFollowing(1);
+        verify(accountService, times(1)).findListOfUsersFollowed(1);
     }
 
     @Test

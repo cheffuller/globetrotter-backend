@@ -140,7 +140,7 @@ public class UserAccountServiceTest {
     }
 
     @Test
-    public void testGetFollowersSuccess() {
+    public void testFindListOfUsersFollowingSuccess() throws NotFoundException {
         int userId = 1;
         List<Follow> followers = Arrays.asList(new Follow(2, userId), new Follow(3, userId));
         
@@ -148,13 +148,13 @@ public class UserAccountServiceTest {
         when(userAccountRepository.existsById(userId)).thenReturn(true);
         when(followRepository.findByFollowing(userId)).thenReturn(followers);
     
-        List<Follow> result = accountService.getFollowers(userId);
+        List<Follow> result = accountService.findListOfUsersFollowing(userId);
         assertEquals(followers, result);
         verify(userAccountRepository, times(1)).existsById(userId);
     }
     
     @Test
-    public void testGetFollowersNonExistentUserId() {
+    public void testFindListOfUsersFollowingNonExistentUserId() {
         int userId = 1;
         
         // Mock non-existence of the user
@@ -162,14 +162,14 @@ public class UserAccountServiceTest {
     
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class, 
-            () -> accountService.getFollowers(userId)
+            () -> accountService.findListOfUsersFollowing(userId)
         );
         assertEquals("User ID does not exist.", exception.getMessage());
         verify(userAccountRepository, times(1)).existsById(userId);
     }
     
     @Test
-    public void testGetFollowingSuccess() {
+    public void testGetFollowingSuccess() throws NotFoundException {
         int userId = 1;
         List<Follow> following = Arrays.asList(new Follow(userId, 2), new Follow(userId, 3));
         
@@ -177,7 +177,7 @@ public class UserAccountServiceTest {
         when(userAccountRepository.existsById(userId)).thenReturn(true);
         when(followRepository.findByFollower(userId)).thenReturn(following);
     
-        List<Follow> result = accountService.getFollowing(userId);
+        List<Follow> result = accountService.findListOfUsersFollowed(userId);
         assertEquals(following, result);
         verify(userAccountRepository, times(1)).existsById(userId);
     }
@@ -191,7 +191,7 @@ public class UserAccountServiceTest {
     
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class, 
-            () -> accountService.getFollowing(userId)
+            () -> accountService.findListOfUsersFollowed(userId)
         );
         assertEquals("User ID does not exist.", exception.getMessage());
         verify(userAccountRepository, times(1)).existsById(userId);
@@ -277,7 +277,7 @@ public class UserAccountServiceTest {
         Follow follow = new Follow(followerId, followingId);
         FollowRequest followRequest = new FollowRequest(followerId, followingId);
 
-        when(followRepository.existsById(follow.getId())).thenReturn(false);
+        when(followRepository.existsById(follow.getId())).thenThrow(new NotFoundException("User does not exist"));
         when(followRequestRepository.existsById(followRequest.getId())).thenReturn(true);
 
         accountService.unfollowUser(followerId, followingId);
