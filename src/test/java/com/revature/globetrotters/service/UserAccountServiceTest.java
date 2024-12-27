@@ -2,20 +2,30 @@ package com.revature.globetrotters.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
 import com.revature.globetrotters.entity.Follow;
+import com.revature.globetrotters.entity.FollowRequest;
 import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.entity.UserProfile;
+import com.revature.globetrotters.exception.BadRequestException;
+import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.FollowRepository;
+import com.revature.globetrotters.repository.FollowRequestRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
+import com.revature.globetrotters.repository.UserProfileRepository;
 
 
 
@@ -28,7 +38,13 @@ public class UserAccountServiceTest {
     private AccountService accountService;
 
     @Mock
+    private UserProfileRepository userProfileRepository;
+
+    @Mock
     private FollowRepository followRepository;
+
+    @Mock
+    private FollowRequestRepository followRequestRepository;
 
     @BeforeEach
     public void setUp() {
@@ -155,4 +171,50 @@ public class UserAccountServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.getFollowing(0));
         assertEquals("User ID must be greater than zero.", exception.getMessage());
     }
+
+        @Test
+    public void testFollowUser_ValidRequest() throws NotFoundException, BadRequestException {
+        int followerId = 1;
+        int followingId = 2;
+
+        UserProfile userProfile = new UserProfile();
+        userProfile.setPrivate(false);
+
+        when(userProfileRepository.existsById(followerId)).thenReturn(true);
+        when(userProfileRepository.existsById(followingId)).thenReturn(true);
+        when(userProfileRepository.findById(followingId)).thenReturn(Optional.of(userProfile));
+        when(followRepository.existsById(any(Follow.FollowId.class))).thenReturn(false);
+        when(followRequestRepository.existsById(any(FollowRequest.FollowRequestId.class))).thenReturn(false);
+
+        accountService.followUser(followerId, followingId);
+
+        verify(followRepository, times(1)).save(any(Follow.class));
+    }
+
+    @Test
+    public void testFollowUser_UserNotFound() {
+        int followerId = 1;
+        int followingId = 2;
+
+        when(userProfileRepository.existsById(followerId)).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () -> {
+            accountService.followUser(followerId, followingId);
+        });
+    }
+
+    @Test
+    public void testFollowUser_FollowRequestAlreadyExists() {
+        int followerId = 1;
+        int followingId = 2;
+
+        when(userProfileRepository.existsById(followerId)).thenReturn(true);
+        when(userProfileRepository.existsById(followingId)).thenReturn(true);
+        when(followRepository.existsById(any(Follow.FollowId.class))).thenReturn(true);
+
+        assertThrows(BadRequestException.class, () -> {
+            accountService.followUser(followerId, followingId);
+        });
+    }
+    
 }
