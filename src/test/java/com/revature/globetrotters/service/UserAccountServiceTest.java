@@ -216,5 +216,47 @@ public class UserAccountServiceTest {
             accountService.followUser(followerId, followingId);
         });
     }
+
+    @Test
+    public void testUnfollowUser_Success() throws BadRequestException {
+        int followerId = 1;
+        int followingId = 2;
+        Follow follow = new Follow(followerId, followingId);
+
+        when(followRepository.existsById(follow.getId())).thenReturn(true);
+
+        accountService.unfollowUser(followerId, followingId);
+
+        verify(followRepository, times(1)).delete(follow);
+    }
+
+    @Test
+    public void testUnfollowUser_FollowDoesNotExist() {
+        int followerId = 1;
+        int followingId = 2;
+        Follow follow = new Follow(followerId, followingId);
+
+        when(followRepository.existsById(follow.getId())).thenReturn(false);
+        when(followRequestRepository.existsById(new FollowRequest.FollowRequestId(followerId, followingId))).thenReturn(false);
+
+        assertThrows(BadRequestException.class, () -> {
+            accountService.unfollowUser(followerId, followingId);
+        });
+    }
+
+    @Test
+    public void testUnfollowUser_FollowRequestExists() throws BadRequestException {
+        int followerId = 1;
+        int followingId = 2;
+        Follow follow = new Follow(followerId, followingId);
+        FollowRequest followRequest = new FollowRequest(followerId, followingId);
+
+        when(followRepository.existsById(follow.getId())).thenReturn(false);
+        when(followRequestRepository.existsById(followRequest.getId())).thenReturn(true);
+
+        accountService.unfollowUser(followerId, followingId);
+
+        verify(followRequestRepository, times(1)).delete(followRequest);
+    }
     
 }
