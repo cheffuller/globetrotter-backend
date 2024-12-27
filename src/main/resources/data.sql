@@ -1,16 +1,21 @@
 use revature;
 
+-- unhashed password is 'password'
 INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, username)
-VALUES (1, '1234', 'New York', 'United States', 'test@gmail.com', 'John', 'Doe', 'password', 'john_doe');
+VALUES (1, '1234', 'New York', 'United States', 'test@gmail.com', 'John', 'Doe',
+    '$2a$10$seol2uAfLTyKI/gYKbL7G.XOAuOzZ2EAseMrgyI21Z9K9l9bhG.GO', 'john_doe');
 
 INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, username)
-VALUES (2, '567', 'Los Angeles', 'United States', 'example@gmail.com', 'Jane', 'Doe', 'password', 'jane_doe');
+VALUES (2, '567', 'Los Angeles', 'United States', 'example@gmail.com', 'Jane', 'Doe',
+    '$2a$10$seol2uAfLTyKI/gYKbL7G.XOAuOzZ2EAseMrgyI21Z9K9l9bhG.GO', 'jane_doe');
 
 INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, username)
-VALUES (3, '910', 'Paris', 'France', 'france@gmail.com', 'Clark', 'Kent', 'password', 'clark_kent');
+VALUES (3, '910', 'Paris', 'France', 'france@gmail.com', 'Clark', 'Kent',
+    '$2a$10$seol2uAfLTyKI/gYKbL7G.XOAuOzZ2EAseMrgyI21Z9K9l9bhG.GO', 'clark_kent');
 
 INSERT INTO user_account (id, address, city, country, email, first_name, last_name, password, username)
-VALUES (4, '1112', 'London', 'United Kingdom', 'evil@gmail.com', 'Lex', 'Luthor', 'password', 'lex_luthor');
+VALUES (4, '1112', 'London', 'United Kingdom', 'evil@gmail.com', 'Lex', 'Luthor',
+    '$2a$10$seol2uAfLTyKI/gYKbL7G.XOAuOzZ2EAseMrgyI21Z9K9l9bhG.GO', 'lex_luthor');
 
 INSERT INTO user_profile (account_id, bio, display_name, is_private)
 VALUES
@@ -22,8 +27,10 @@ VALUES
 INSERT INTO travel_plan (id, account_id, is_favorited, is_published)
 VALUES (1, 1, false, false);
 
+-- unhashed password is 'password1'
 INSERT INTO moderator_account (id, email, first_name, last_name, password, username)
-VALUES (10, 'admin@gmail.com', 'Barry', 'Allen', 'password1', 'admin');
+VALUES (10, 'admin@gmail.com', 'Barry', 'Allen',
+    '$2a$10$E5DubIl00w/kunTkO4.qp.fjOc4RKjDUJS9h78Hj1bBKGemSgz7Zu', 'admin');
 
 INSERT INTO post (id, created_at, travel_plan)
 VALUES (1, '2019-01-01', 1);
