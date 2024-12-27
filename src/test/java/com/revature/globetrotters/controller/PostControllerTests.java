@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
+import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.util.DateArgumentConverter;
 
 public class PostControllerTests {
@@ -47,10 +48,32 @@ public class PostControllerTests {
 
         @ParameterizedTest
         @CsvSource({
+                        "1, 1, '2019-01-01', 1"
+        })
+        public void getAllPostsTest(Integer userId, Integer postId, @ConvertWith(DateArgumentConverter.class) Date date,
+                        Integer travelPlanId) throws IOException, InterruptedException {
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/users/" + userId + "/posts"))
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
+
+                Post post = new Post(postId, date, travelPlanId);
+                List<Post> expectedPosts = new ArrayList<>();
+                expectedPosts.add(post);
+
+                List<Post> actualPosts = objectMapper.readValue(response.body(), new TypeReference<>() {
+                });
+                Assertions.assertEquals(expectedPosts, actualPosts);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
                         "'2020-01-01', 1"
         })
         public void postPostTest(@ConvertWith(DateArgumentConverter.class) Date date, Integer travelPlanId)
-                        throws IOException, InterruptedException, Exception {
+                        throws IOException, InterruptedException {
                 Post newPost = new Post();
                 newPost.setPostedDate(date);
                 newPost.setTravelPlanId(travelPlanId);
@@ -73,11 +96,13 @@ public class PostControllerTests {
                         "1, '2019-01-01', 1"
         })
         public void getPostByIDTest(Integer postId, @ConvertWith(DateArgumentConverter.class) Date date,
-                        Integer travelPlanId) throws IOException, InterruptedException, Exception {
+                        Integer travelPlanId) throws IOException, InterruptedException {
                 HttpRequest request = HttpRequest.newBuilder()
                                 .uri(URI.create("http://localhost:8080/posts/1"))
                                 .build();
                 HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
 
                 Post expectedPost = new Post(postId, date, travelPlanId);
                 Post actualPost = objectMapper.readValue(response.body(), Post.class);
@@ -88,15 +113,89 @@ public class PostControllerTests {
         @CsvSource({
                         "1"
         })
-        public void getPostLikesTest(Integer postId) throws IOException, InterruptedException, Exception {
+        public void deletePostSuccesfulTest(Integer postId) throws IOException, InterruptedException {
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/posts/" + postId))
+                                .DELETE()
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                        "12345"
+        })
+        public void deletePostNotFoundTest(Integer postId) throws IOException, InterruptedException {
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/posts/" + postId))
+                                .DELETE()
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(404, status);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                        "1"
+        })
+        public void getNumberOfLikesOnPostByIdTest(Integer postId) throws IOException, InterruptedException {
                 HttpRequest request = HttpRequest.newBuilder()
                                 .uri(URI.create("http://localhost:8080/posts/" + postId + "/likes"))
                                 .build();
                 HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
 
                 Integer expectedLikes = 1;
                 Integer actualLikes = objectMapper.readValue(response.body(), Integer.class);
                 Assertions.assertEquals(expectedLikes, actualLikes);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                        "1, '2019-01-01', 1, 'content', 3"
+        })
+        public void getCommentsByPostIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
+                        Integer postId, String content, Integer userId) throws IOException, InterruptedException {
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/posts/" + postId + "/comments"))
+                                .GET()
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
+
+                Comment comment = new Comment(commentId, date, postId, content, userId);
+                List<Comment> expectedComments = new ArrayList<>();
+                expectedComments.add(comment);
+
+                List<Comment> actualComments = objectMapper.readValue(response.body(), new TypeReference<>() {
+                });
+                Assertions.assertEquals(expectedComments, actualComments);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                        "'2020-01-01', 1, 'content', 3"
+        })
+        public void postCommentTest(@ConvertWith(DateArgumentConverter.class) Date date,
+                        Integer postId, String content, Integer userId) throws IOException, InterruptedException {
+                Comment expectedComment = new Comment(date, postId, content, userId);
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/comments"))
+                                .header("Content-Type", "application/json")
+                                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(expectedComment)))
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
+
+                Comment actualComment = objectMapper.readValue(response.body(), Comment.class);
+                expectedComment.setId(actualComment.getId());;
+                Assertions.assertEquals(expectedComment, actualComment);
         }
 
         @ParameterizedTest
@@ -121,9 +220,9 @@ public class PostControllerTests {
         @CsvSource({
                         "1"
         })
-        public void deletePostSuccesfulTest(Integer postId) throws IOException, InterruptedException, Exception {
+        public void deleteCommentTest(Integer commentId) throws IOException, InterruptedException {
                 HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create("http://localhost:8080/posts/" + postId))
+                                .uri(URI.create("http://localhost:8080/comments/" + commentId))
                                 .DELETE()
                                 .build();
                 HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -133,37 +232,86 @@ public class PostControllerTests {
 
         @ParameterizedTest
         @CsvSource({
-                        "12345"
+                        "1"
         })
-        public void deletePostNotFoundTest(Integer postId) throws IOException, InterruptedException, Exception {
+        public void getNumberOfLikesOnCommenttByIdTest(Integer commentId) throws IOException, InterruptedException {
                 HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create("http://localhost:8080/posts/" + postId))
-                                .DELETE()
-                                .build();
-                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-                int status = response.statusCode();
-                Assertions.assertEquals(404, status);
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-                "1, '2019-01-01', 1, 'content', 3"
-        })
-        public void getCommentsByPostIdTest (Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
-        Integer postId, String content, Integer userId) throws IOException, InterruptedException, Exception {
-                HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create("http://localhost:8080/posts/" + postId + "/comments"))
-                                .GET()
+                                .uri(URI.create("http://localhost:8080/comments/" + commentId + "/likes"))
                                 .build();
                 HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
                 int status = response.statusCode();
                 Assertions.assertEquals(200, status);
 
-                Comment comment = new Comment(commentId, date, postId, content, userId);
-                List<Comment> expectedComments = new ArrayList<>();
-                expectedComments.add(comment);
+                Integer expectedLikes = 1;
+                Integer actualLikes = objectMapper.readValue(response.body(), Integer.class);
+                Assertions.assertEquals(expectedLikes, actualLikes);
+        }
 
-                List<Comment> actualComments = objectMapper.readValue(response.body(), new TypeReference<>() {});
-                Assertions.assertEquals(expectedComments, actualComments);
+        @ParameterizedTest
+        @CsvSource({
+                        "1, 2"
+        })
+        public void likeCommentTest(Integer commentId, Integer userId) throws IOException, InterruptedException {
+                UserAccount userAccount = new UserAccount();
+                userAccount.setId(userId);
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/comments/" + commentId + "/likes"))
+                                .header("Content-Type", "application/json")
+                                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                        "1, 3"
+        })
+        public void unlikeCommentTest(Integer commentId, Integer userId) throws IOException, InterruptedException {
+                UserAccount userAccount = new UserAccount();
+                userAccount.setId(userId);
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/comments/" + commentId + "/likes"))
+                                .header("Content-Type", "application/json")
+                                .method("DELETE", HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                        "1, 2"
+        })
+        public void likePostTest(Integer postId, Integer userId) throws IOException, InterruptedException {
+                UserAccount userAccount = new UserAccount();
+                userAccount.setId(userId);
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/posts/" + postId + "/likes"))
+                                .header("Content-Type", "application/json")
+                                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                        "1, 3"
+        })
+        public void unlikePostTest(Integer postId, Integer userId) throws IOException, InterruptedException {
+                UserAccount userAccount = new UserAccount();
+                userAccount.setId(userId);
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8080/posts/" + postId + "/likes"))
+                                .header("Content-Type", "application/json")
+                                .method("DELETE", HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
+                                .build();
+                HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int status = response.statusCode();
+                Assertions.assertEquals(200, status);
         }
 }
