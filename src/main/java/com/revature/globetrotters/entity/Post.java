@@ -10,6 +10,8 @@ import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "post")
 public class Post {
@@ -19,11 +21,17 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "created_at")
+    @JsonProperty("timestamp")
     private Date postedDate;
     @Column(name = "travel_plan")
     private int travelPlanId;
 
     public Post() {
+    }
+
+    public Post(Date postedDate, int travelPlanId) {
+        this.postedDate = postedDate;
+        this.travelPlanId = travelPlanId;
     }
 
     public Post(int id, Date postedDate, int travelPlanId) {
