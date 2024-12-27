@@ -50,8 +50,8 @@ public class PostControllerTests {
         @CsvSource({
                         "1, 1, '2019-01-01', 1"
         })
-        public void getAllPostsTest(Integer userId, Integer postId, @ConvertWith(DateArgumentConverter.class) Date date,
-                        Integer travelPlanId) throws IOException, InterruptedException {
+        public void getAllPostsByUserIdTest(Integer userId, Integer postId, @ConvertWith(DateArgumentConverter.class) Date date,
+                                            Integer travelPlanId) throws IOException, InterruptedException {
                 HttpRequest request = HttpRequest.newBuilder()
                                 .uri(URI.create("http://localhost:8080/users/" + userId + "/posts"))
                                 .build();

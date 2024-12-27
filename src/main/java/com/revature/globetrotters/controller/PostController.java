@@ -26,7 +26,7 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("users/{userId}/posts")
-    public ResponseEntity<List<Post>> getAllPosts(@PathVariable int userId) {
+    public ResponseEntity<List<Post>> getAllPostsByUserId(@PathVariable int userId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(postService.findPostsByUserId(userId));
         } catch (NotFoundException e) {

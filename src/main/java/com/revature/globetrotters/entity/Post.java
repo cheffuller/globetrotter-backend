@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 @Entity
 @Table(name = "post")
 public class Post {
