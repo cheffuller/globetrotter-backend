@@ -140,37 +140,64 @@ public class UserAccountServiceTest {
         assertEquals(null, result);
     }
 
-       @Test
+    @Test
     public void testGetFollowersSuccess() {
         int userId = 1;
         List<Follow> followers = Arrays.asList(new Follow(2, userId), new Follow(3, userId));
+        
+        // Mock the existence of the user and the follower list retrieval
+        when(userAccountRepository.existsById(userId)).thenReturn(true);
         when(followRepository.findByFollowing(userId)).thenReturn(followers);
-
+    
         List<Follow> result = accountService.getFollowers(userId);
         assertEquals(followers, result);
+        verify(userAccountRepository, times(1)).existsById(userId);
     }
-
+    
     @Test
-    public void testGetFollowersInvalidUserId() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.getFollowers(0));
-        assertEquals("User ID must be greater than zero.", exception.getMessage());
+    public void testGetFollowersNonExistentUserId() {
+        int userId = 1;
+        
+        // Mock non-existence of the user
+        when(userAccountRepository.existsById(userId)).thenReturn(false);
+    
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class, 
+            () -> accountService.getFollowers(userId)
+        );
+        assertEquals("User ID does not exist.", exception.getMessage());
+        verify(userAccountRepository, times(1)).existsById(userId);
     }
-
+    
     @Test
     public void testGetFollowingSuccess() {
         int userId = 1;
         List<Follow> following = Arrays.asList(new Follow(userId, 2), new Follow(userId, 3));
+        
+        // Mock the existence of the user and the following list retrieval
+        when(userAccountRepository.existsById(userId)).thenReturn(true);
         when(followRepository.findByFollower(userId)).thenReturn(following);
-
+    
         List<Follow> result = accountService.getFollowing(userId);
         assertEquals(following, result);
+        verify(userAccountRepository, times(1)).existsById(userId);
     }
-
+    
     @Test
-    public void testGetFollowingInvalidUserId() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.getFollowing(0));
-        assertEquals("User ID must be greater than zero.", exception.getMessage());
+    public void testGetFollowingNonExistentUserId() {
+        int userId = 1;
+        
+        // Mock non-existence of the user
+        when(userAccountRepository.existsById(userId)).thenReturn(false);
+    
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class, 
+            () -> accountService.getFollowing(userId)
+        );
+        assertEquals("User ID does not exist.", exception.getMessage());
+        verify(userAccountRepository, times(1)).existsById(userId);
     }
+    
 
         @Test
     public void testFollowUser_ValidRequest() throws NotFoundException, BadRequestException {

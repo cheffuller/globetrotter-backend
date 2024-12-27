@@ -73,19 +73,23 @@ public class AccountService {
     }
 
     public Optional<UserAccount> getUser(int userId) {
-        if (userId <= 0) throw new IllegalArgumentException("User ID must be greater than zero.");
+        if (!userAccountRepository.existsById(userId)) 
+            throw new IllegalArgumentException("User ID does not exist.");
         return userAccountRepository.findById(userId);
     }
-
+    
     public List<Follow> getFollowers(int userId) {
-        if (userId <= 0) throw new IllegalArgumentException("User ID must be greater than zero.");
+        if (!userAccountRepository.existsById(userId)) 
+            throw new IllegalArgumentException("User ID does not exist.");
         return followRepository.findByFollowing(userId);
     }
-
+    
     public List<Follow> getFollowing(int userId) {
-        if (userId <= 0) throw new IllegalArgumentException("User ID must be greater than zero.");
+        if (!userAccountRepository.existsById(userId)) 
+            throw new IllegalArgumentException("User ID does not exist.");
         return followRepository.findByFollower(userId);
     }
+    
 
     public void followUser(int followerId, int followingId) throws NotFoundException, BadRequestException {
         if (!userProfileRepository.existsById(followerId) || !userProfileRepository.existsById(followingId)) {
