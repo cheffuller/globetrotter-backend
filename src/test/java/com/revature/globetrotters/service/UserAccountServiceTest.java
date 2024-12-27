@@ -96,25 +96,25 @@ public class UserAccountServiceTest {
     @Test
     public void testAuthenticateNullUsername() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate(null, "password"));
-        assertEquals("Username and password are required.", exception.getMessage());
+        assertEquals("Username is required.", exception.getMessage());
     }
 
     @Test
     public void testAuthenticateEmptyUsername() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate("", "password"));
-        assertEquals("Username and password are required.", exception.getMessage());
+        assertEquals("Username is required.", exception.getMessage());
     }
 
     @Test
     public void testAuthenticateNullPassword() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate("testuser", null));
-        assertEquals("Username and password are required.", exception.getMessage());
+        assertEquals("Password is required.", exception.getMessage());
     }
 
     @Test
     public void testAuthenticateEmptyPassword() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate("testuser", ""));
-        assertEquals("Username and password are required.", exception.getMessage());
+        assertEquals("Password is required.", exception.getMessage());
     }
 
     @Test
