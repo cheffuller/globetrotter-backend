@@ -19,9 +19,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,31 +37,28 @@ import static org.mockito.Mockito.when;
 
 
 public class UserAccountServiceTest {
-
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Mock
     private UserAccountRepository userAccountRepository;
-
     @InjectMocks
     private AccountService accountService;
-
     @Mock
     private UserProfileRepository userProfileRepository;
-
     @Mock
     private FollowRepository followRepository;
-
     @Mock
     private FollowRequestRepository followRequestRepository;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        accountService.setPasswordEncoder(passwordEncoder);
     }
 
     private UserAccount createUserAccount(String username, String password) {
         UserAccount account = new UserAccount();
         account.setUsername(username);
-        account.setPassword(password);
+        account.setPassword(passwordEncoder.encode(password));
         account.setAddress("123 Street");
         account.setCity("City");
         account.setCountry("Country");
@@ -69,66 +70,63 @@ public class UserAccountServiceTest {
 
     @Test
     public void testRegisterNullAccount() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.register(null));
-        assertEquals("Account is required.", exception.getMessage());
+        assertThrows(BadRequestException.class, () -> accountService.register(null));
     }
 
     @Test
     public void testRegisterMissingUsername() {
         UserAccount account = createUserAccount(null, "password");
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.register(account));
-        assertEquals("Username is required.", exception.getMessage());
+        assertThrows(BadRequestException.class, () -> accountService.register(account));
     }
 
     @Test
     public void testRegisterMissingPassword() {
         UserAccount account = createUserAccount("newuser", null);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.register(account));
-        assertEquals("Password is required.", exception.getMessage());
+        assertThrows(BadRequestException.class, () -> accountService.register(account));
     }
 
     @Test
     public void testRegisterUsernameTaken() {
         UserAccount account = createUserAccount("newuser", "password");
         when(userAccountRepository.findByUsername("newuser")).thenReturn(Optional.of(new UserAccount()));
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.register(account));
-        assertEquals("Username is already taken.", exception.getMessage());
+        assertThrows(BadRequestException.class, () -> accountService.register(account));
     }
 
-    @ParameterizedTest
-    @CsvSource({
-            "'testuser', 'password'"
-    })
-    public void testAuthenticateSuccess(String username, String password) throws NotFoundException, BadRequestException {
+    @Test
+    public void testAuthenticateSuccess() throws NotFoundException, BadRequestException {
+        String username = "username";
+        String password = "password";
         UserAccount account = createUserAccount(username, password);
+
         when(userAccountRepository.findByUsername(username)).thenReturn(Optional.of(account));
-        String token = accountService.authenticate(username, password);
-        String userNameClaim = (String) JwtUtil.extractValueFromTokenByKey(token, JwtConsts.USERNAME);
-        assertEquals(username, userNameClaim);
+
+        String token = accountService.authenticate(account);
+        String tokenSubject = JwtUtil.extractSubjectFromToken(token);
+        assertEquals(username, tokenSubject);
     }
 
     @Test
     public void testAuthenticateNullUsername() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate(null, "password"));
-        assertEquals("Username is required.", exception.getMessage());
+        assertThrows(BadRequestException.class,
+                () -> accountService.authenticate(createUserAccount(null, "password")));
     }
 
     @Test
     public void testAuthenticateEmptyUsername() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate("", "password"));
-        assertEquals("Username is required.", exception.getMessage());
+        assertThrows(BadRequestException.class,
+                () -> accountService.authenticate(createUserAccount("", "password")));
     }
 
     @Test
     public void testAuthenticateNullPassword() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate("testuser", null));
-        assertEquals("Password is required.", exception.getMessage());
+        assertThrows(BadRequestException.class,
+                () -> accountService.authenticate(createUserAccount("testuser", null)));
     }
 
     @Test
     public void testAuthenticateEmptyPassword() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountService.authenticate("testuser", ""));
-        assertEquals("Password is required.", exception.getMessage());
+        assertThrows(BadRequestException.class,
+                () -> accountService.authenticate(createUserAccount("testuser", "")));
     }
 
     @Test

@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -45,22 +44,24 @@ public class AccountService {
     private UserProfileRepository userProfileRepository;
     private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
-    public String authenticate(String username, String password) throws NotFoundException, BadRequestException {
-        if (StringUtil.isNullOrEmpty(username.trim()) ||
-                StringUtil.isNullOrEmpty(password.trim())) {
-            throw new IllegalArgumentException("Username and password are required.");
+    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public String authenticate(UserAccount account) throws NotFoundException, BadRequestException {
+        if (!account.isPasswordValid() || !account.isUsernameValid()) {
+            throw new BadRequestException("Username and password are required.");
         }
 
-        Optional<UserAccount> account = userAccountRepository.findByUsername(username);
-        if (account.isEmpty()) {
-            throw new NotFoundException(String.format("User with ID %s not found.", username));
+        if (userAccountRepository.findByUsername(account.getUsername()).isEmpty()) {
+            throw new NotFoundException(String.format("User with username %s not found.", account.getUsername()));
         }
 
-        if (!passwordEncoder.matches(password, account.get().getPassword())) {
+        if (!passwordEncoder.matches(account.getPassword(), account.getPassword())) {
             throw new BadRequestException("Invalid login credentials.");
         }
 
-        return JwtUtil.generateTokenFromUserName(username, new HashMap<>());
+        return JwtUtil.generateTokenFromUserName(account.getUsername(), new HashMap<>());
     }
 
     public void register(UserAccount account) throws BadRequestException {

@@ -30,7 +30,7 @@ public class UserAccountController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserAccount account) {
         try {
-            String token = accountService.authenticate(account.getUsername(), account.getPassword());
+            String token = accountService.authenticate(account);
             return ResponseEntity.status(HttpStatus.OK).body(token);
         } catch (IllegalArgumentException | BadRequestException e) {
             logger.info(e.getMessage());
