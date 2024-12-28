@@ -15,12 +15,14 @@ import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import com.revature.globetrotters.repository.UserProfileRepository;
+import com.revature.globetrotters.security.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +46,7 @@ public class AccountService {
     private UserProfileRepository userProfileRepository;
     private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
-    public UserAccount authenticate(String username, String password) throws NotFoundException, BadRequestException {
+    public String authenticate(String username, String password) throws NotFoundException, BadRequestException {
         if (StringUtil.isNullOrEmpty(username.trim()) ||
                 StringUtil.isNullOrEmpty(password.trim())) {
             throw new IllegalArgumentException("Username and password are required.");
@@ -59,10 +61,13 @@ public class AccountService {
             throw new BadRequestException("Invalid login credentials.");
         }
 
-        return account.get();
+        HashMap<String, String> tokenClaims = new HashMap<>();
+        tokenClaims.put("username", username);
+
+        return JwtUtil.generateToken(tokenClaims);
     }
 
-    public UserAccount register(UserAccount account) throws BadRequestException {
+    public void register(UserAccount account) throws BadRequestException {
         if (account == null ||
                 StringUtil.isNullOrEmpty(account.getUsername()) ||
                 userAccountRepository.findByUsername(account.getUsername()).isPresent() ||
@@ -79,7 +84,7 @@ public class AccountService {
         }
 
         account.setPassword(passwordEncoder.encode(account.getPassword()));
-        return userAccountRepository.save(account);
+        userAccountRepository.save(account);
     }
 
     public UserAccount getUser(int userId) throws NotFoundException {

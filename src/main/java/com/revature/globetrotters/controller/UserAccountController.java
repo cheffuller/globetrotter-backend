@@ -28,10 +28,10 @@ public class UserAccountController {
     private static final Logger logger = LoggerFactory.getLogger(UserAccountController.class);
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserAccount account) {
+    public ResponseEntity<String> login(@RequestBody UserAccount account) {
         try {
-            UserAccount authenticatedAccount = accountService.authenticate(account.getUsername(), account.getPassword());
-            return ResponseEntity.status(HttpStatus.OK).body(authenticatedAccount);
+            String token = accountService.authenticate(account.getUsername(), account.getPassword());
+            return ResponseEntity.status(HttpStatus.OK).body(token);
         } catch (IllegalArgumentException | BadRequestException e) {
             logger.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -42,10 +42,10 @@ public class UserAccountController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserAccount account) {
+    public ResponseEntity register(@RequestBody UserAccount account) {
         try {
-            UserAccount newAccount = accountService.register(account);
-            return ResponseEntity.ok(newAccount);
+            accountService.register(account);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (BadRequestException e) {
             logger.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

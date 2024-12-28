@@ -1,34 +1,40 @@
 package com.revature.globetrotters.security;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.Map;
 
+/*
+    Do not use '-' in any subject or claims.
+*/
 public class JwtUtil {
-    private static final String secretKey = "jwt-secret-key";
+    // Remove the secretKey in a prod environment and get it from an env file that isn't shared to GitHub
+    private static final String secretKey = "r3hoQxC0q99pZ1dC36g7Ja0X3DZr6RqYPOXaoqz3xkc";
     private static final int tokenLifespanInSeconds = 3600; // Remove if expiration is unnecessary
     private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
+    private static final String tokenSubject = "loginToken";
 
-    public static String generateToken(String username) {
-        logger.info("Jwt received username: {}", username);
+    public static String generateToken(Map<String, String> claims) {
+        logger.info("Jwt received claims: {}", claims);
 
         String token = Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + tokenLifespanInSeconds))
+                .subject(tokenSubject)
+                .claims(claims)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + tokenLifespanInSeconds))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
         logger.info("Jwt generated token: {}", token);
         return token;
     }
 
-    public static String extractUsername(String token) {
-        logger.info("Jwt received token: {}", token);
+    public static Object extractValueFromTokenByKey(String token, String key) {
+        logger.info("Jwt received token: {}.\nJwt received key: {}.", token, key);
 
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
@@ -36,7 +42,7 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
 
-        logger.info("Jwt extracted username: {}", claims.getSubject());
-        return claims.getSubject();
+        logger.info("Jwt extracted value: {}", claims.get(key));
+        return claims.get(key);
     }
 }
