@@ -29,7 +29,6 @@ import java.util.Optional;
 
 @Service
 public class AccountService {
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
@@ -61,10 +60,7 @@ public class AccountService {
             throw new BadRequestException("Invalid login credentials.");
         }
 
-        HashMap<String, String> tokenClaims = new HashMap<>();
-        tokenClaims.put("username", username);
-
-        return JwtUtil.generateToken(tokenClaims);
+        return JwtUtil.generateTokenFromUserName(username, new HashMap<>());
     }
 
     public void register(UserAccount account) throws BadRequestException {
