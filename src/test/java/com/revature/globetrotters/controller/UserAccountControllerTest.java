@@ -1,12 +1,10 @@
 package com.revature.globetrotters.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.service.AccountService;
-import org.apache.catalina.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.sql.Date;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,21 +50,21 @@ public class UserAccountControllerTest {
         objectMapper = new ObjectMapper();
     }
 
-    @Test
-    public void testLogin_ValidCredentials() throws Exception {
+    @ParameterizedTest
+    @CsvSource({
+            "'john_doe', 'password'"
+    })
+    public void testLogin_ValidCredentials(String username, String password) throws Exception {
         UserAccount account = new UserAccount();
-        account.setUsername("john_doe");
-        account.setPassword("password");
-
-        when(accountService.authenticate("john_doe", "password")).thenReturn(account);
+        account.setUsername(username);
+        account.setPassword(password);
 
         mockMvc.perform(post("/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(account)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("john_doe"));
+                .andExpect(status().isOk());
 
-        verify(accountService, times(1)).authenticate("john_doe", "password");
+        verify(accountService, times(1)).authenticate(username, password);
     }
 
     @Test
@@ -91,13 +90,11 @@ public class UserAccountControllerTest {
         account.setUsername("new_user");
         account.setPassword("new_password");
 
-        when(accountService.register(any(UserAccount.class))).thenReturn(account);
-
+        doNothing().when(accountService).register(any(UserAccount.class));
         mockMvc.perform(post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(account)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("new_user"));
+                .andExpect(status().isOk());
 
         verify(accountService, times(1)).register(any(UserAccount.class));
     }
