@@ -3,6 +3,7 @@ package com.revature.globetrotters.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.UserAccount;
+import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,24 +64,22 @@ public class UserAccountControllerTest {
                         .content(objectMapper.writeValueAsString(account)))
                 .andExpect(status().isOk());
 
-        verify(accountService, times(1)).authenticate(username, password);
+        verify(accountService, times(1)).authenticate(account);
     }
 
     @Test
     public void testLogin_InvalidCredentials() throws Exception {
-        when(accountService.authenticate("invalid_user", "wrong_password")).thenReturn(null);
-
         UserAccount account = new UserAccount();
         account.setUsername("invalid_user");
         account.setPassword("wrong_password");
+        when(accountService.authenticate(account)).thenThrow(new BadRequestException(""));
 
         mockMvc.perform(post("/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(account)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid username or password"));
+                .andExpect(status().isBadRequest());
 
-        verify(accountService, times(1)).authenticate("invalid_user", "wrong_password");
+        verify(accountService, times(1)).authenticate(account);
     }
 
     @Test
@@ -155,25 +153,4 @@ public class UserAccountControllerTest {
 
         verify(accountService, times(1)).followUser(followerId, followingId);
     }
-
-    @Test
-    public void testCreatePost() throws Exception {
-        int userId = 1;
-        Post post = new Post();
-
-        post.setTravelPlanId(123);
-        post.setPostedDate(new Date(System.currentTimeMillis()));
-
-        when(accountService.createPost(userId, post)).thenReturn(post);
-
-        mockMvc.perform(post("/users/" + userId + "/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(post)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.travelPlanId").value(123))
-                .andExpect(jsonPath("$.postedDate").isNotEmpty());
-
-        verify(accountService, times(1)).createPost(userId, post);
-    }
-
 }

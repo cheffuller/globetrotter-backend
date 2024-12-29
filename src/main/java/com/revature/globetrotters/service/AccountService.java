@@ -45,31 +45,35 @@ public class AccountService {
     private UserProfileRepository userProfileRepository;
     private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
-    public String authenticate(String username, String password) throws NotFoundException, BadRequestException {
-        if (StringUtil.isNullOrEmpty(username.trim()) ||
-                StringUtil.isNullOrEmpty(password.trim())) {
-            throw new IllegalArgumentException("Username and password are required.");
+    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public String authenticate(UserAccount account) throws NotFoundException, BadRequestException {
+        if (!account.isPasswordValid() || !account.isUsernameValid()) {
+            throw new BadRequestException("Username and password are required.");
         }
 
-        Optional<UserAccount> account = userAccountRepository.findByUsername(username);
-        if (account.isEmpty()) {
-            throw new NotFoundException(String.format("User with ID %s not found.", username));
+        Optional<UserAccount> foundAccount = userAccountRepository.findByUsername(account.getUsername());
+        if (foundAccount.isEmpty()) {
+            throw new NotFoundException(String.format("User with username %s not found.", account.getUsername()));
         }
 
-        if (!passwordEncoder.matches(password, account.get().getPassword())) {
-            throw new BadRequestException("Invalid login credentials.");
+        if (!passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword())) {
+            throw new BadRequestException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
+                    ".\nPassword: " + account.getPassword() + ".\nFound passwrd hash: " + foundAccount.get().getPassword());
         }
 
-        return JwtUtil.generateTokenFromUserName(username, new HashMap<>());
+        return JwtUtil.generateTokenFromUserName(account.getUsername(), new HashMap<>());
     }
 
     public void register(UserAccount account) throws BadRequestException {
         if (account == null ||
-                StringUtil.isNullOrEmpty(account.getUsername()) ||
+                !account.isUsernameValid() ||
                 userAccountRepository.findByUsername(account.getUsername()).isPresent() ||
                 StringUtil.isNullOrEmpty(account.getEmail()) ||
                 userAccountRepository.findByUsername(account.getEmail()).isPresent() ||
-                StringUtil.isNullOrEmpty(account.getPassword()) ||
+                !account.isPasswordValid() ||
                 StringUtil.isNullOrEmpty(account.getAddress()) ||
                 StringUtil.isNullOrEmpty(account.getCity()) ||
                 StringUtil.isNullOrEmpty(account.getCountry()) ||
