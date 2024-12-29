@@ -1,6 +1,5 @@
 package com.revature.globetrotters.service;
 
-import com.revature.globetrotters.consts.JwtConsts;
 import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.FollowRequest;
 import com.revature.globetrotters.entity.UserAccount;
@@ -14,18 +13,13 @@ import com.revature.globetrotters.repository.UserProfileRepository;
 import com.revature.globetrotters.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,6 +32,8 @@ import static org.mockito.Mockito.when;
 
 public class UserAccountServiceTest {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Mock
+    BCryptPasswordEncoder mockPasswordEncoder;
     @Mock
     private UserAccountRepository userAccountRepository;
     @InjectMocks
@@ -52,13 +48,12 @@ public class UserAccountServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        accountService.setPasswordEncoder(passwordEncoder);
     }
 
     private UserAccount createUserAccount(String username, String password) {
         UserAccount account = new UserAccount();
         account.setUsername(username);
-        account.setPassword(passwordEncoder.encode(password));
+        account.setPassword(password);
         account.setAddress("123 Street");
         account.setCity("City");
         account.setCountry("Country");
@@ -97,8 +92,11 @@ public class UserAccountServiceTest {
         String username = "username";
         String password = "password";
         UserAccount account = createUserAccount(username, password);
+        UserAccount foundAccount = createUserAccount(username, password);
+        foundAccount.setPassword(passwordEncoder.encode(password));
 
-        when(userAccountRepository.findByUsername(username)).thenReturn(Optional.of(account));
+        when(userAccountRepository.findByUsername(username)).thenReturn(Optional.of(foundAccount));
+        when(mockPasswordEncoder.matches(password, foundAccount.getPassword())).thenReturn(true);
 
         String token = accountService.authenticate(account);
         String tokenSubject = JwtUtil.extractSubjectFromToken(token);
@@ -150,11 +148,7 @@ public class UserAccountServiceTest {
         // Mock non-existence of the user
         when(userAccountRepository.existsById(userId)).thenReturn(false);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> accountService.findListOfUsersFollowing(userId)
-        );
-        assertEquals("User ID does not exist.", exception.getMessage());
+        assertThrows(NotFoundException.class, () -> accountService.findListOfUsersFollowing(userId));
         verify(userAccountRepository, times(1)).existsById(userId);
     }
 
@@ -176,14 +170,9 @@ public class UserAccountServiceTest {
     public void testGetFollowingNonExistentUserId() {
         int userId = 1;
 
-        // Mock non-existence of the user
         when(userAccountRepository.existsById(userId)).thenReturn(false);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> accountService.findListOfUsersFollowed(userId)
-        );
-        assertEquals("User ID does not exist.", exception.getMessage());
+        assertThrows(NotFoundException.class, () -> accountService.findListOfUsersFollowed(userId));
         verify(userAccountRepository, times(1)).existsById(userId);
     }
 
@@ -196,8 +185,8 @@ public class UserAccountServiceTest {
         UserProfile userProfile = new UserProfile();
         userProfile.setPrivate(false);
 
-        when(userProfileRepository.existsById(followerId)).thenReturn(true);
-        when(userProfileRepository.existsById(followingId)).thenReturn(true);
+        when(userAccountRepository.existsById(followerId)).thenReturn(true);
+        when(userAccountRepository.existsById(followingId)).thenReturn(true);
         when(userProfileRepository.findById(followingId)).thenReturn(Optional.of(userProfile));
         when(followRepository.existsById(any(Follow.FollowId.class))).thenReturn(false);
         when(followRequestRepository.existsById(any(FollowRequest.FollowRequestId.class))).thenReturn(false);
@@ -224,13 +213,11 @@ public class UserAccountServiceTest {
         int followerId = 1;
         int followingId = 2;
 
-        when(userProfileRepository.existsById(followerId)).thenReturn(true);
-        when(userProfileRepository.existsById(followingId)).thenReturn(true);
+        when(userAccountRepository.existsById(followerId)).thenReturn(true);
+        when(userAccountRepository.existsById(followingId)).thenReturn(true);
         when(followRepository.existsById(any(Follow.FollowId.class))).thenReturn(true);
 
-        assertThrows(BadRequestException.class, () -> {
-            accountService.followUser(followerId, followingId);
-        });
+        assertThrows(BadRequestException.class, () -> accountService.followUser(followerId, followingId));
     }
 
     @Test
@@ -267,7 +254,7 @@ public class UserAccountServiceTest {
         Follow follow = new Follow(followerId, followingId);
         FollowRequest followRequest = new FollowRequest(followerId, followingId);
 
-        when(followRepository.existsById(follow.getId())).thenThrow(new NotFoundException("User does not exist"));
+        when(followRepository.existsById(follow.getId())).thenReturn(false);
         when(followRequestRepository.existsById(followRequest.getId())).thenReturn(true);
 
         accountService.unfollowUser(followerId, followingId);

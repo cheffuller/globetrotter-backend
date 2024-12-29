@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -53,12 +54,14 @@ public class AccountService {
             throw new BadRequestException("Username and password are required.");
         }
 
-        if (userAccountRepository.findByUsername(account.getUsername()).isEmpty()) {
+        Optional<UserAccount> foundAccount = userAccountRepository.findByUsername(account.getUsername());
+        if (foundAccount.isEmpty()) {
             throw new NotFoundException(String.format("User with username %s not found.", account.getUsername()));
         }
 
-        if (!passwordEncoder.matches(account.getPassword(), account.getPassword())) {
-            throw new BadRequestException("Invalid login credentials.");
+        if (!passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword())) {
+            throw new BadRequestException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
+                    ".\nPassword: " + account.getPassword() + ".\nFound passwrd hash: " + foundAccount.get().getPassword());
         }
 
         return JwtUtil.generateTokenFromUserName(account.getUsername(), new HashMap<>());
@@ -66,11 +69,11 @@ public class AccountService {
 
     public void register(UserAccount account) throws BadRequestException {
         if (account == null ||
-                StringUtil.isNullOrEmpty(account.getUsername()) ||
+                !account.isUsernameValid() ||
                 userAccountRepository.findByUsername(account.getUsername()).isPresent() ||
                 StringUtil.isNullOrEmpty(account.getEmail()) ||
                 userAccountRepository.findByUsername(account.getEmail()).isPresent() ||
-                StringUtil.isNullOrEmpty(account.getPassword()) ||
+                !account.isPasswordValid() ||
                 StringUtil.isNullOrEmpty(account.getAddress()) ||
                 StringUtil.isNullOrEmpty(account.getCity()) ||
                 StringUtil.isNullOrEmpty(account.getCountry()) ||
