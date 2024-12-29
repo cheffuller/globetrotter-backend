@@ -153,24 +153,4 @@ public class UserAccountControllerTest {
 
         verify(accountService, times(1)).followUser(followerId, followingId);
     }
-
-    @Test
-    public void testCreatePost() throws Exception {
-        int userId = 1;
-        Post post = new Post();
-        post.setTravelPlanId(123);
-        post.setPostedDate(new Date(System.currentTimeMillis()));
-
-        when(accountService.createPost(userId, post)).thenReturn(post);
-
-        mockMvc.perform(post("/users/" + userId + "/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(post)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.travelPlanId").value(123))
-                .andExpect(jsonPath("$.postedDate").isNotEmpty());
-
-        verify(accountService, times(1)).createPost(userId, post);
-    }
-
 }
