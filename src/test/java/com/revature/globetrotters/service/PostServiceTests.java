@@ -1,11 +1,11 @@
 package com.revature.globetrotters.service;
+
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.exception.NotFoundException;
-
 import com.revature.globetrotters.exception.BadRequestException;
-
+import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.util.DateArgumentConverter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,14 +15,14 @@ import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.context.SpringBootTest;    
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-
-import com.revature.globetrotters.util.DateArgumentConverter;
-
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+
+import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
 
 @SpringBootTest
 public class PostServiceTests {
@@ -42,40 +42,29 @@ public class PostServiceTests {
         Thread.sleep(500);
         SpringApplication.exit(app);
     }
-    
+
     @Test
-    public void createPostTest() throws BadRequestException {
-        DateArgumentConverter converter = new DateArgumentConverter();
-
-        Post post = new Post(0, (Date) converter.convert("2020-01-01", null), 1);
-
-        Post expectedPost = new Post(
-            2,
-            (Date) converter.convert("2020-01-01", null),
-            1
-        );
-
+    public void createPostTest() throws BadRequestException, ParseException {
+        Post post = new Post(0, convertToDate("2020-01-01"), 1);
+        Post expectedPost = new Post(2, convertToDate("2020-01-01"), 1);
         Post actualPost = postService.createPost(post);
         Assertions.assertEquals(expectedPost, actualPost);
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "1, '2019-01-01', 1"
-    })
-    public void findPostsByUserIdTest(int id, @ConvertWith(DateArgumentConverter.class) Date date, Integer travelPlanId) throws NotFoundException {
-        List<Post> expectedPosts = List.of(new Post(id, date, travelPlanId));
+    @Test
+    public void findPostsByUserIdTest() throws NotFoundException, ParseException {
+        List<Post> expectedPosts = List.of(new Post(1, convertToDate("2019-01-01"), 1));
         List<Post> actualPosts = postService.findPostsByUserId(1);
         Assertions.assertEquals(expectedPosts, actualPosts);
     }
 
     @ParameterizedTest
     @CsvSource({
-        "1, '2019-01-01', 1"
+            "1, '2019-01-01', 1"
     })
     public void findPostByIdTest(int id, @ConvertWith(DateArgumentConverter.class) Date date, Integer travelPlanId) throws NotFoundException {
         Post expectedPost = new Post(id, date, travelPlanId);
-        
+
         Post actualPost = postService.findPostById(id);
         Assertions.assertEquals(expectedPost, actualPost);
     }
@@ -88,16 +77,16 @@ public class PostServiceTests {
 
     @ParameterizedTest
     @CsvSource({
-        "1, 3"
+            "1, 3"
     })
     public void getPostLikesTest(int postId, int userId) throws NotFoundException {
         int expectedLike = 1;
-        
+
         Integer actualLiked = postService.getNumberOfLikesOnPostById(postId);
 
         Assertions.assertEquals(expectedLike, actualLiked);
     }
-    
+
     @Test
     public void likePostTest() throws NotFoundException {
         postService.likePost(1, 1);
@@ -114,28 +103,26 @@ public class PostServiceTests {
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "1, '2019-01-01', 1, 'content', 3"
-    })
-    public void findCommentsByPostIdTest(Integer id, @ConvertWith(DateArgumentConverter.class) Date date, Integer postId, String content, Integer userId) throws NotFoundException {
-        List<Comment> expectedComments = List.of(new Comment(id, date, postId, content, userId));
+    @Test
+    public void findCommentsByPostIdTest() throws NotFoundException, ParseException {
+        List<Comment> expectedComments = List.of(
+                new Comment(1, convertToDate("2019-01-01"), 1, "content", 3),
+                new Comment(2, convertToDate("2020-01-01"), 1, "content", 2),
+                new Comment(4, convertToDate("2019-01-01"), 1, "content", 1));
         List<Comment> actualComments = postService.findCommentsByPostId(1);
         Assertions.assertEquals(expectedComments, actualComments);
     }
 
     @Test
-    public void postCommentTest() throws BadRequestException {
-        DateArgumentConverter converter = new DateArgumentConverter();
-
-        Comment comment = new Comment(null, (Date) converter.convert("2019-01-02", null), 1, "more-content", 3);
+    public void postCommentTest() throws BadRequestException, ParseException {
+        Comment comment = new Comment(null, convertToDate("2019-01-02"), 1, "more-content", 3);
 
         Comment expectedComment = new Comment(
-            2,
-            (Date) converter.convert("2019-01-02", null),
-            1,
-            "more-content",
-            3
+                7,
+                convertToDate("2019-01-02"),
+                1,
+                "more-content",
+                3
         );
 
         Comment actualComment = postService.postComment(comment);
@@ -144,7 +131,7 @@ public class PostServiceTests {
 
     @ParameterizedTest
     @CsvSource({
-        "1, '2019-01-01', 1, 'content', 3"
+            "1, '2019-01-01', 1, 'content', 3"
     })
     public void findCommentByIdTest(Integer id, @ConvertWith(DateArgumentConverter.class) Date date, Integer postId, String content, Integer userId) throws NotFoundException {
         Comment expectedComment = new Comment(id, date, postId, content, userId);
@@ -160,14 +147,14 @@ public class PostServiceTests {
 
     @ParameterizedTest
     @CsvSource({
-        "1, 3"
+            "1, 3"
     })
     public void getCommentLikesTest(Integer commentId, Integer userId) throws NotFoundException {
         int expectedLike = 1;
         Integer actualLiked = postService.getNumberOfLikesOnCommentById(commentId);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
-    
+
     @Test
     public void likeCommentTest() throws NotFoundException {
         postService.likeComment(1, 1);

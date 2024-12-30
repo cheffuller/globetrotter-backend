@@ -2,8 +2,7 @@ package com.revature.globetrotters.service;
 
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.TravelPlanLocation;
-import com.revature.globetrotters.service.TravelPlanLocationService;
-
+import com.revature.globetrotters.util.DateArgumentConverter;
 import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -11,14 +10,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.context.SpringBootTest;    
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-
-import com.revature.globetrotters.util.DateArgumentConverter;
-
+import java.text.ParseException;
 import java.util.List;
-import java.util.Date;
+
+import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
 
 @SpringBootTest
 public class TravelPlanLocationServiceTests {
@@ -38,27 +36,27 @@ public class TravelPlanLocationServiceTests {
         Thread.sleep(500);
         SpringApplication.exit(app);
     }
-    
+
     @Test
-    public void createTravelPlanLocationTest() throws BadRequestException  {
+    public void createTravelPlanLocationTest() throws BadRequestException, ParseException {
         DateArgumentConverter converter = new DateArgumentConverter();
 
         TravelPlanLocation travelPlanLocation = new TravelPlanLocation(
-            null, 
-            "New York",
-            "United States",
-            (Date) converter.convert("2020-12-31", null),
-            (Date) converter.convert("2020-12-01", null),
-            1
+                null,
+                "New York",
+                "United States",
+                convertToDate("2020-12-01"),
+                convertToDate("2020-12-31"),
+                1
         );
 
         TravelPlanLocation expectedResult = new TravelPlanLocation(
-            2, 
-            "New York",
-            "United States",
-            (Date) converter.convert("2020-12-31", null),
-            (Date) converter.convert("2020-12-01", null),
-            1
+                7,
+                "New York",
+                "United States",
+                convertToDate("2020-12-31"),
+                convertToDate("2020-12-01"),
+                1
         );
 
         TravelPlanLocation actualResult = travelPlanLocationService.createTravelPlanLocation(travelPlanLocation);
@@ -66,14 +64,18 @@ public class TravelPlanLocationServiceTests {
         Assertions.assertEquals(expectedResult, actualResult,
                 "Expected: " + expectedResult + ". Actual: " + actualResult);
     }
-  
+
     @Test
-    void getTravelPlanLocationsByTravelPlanIdTest() {
+    void getTravelPlanLocationsByTravelPlanIdTest() throws ParseException {
         DateArgumentConverter converter = new DateArgumentConverter();
         List<TravelPlanLocation> expectedResult = List.of(
-            (new TravelPlanLocation(1, "Sydney", "Australia", 
-            (Date) converter.convert("2018-12-31", null),
-            (Date) converter.convert("2018-12-01", null), 1))
+                (new TravelPlanLocation(
+                        1,
+                        "Sydney",
+                        "Australia",
+                        convertToDate("2018-12-31"),
+                        convertToDate("2018-12-01"),
+                        1))
         );
         List<TravelPlanLocation> actualResult = travelPlanLocationService.getTravelPlanLocationsByTravelPlanId(1);
         Assertions.assertEquals(expectedResult, actualResult,
@@ -81,11 +83,15 @@ public class TravelPlanLocationServiceTests {
     }
 
     @Test
-    void getTravelPlanLocationByIdTest() throws BadRequestException {
+    void getTravelPlanLocationByIdTest() throws BadRequestException, ParseException {
         DateArgumentConverter converter = new DateArgumentConverter();
-        TravelPlanLocation expectedResult = new TravelPlanLocation(1, "Sydney", "Australia", 
-            (Date) converter.convert("2018-12-31", null),
-            (Date) converter.convert("2018-12-01", null), 1);
+        TravelPlanLocation expectedResult = new TravelPlanLocation(
+                7,
+                "New York",
+                "United States",
+                convertToDate("2020-12-31"),
+                convertToDate("2020-12-01"),
+                1);
         TravelPlanLocation actualResult = travelPlanLocationService.getTravelPlanLocationById(1, 1);
 
         Assertions.assertEquals(expectedResult, actualResult,

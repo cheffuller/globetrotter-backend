@@ -25,7 +25,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +51,7 @@ public class PostControllerTests {
         SpringApplication.exit(app);
     }
 
-    private String getWebtoken() {
+    private String getWebToken() {
         return JwtUtil.generateTokenFromUserName("john_doe", new HashMap<>());
     }
 
@@ -60,7 +59,7 @@ public class PostControllerTests {
     public void getAllPostsByUserIdTest() throws IOException, InterruptedException, ParseException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/users/1/posts"))
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
         int status = response.statusCode();
@@ -89,7 +88,7 @@ public class PostControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts"))
                 .header("Content-Type", "application/json")
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(newPost)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -109,7 +108,7 @@ public class PostControllerTests {
                                 Integer travelPlanId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts/1"))
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
         int status = response.statusCode();
@@ -127,7 +126,7 @@ public class PostControllerTests {
     public void deletePostSuccesfulTest(Integer postId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts/" + postId))
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .DELETE()
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -142,7 +141,7 @@ public class PostControllerTests {
     public void deletePostNotFoundTest(Integer postId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts/" + postId))
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .DELETE()
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -157,7 +156,7 @@ public class PostControllerTests {
     public void getNumberOfLikesOnPostByIdTest(Integer postId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts/" + postId + "/likes"))
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
         int status = response.statusCode();
@@ -172,7 +171,7 @@ public class PostControllerTests {
     public void getCommentsByPostIdTest() throws IOException, InterruptedException, ParseException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts/1/comments"))
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .GET()
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -200,7 +199,7 @@ public class PostControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/comments"))
                 .header("Content-Type", "application/json")
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(expectedComment)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -223,7 +222,7 @@ public class PostControllerTests {
             throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/comments/" + commentId))
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .GET()
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -240,7 +239,7 @@ public class PostControllerTests {
     public void deleteCommentTest(Integer commentId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/comments/" + commentId))
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .DELETE()
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -255,7 +254,7 @@ public class PostControllerTests {
     public void getNumberOfLikesOnCommenttByIdTest(Integer commentId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/comments/" + commentId + "/likes"))
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
         int status = response.statusCode();
@@ -276,7 +275,7 @@ public class PostControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/comments/" + commentId + "/likes"))
                 .header("Content-Type", "application/json")
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -294,7 +293,7 @@ public class PostControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/comments/" + commentId + "/likes"))
                 .header("Content-Type", "application/json")
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .method("DELETE", HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -312,7 +311,7 @@ public class PostControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts/" + postId + "/likes"))
                 .header("Content-Type", "application/json")
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -330,7 +329,7 @@ public class PostControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts/" + postId + "/likes"))
                 .header("Content-Type", "application/json")
-                .header(JwtConsts.AUTHORIZATION, getWebtoken())
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .method("DELETE", HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
