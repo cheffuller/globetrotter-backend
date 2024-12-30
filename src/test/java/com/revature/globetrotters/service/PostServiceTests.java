@@ -2,13 +2,10 @@ package com.revature.globetrotters.service;
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.PostLike;
 import com.revature.globetrotters.exception.NotFoundException;
-import com.revature.globetrotters.service.PostService;
 
 import com.revature.globetrotters.exception.BadRequestException;
 
-import org.hibernate.annotations.Parameter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +21,6 @@ import org.springframework.context.ApplicationContext;
 
 import com.revature.globetrotters.util.DateArgumentConverter;
 
-import java.net.http.HttpRequest;
 import java.util.Date;
 import java.util.List;
 

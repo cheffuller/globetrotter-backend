@@ -99,11 +99,10 @@ public class PostController {
     public ResponseEntity likeComment(@PathVariable int commentId, @RequestBody UserAccount account) throws NotFoundException {
         postService.likeComment(commentId, account.getId());
         return ResponseEntity.status(HttpStatus.OK).body(null);
-
     }
 
     @DeleteMapping("comments/{commentId}/likes")
-    public ResponseEntity unlikeComment(@PathVariable int commentId, @RequestBody UserAccount account) {
+    public ResponseEntity<?> unlikeComment(@PathVariable int commentId, @RequestBody UserAccount account) {
         postService.unlikeComment(commentId, account.getId());
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
@@ -115,7 +114,7 @@ public class PostController {
     }
 
     @DeleteMapping("posts/{postId}/likes")
-    public ResponseEntity unlikePost(@PathVariable int postId, @RequestBody UserAccount account) {
+    public ResponseEntity<?> unlikePost(@PathVariable int postId, @RequestBody UserAccount account) {
         postService.unlikePost(postId, account.getId());
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
