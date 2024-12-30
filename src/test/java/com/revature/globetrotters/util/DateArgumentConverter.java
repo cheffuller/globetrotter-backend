@@ -6,6 +6,7 @@ import org.junit.jupiter.params.converter.ArgumentConverter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DateArgumentConverter implements ArgumentConverter {
     private static final String DATE_FORMAT = "yyyy-MM-dd";
@@ -22,5 +23,10 @@ public class DateArgumentConverter implements ArgumentConverter {
         } catch (ParseException e) {
             throw new ArgumentConversionException("Failed to parse date: " + sourceString, e);
         }
+    }
+
+    public static Date convertToDate(String source) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        return sdf.parse(source);
     }
 }
