@@ -24,9 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-//no need for path variable in the post 
-// no need to have path variable for travelPlan
-
 @Controller
 @RequestMapping("/plans")
 @CrossOrigin(origins = "http://localhost:5173/")
