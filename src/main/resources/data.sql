@@ -51,7 +51,9 @@ VALUES (1, '2019-01-01', 1, 'content', 3),
     (3, '2019-01-01', 2, 'content', 3),
     (4, '2019-01-01', 1, 'content', 1),
     (5, '2019-01-01', 4, 'content', 1),
-    (6, '2019-01-01', 6, 'content', 4);
+    (6, '2019-01-01', 4, 'content', 1),
+    (7, '2019-01-01', 4, 'content', 1),
+    (8, '2019-01-01', 6, 'content', 4);
 
 INSERT INTO follow (follower, following)
 VALUES
@@ -79,6 +81,6 @@ VALUES (3, 1);
 
 INSERT INTO banned_user(account_id) VALUES (4);
 
-INSERT INTO post_like(post_id, user_id) VALUES (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (3, 3), (4, 3);
+INSERT INTO post_like(post_id, user_id) VALUES (1, 3), (2, 3), (3, 2), (4, 3), (5, 3), (6, 3), (3, 4), (4, 4);
 
 INSERT INTO comment_like(comment_id, user_id) VALUES (1, 3);

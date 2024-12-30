@@ -19,7 +19,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findAllByPostId(Integer postId);
 
     @Query("""
-            SELECT COUNT(c)
+            SELECT COUNT(c.id)
             FROM Comment c
             WHERE c.postId = :postId
             """)
