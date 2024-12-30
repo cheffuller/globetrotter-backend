@@ -3,6 +3,7 @@ package com.revature.globetrotters.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.TravelPlanLocation;
+import com.revature.globetrotters.security.JwtUtil;
 import com.revature.globetrotters.util.DateArgumentConverter;
 
 import org.json.JSONException;
@@ -23,6 +24,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Date;
+import java.util.HashMap;
 
 
 public class TravelPlanLocationControllerTests {
@@ -45,24 +47,29 @@ public class TravelPlanLocationControllerTests {
         SpringApplication.exit(app);
     }
 
+    private String getWebToken() {
+        return JwtUtil.generateTokenFromUserName("john_doe", new HashMap<>());
+    }
+
     @ParameterizedTest
     @CsvSource({
             "'New York', 'United States', '2020-12-31', '2020-12-01', 1"
     })
     public void createTravelPlanLocationTest(String city, String country, @ConvertWith(DateArgumentConverter.class) Date endDate, @ConvertWith(DateArgumentConverter.class) Date startDate, Integer travelPlanId) throws IOException, InterruptedException, JSONException {
         TravelPlanLocation travelPlanLocation = new TravelPlanLocation(
-            city,
-            country,
-            endDate,
-            startDate,
-            travelPlanId
+                city,
+                country,
+                endDate,
+                startDate,
+                travelPlanId
         );
 
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/plans/" + travelPlanId + "/locations"))
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(travelPlanLocation)))
-            .build();
+                .uri(URI.create("http://localhost:8080/plans/" + travelPlanId + "/locations"))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken())
+                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(travelPlanLocation)))
+                .build();
 
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
@@ -71,10 +78,11 @@ public class TravelPlanLocationControllerTests {
     @Test
     public void getTravelPlanLocationsTest() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/plans/1/locations"))
-            .header("Content-Type", "application/json")
-            .GET()
-            .build();
+                .uri(URI.create("http://localhost:8080/plans/1/locations"))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken())
+                .GET()
+                .build();
 
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
@@ -82,24 +90,24 @@ public class TravelPlanLocationControllerTests {
 
     @ParameterizedTest
     @CsvSource({
-        "1, 'Sydney', 'Australia', '2018-12-31', '2018-12-01', 1"
+            "1, 'Sydney', 'Australia', '2018-12-31', '2018-12-01', 1"
     })
-    public void getTravelPlanLocationByIdTest(Integer locationId, String city, String country, 
-    @ConvertWith(DateArgumentConverter.class) Date endDate, @ConvertWith(DateArgumentConverter.class) Date starDate, 
-    Integer travelPlanId) throws IOException, InterruptedException, JSONException {
+    public void getTravelPlanLocationByIdTest(Integer locationId, String city, String country,
+                                              @ConvertWith(DateArgumentConverter.class) Date endDate, @ConvertWith(DateArgumentConverter.class) Date starDate,
+                                              Integer travelPlanId) throws IOException, InterruptedException, JSONException {
         TravelPlanLocation expected = new TravelPlanLocation(locationId, city, country, endDate, starDate, travelPlanId);
 
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/plans/" + travelPlanId + "/locations/" + locationId))
-            .header("Content-Type", "application/json")
-            .GET()
-            .build();
+                .uri(URI.create("http://localhost:8080/plans/" + travelPlanId + "/locations/" + locationId))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken())
+                .GET()
+                .build();
 
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
         TravelPlanLocation actual = objectMapper.readValue(response.body(), TravelPlanLocation.class);
         Assertions.assertEquals(expected, actual);
     }
-
 
 
 }

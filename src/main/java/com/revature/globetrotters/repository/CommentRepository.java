@@ -12,8 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
-    Optional<Comment> findByCommentedDate(Date date);
-
     Optional<Comment> findByPostId(Integer postId);
 
     Optional<Comment> findByUserId(Integer madeBy);
