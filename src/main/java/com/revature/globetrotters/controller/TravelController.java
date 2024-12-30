@@ -53,15 +53,17 @@ public class TravelController {
     public ResponseEntity<?> createTravelPlan(@RequestBody TravelPlan travelPlan) {
         //call travel plan service layer to create travel plan
         //and then call travel plan location service layer to create travel plan location
+        TravelPlan newTravelPlan = travelPlanService.createTravelPlan(travelPlan);
         //however that may be a bit weird in terms of referencing where the information for travel plan location is coming from
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(newTravelPlan);
     }
 
     @GetMapping("/{planId}")
-    public ResponseEntity<?> getTravelPlansById(@PathVariable int travelPlanId) {
+    public ResponseEntity<?> getTravelPlansById(@PathVariable("planId") int travelPlanId) {
         // call service layer to get travel plan by id
+        TravelPlan travelPlan = travelPlanService.getTravelPlanById(travelPlanId);
         // and then probably call travel plan location service layer to get travel plan location
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(travelPlan);
     }
 
     @PutMapping("")
@@ -73,7 +75,7 @@ public class TravelController {
     }
 
     @DeleteMapping("/{planId}")
-    public ResponseEntity<?> deleteTravelPlan(@PathVariable int travelPlanId) {
+    public ResponseEntity<?> deleteTravelPlan(@PathVariable("planId") int travelPlanId) {
         // call travel plan service layer to delete travel plan by its id
         // and then probably call travel plan location service layer to delete travel plan location
         return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -89,7 +91,7 @@ public class TravelController {
     @PostMapping("/{planId}/locations")
     public ResponseEntity<TravelPlanLocation> createTravelPlanLocation(
             @PathVariable("planId") int travelPlanId, @RequestBody TravelPlanLocation travelPlanLocation)
-            throws org.apache.coyote.BadRequestException {
+            throws BadRequestException {
         // call travel plan location service layer to create travel plan location
         TravelPlanLocation newLocation = travelPlanLocationService.createTravelPlanLocation(travelPlanLocation);
         return ResponseEntity.status(HttpStatus.OK).body(newLocation);
@@ -98,7 +100,7 @@ public class TravelController {
     @GetMapping("/{planId}/locations/{locationId}")
     public ResponseEntity<TravelPlanLocation> getTravelPlanLocationsById(
             @PathVariable("locationId") int travelPlanId, @PathVariable("planId") int locationId)
-            throws org.apache.coyote.BadRequestException {
+            throws BadRequestException {
         // call travel plan location service layer to get travel plan location by its id
         TravelPlanLocation location = travelPlanLocationService.getTravelPlanLocationById(travelPlanId, locationId);
         return ResponseEntity.status(HttpStatus.OK).body(location);
@@ -110,12 +112,12 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}/likes")
-    public ResponseEntity<Integer> getNumberOfLikesOnPostByTravelPlanId(@PathVariable int travelPlanId) throws NotFoundException{
+    public ResponseEntity<Integer> getNumberOfLikesOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException{
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfLikesOnPostByTravelPlanId(travelPlanId));
     }
 
     @GetMapping("/{planId}/comments")
-    public ResponseEntity<Integer> getNmberOfCommentsOnPostByTravelPlanId(@PathVariable int travelPlanId) throws NotFoundException {
+    public ResponseEntity<Integer> getNmberOfCommentsOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfCommentsOnPostByTravelPlanId(travelPlanId));
     }
     

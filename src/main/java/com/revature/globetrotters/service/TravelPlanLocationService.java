@@ -1,7 +1,7 @@
 package com.revature.globetrotters.service;
 
 import org.springframework.stereotype.Service;
-import org.apache.coyote.BadRequestException;
+import com.revature.globetrotters.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.revature.globetrotters.entity.TravelPlan;
