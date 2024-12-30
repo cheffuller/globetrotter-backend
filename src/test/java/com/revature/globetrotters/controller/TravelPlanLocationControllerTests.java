@@ -26,7 +26,6 @@ import java.net.http.HttpResponse;
 import java.util.Date;
 import java.util.HashMap;
 
-
 public class TravelPlanLocationControllerTests {
     ApplicationContext app;
     HttpClient webClient;
