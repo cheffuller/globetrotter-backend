@@ -2,14 +2,19 @@ package com.revature.globetrotters.controller;
 
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
+import com.revature.globetrotters.exception.BadRequestException;
+import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.service.TravelPlanLocationService;
 import com.revature.globetrotters.service.TravelPlanService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,92 +32,80 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173/")
 public class TravelController {
     @Autowired
-    TravelPlanService travelPlanService;
+    private TravelPlanService travelPlanService;
     @Autowired
-    TravelPlanLocationService travelPlanLocationService;
+    private TravelPlanLocationService travelPlanLocationService;
+    private static final Logger logger = LoggerFactory.getLogger(TravelController.class);
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity handleBadRequestException(BadRequestException exception) {
+        logger.info(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity handleNotFoundException(NotFoundException exception) {
+        logger.info(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
 
     @PostMapping("")
     public ResponseEntity<?> createTravelPlan(@RequestBody TravelPlan travelPlan) {
-        try {
-            //call travel plan service layer to create travel plan
-            //and then call travel plan location service layer to create travel plan location
-            //however that may be a bit weird in terms of referencing where the information for travel plan location is coming from
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        //call travel plan service layer to create travel plan
+        //and then call travel plan location service layer to create travel plan location
+        //however that may be a bit weird in terms of referencing where the information for travel plan location is coming from
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("/{planId}")
     public ResponseEntity<?> getTravelPlansById(@PathVariable int travelPlanId) {
-        try {
-            // call service layer to get travel plan by id
-            // and then probably call travel plan location service layer to get travel plan location 
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        // call service layer to get travel plan by id
+        // and then probably call travel plan location service layer to get travel plan location
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PutMapping("")
     public ResponseEntity<TravelPlanLocation> updateTravelPlan(@RequestBody TravelPlanLocation travelPlan) {
-        try {
-            // call travel plan service layer to update travel plan by its id
-            // and then probably call travel plan location service layer to update travel plan location or times
-            TravelPlanLocation updatedTravelPlan = travelPlanService.updateTravelPlan(travelPlan);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        // call travel plan service layer to update travel plan by its id
+        // and then probably call travel plan location service layer to update travel plan location or times
+        TravelPlanLocation updatedTravelPlan = travelPlanService.updateTravelPlan(travelPlan);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan);
     }
 
     @DeleteMapping("/{planId}")
     public ResponseEntity<?> deleteTravelPlan(@PathVariable int travelPlanId) {
-        try {
-            // call travel plan service layer to delete travel plan by its id
-            // and then probably call travel plan location service layer to delete travel plan location
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        // call travel plan service layer to delete travel plan by its id
+        // and then probably call travel plan location service layer to delete travel plan location
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("/{planId}/locations")
     public ResponseEntity<List<TravelPlanLocation>> getTravelPlanLocations(@PathVariable("planId") int travelPlanId) {
-        try {
-            // call travel plan location service layer to get travel plan location by its id
-            List<TravelPlanLocation> locations = travelPlanLocationService.getTravelPlanLocationsByTravelPlanId(travelPlanId);
-            return ResponseEntity.status(HttpStatus.OK).body(locations);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        // call travel plan location service layer to get travel plan location by its id
+        List<TravelPlanLocation> locations = travelPlanLocationService.getTravelPlanLocationsByTravelPlanId(travelPlanId);
+        return ResponseEntity.status(HttpStatus.OK).body(locations);
     }
 
     @PostMapping("/{planId}/locations")
-    public ResponseEntity<TravelPlanLocation> createTravelPlanLocation(@PathVariable("planId") int travelPlanId, @RequestBody TravelPlanLocation travelPlanLocation) {
-        try {
-            // call travel plan location service layer to create travel plan location
-            TravelPlanLocation newLocation = travelPlanLocationService.createTravelPlanLocation(travelPlanLocation);
-            return ResponseEntity.status(HttpStatus.OK).body(newLocation);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<TravelPlanLocation> createTravelPlanLocation(
+            @PathVariable("planId") int travelPlanId, @RequestBody TravelPlanLocation travelPlanLocation)
+            throws org.apache.coyote.BadRequestException {
+        // call travel plan location service layer to create travel plan location
+        TravelPlanLocation newLocation = travelPlanLocationService.createTravelPlanLocation(travelPlanLocation);
+        return ResponseEntity.status(HttpStatus.OK).body(newLocation);
     }
 
     @GetMapping("/{planId}/locations/{locationId}")
-    public ResponseEntity<TravelPlanLocation> getTravelPlanLocationsById(@PathVariable("locationId") int travelPlanId, @PathVariable("planId") int locationId) {
-        try {
-            // call travel plan location service layer to get travel plan location by its id
-            TravelPlanLocation location = travelPlanLocationService.getTravelPlanLocationById(travelPlanId, locationId);
-            return ResponseEntity.status(HttpStatus.OK).body(location);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<TravelPlanLocation> getTravelPlanLocationsById(
+            @PathVariable("locationId") int travelPlanId, @PathVariable("planId") int locationId)
+            throws org.apache.coyote.BadRequestException {
+        // call travel plan location service layer to get travel plan location by its id
+        TravelPlanLocation location = travelPlanLocationService.getTravelPlanLocationById(travelPlanId, locationId);
+        return ResponseEntity.status(HttpStatus.OK).body(location);
     }
 
     @GetMapping("/recent/{limit}")
     public ResponseEntity<List<TravelPlan>> findRecentPublishedPlans(@PathVariable("limit") int limit) {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.findMostRecentPublicTravelPlan(limit));
     }
-
 }
