@@ -3,7 +3,7 @@ package com.revature.globetrotters.service;
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.TravelPlanLocation;
 import com.revature.globetrotters.util.DateArgumentConverter;
-import org.apache.coyote.BadRequestException;
+import com.revature.globetrotters.exception.BadRequestException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
