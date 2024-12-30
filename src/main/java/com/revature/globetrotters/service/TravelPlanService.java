@@ -1,7 +1,13 @@
 package com.revature.globetrotters.service;
 
+import com.revature.globetrotters.entity.Comment;
+import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
+import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.repository.CommentRepository;
+import com.revature.globetrotters.repository.PostLikeRepository;
+import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +23,12 @@ public class TravelPlanService {
     TravelPlanRepository travelPlanRepository;
     @Autowired
     TravelPlanLocationRepository travelPlanLocationRepository;
+    @Autowired
+    PostRepository postRepository;
+    @Autowired
+    PostLikeRepository postLikeRepository;
+    @Autowired
+    CommentRepository commentRepository;
 
     public TravelPlanService(TravelPlanRepository travelPlanRepository) {
         this.travelPlanRepository = travelPlanRepository;
@@ -56,5 +68,33 @@ public class TravelPlanService {
     public List<TravelPlan> findMostRecentPublicTravelPlan(int limit) {
         Pageable pageable = Pageable.ofSize(limit);
         return travelPlanRepository.findRecentPublicTravelPlans(pageable);
+    }
+
+    public Integer getNumberOfLikesOnPostByTravelPlanId(Integer planId) throws NotFoundException {
+        if (!travelPlanRepository.existsById(planId)) {
+            throw new NotFoundException(String.format("Travel plan with ID %d not found.", planId));
+        }
+
+        Optional<Post> optionalPost = postRepository.findByTravelPlanId(planId);
+
+        Post post = optionalPost.orElseThrow(() ->
+            new NotFoundException(String.format("Post with Travel Plan ID %d not found.", planId))
+        );
+
+        return postLikeRepository.findNumberOfLikesByPostId(post.getId());
+    }
+
+    public Integer getNumberOfCommentsOnPostByTravelPlanId(Integer planId) throws NotFoundException {
+        if (!travelPlanRepository.existsById(planId)) {
+            throw new NotFoundException(String.format("Travel plan with ID %d not found.", planId));
+        }
+
+        Optional<Post> optionalPost = postRepository.findByTravelPlanId(planId);
+
+        Post post = optionalPost.orElseThrow(() ->
+            new NotFoundException(String.format("Post with Travel Plan ID %d not found.", planId))
+        );
+
+        return commentRepository.findNumberOfCommentsByPostId(post.getId());
     }
 }
