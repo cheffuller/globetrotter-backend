@@ -1,5 +1,6 @@
 package com.revature.globetrotters.controller;
 
+import com.revature.globetrotters.consts.JwtConsts;
 import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.UserAccount;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -42,7 +44,9 @@ public class PostController {
     }
 
     @GetMapping("users/{userId}/posts")
-    public ResponseEntity<List<Post>> getAllPostsByUserId(@PathVariable int userId) throws NotFoundException {
+    public ResponseEntity<List<Post>> getAllPostsByUserId(@PathVariable int userId,
+                                                          @RequestHeader(name = JwtConsts.AUTHORIZATION) String token)
+            throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findPostsByUserId(userId));
     }
 
