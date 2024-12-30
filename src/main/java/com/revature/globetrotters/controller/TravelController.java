@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 
 @Controller
 @RequestMapping("/plans")
@@ -105,4 +108,15 @@ public class TravelController {
     public ResponseEntity<List<TravelPlan>> findRecentPublishedPlans(@PathVariable("limit") int limit) {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.findMostRecentPublicTravelPlan(limit));
     }
+
+    @GetMapping("/{planId}/likes")
+    public ResponseEntity<Integer> getNumberOfLikesOnPostByTravelPlanId(@PathVariable int travelPlanId) throws NotFoundException{
+        return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfLikesOnPostByTravelPlanId(travelPlanId));
+    }
+
+    @GetMapping("/{planId}/comments")
+    public ResponseEntity<Integer> getNmberOfCommentsOnPostByTravelPlanId(@PathVariable int travelPlanId) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfCommentsOnPostByTravelPlanId(travelPlanId));
+    }
+    
 }
