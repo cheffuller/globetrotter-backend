@@ -119,7 +119,7 @@ public class PostController {
     }
 
     @PostMapping("comments/{commentId}/likes")
-    public ResponseEntity likeComment(@PathVariable int commentId, @RequestBody UserAccount account) {
+    public ResponseEntity<?> likeComment(@PathVariable int commentId, @RequestBody UserAccount account) {
         try {
             postService.likeComment(commentId, account.getId());
             return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -129,13 +129,13 @@ public class PostController {
     }
 
     @DeleteMapping("comments/{commentId}/likes")
-    public ResponseEntity unlikeComment(@PathVariable int commentId, @RequestBody UserAccount account) {
+    public ResponseEntity<?> unlikeComment(@PathVariable int commentId, @RequestBody UserAccount account) {
         postService.unlikeComment(commentId, account.getId());
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PostMapping("posts/{postId}/likes")
-    public ResponseEntity likePost(@PathVariable int postId, @RequestBody UserAccount account) {
+    public ResponseEntity<?> likePost(@PathVariable int postId, @RequestBody UserAccount account) {
         try {
             postService.likePost(postId, account.getId());
             return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -145,7 +145,7 @@ public class PostController {
     }
 
     @DeleteMapping("posts/{postId}/likes")
-    public ResponseEntity unlikePost(@PathVariable int postId, @RequestBody UserAccount account) {
+    public ResponseEntity<?> unlikePost(@PathVariable int postId, @RequestBody UserAccount account) {
         postService.unlikePost(postId, account.getId());
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
