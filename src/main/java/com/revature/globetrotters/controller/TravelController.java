@@ -114,7 +114,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}/comments")
-    public ResponseEntity<Integer> getNumberOfCommentsOnPostByTravelPlanId(@PathVariable int travelPlanId) throws NotFoundException {
+    public ResponseEntity<Integer> getNumberOfCommentsOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfCommentsOnPostByTravelPlanId(travelPlanId));
     }
     
