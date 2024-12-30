@@ -1,7 +1,8 @@
 package com.revature.globetrotters.security;
 
 import com.revature.globetrotters.consts.JwtConsts;
-import com.revature.globetrotters.repository.UserAccountRepository;
+import com.revature.globetrotters.enums.PublicUrl;
+import com.revature.globetrotters.service.CustomerDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,15 +11,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
-    private UserAccountRepository userAccountRepository;
+    private CustomerDetailService customerDetailService;
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
@@ -27,18 +32,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        final String token = request.getHeader(JwtConsts.AUTHORIZATION);
-        logger.info("TOKEN RECEIVED {}", token);
-        if (token == null) {
-            logger.info("FILTERED");
+        String requestURI = request.getRequestURI();
+        if (PublicUrl.isPublicUrl(requestURI)) {
+            logger.info("{} is a public URL.", requestURI);
             filterChain.doFilter(request, response);
             return;
         }
-        final String username = JwtUtil.extractSubjectFromToken(token);
-        logger.info("USERNAME RECEIVED: {}", username);
-        if (userAccountRepository.findByUsername(username).isEmpty()) {
-            filterChain.doFilter(request, response);
+
+        final String token = request.getHeader(JwtConsts.AUTHORIZATION);
+        logger.info("Token received: {}", token);
+        if (token == null) {
+            logger.info("Filtered null token.");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
+        }
+
+        final String username = JwtUtil.extractSubjectFromToken(token);
+        try {
+            UserDetails userDetails = customerDetailService.loadUserByUsername(username);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    userDetails.getUsername(),
+                    userDetails.getPassword(),
+                    List.of()
+            );
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            filterChain.doFilter(request, response);
+            logger.info("Authentication for user {} successful.", username);
+        } catch (Exception e) {
+            logger.info("Filtered invalid token.");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
         }
     }
 }
