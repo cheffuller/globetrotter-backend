@@ -12,6 +12,8 @@ import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,7 @@ public class PostService {
     private TravelPlanRepository travelPlanRepository;
     @Autowired
     private UserAccountRepository userAccountRepository;
+    private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
     public Post createPost(Post post) throws BadRequestException {
         if (!travelPlanRepository.existsById(post.getTravelPlanId())) {
