@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -114,8 +115,8 @@ public class PostController {
     }
 
     @DeleteMapping("posts/{postId}/likes")
-    public ResponseEntity<?> unlikePost(@PathVariable int postId, @RequestBody UserAccount account) {
-        postService.unlikePost(postId, account.getId());
+    public ResponseEntity<?> unlikePost(@PathVariable int postId) {
+        postService.unlikePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

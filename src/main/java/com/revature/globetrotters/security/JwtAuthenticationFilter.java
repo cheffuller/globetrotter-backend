@@ -49,10 +49,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String username = JwtUtil.extractSubjectFromToken(token);
         try {
-            UserDetails userDetails = customerDetailService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails.getUsername(),
-                    userDetails.getPassword(),
+            CustomerDetails customerDetails = customerDetailService.loadCustomerByUsername(username);
+            CustomerAuthenticationToken authenticationToken = new CustomerAuthenticationToken(
+                    customerDetails.getUsername(),
+                    customerDetails.getPassword(),
+                    customerDetails.getUserAccountId(),
                     List.of()
             );
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);

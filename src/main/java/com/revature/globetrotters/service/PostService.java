@@ -31,6 +31,8 @@ public class PostService {
     @Autowired
     private PostLikeRepository postLikeRepository;
     @Autowired
+    private TokenService tokenService;
+    @Autowired
     private TravelPlanRepository travelPlanRepository;
     @Autowired
     private UserAccountRepository userAccountRepository;
@@ -80,8 +82,8 @@ public class PostService {
         postLikeRepository.save(new PostLike(postId, userId));
     }
 
-    public void unlikePost(Integer postId, Integer userId) {
-        postLikeRepository.delete(new PostLike(postId, userId));
+    public void unlikePost(Integer postId) {
+        postLikeRepository.delete(new PostLike(postId, tokenService.getUserAccountId()));
     }
 
     public List<Comment> findCommentsByPostId(Integer postId) throws NotFoundException {

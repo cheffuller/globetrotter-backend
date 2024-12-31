@@ -2,6 +2,7 @@ package com.revature.globetrotters.service;
 
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.repository.UserAccountRepository;
+import com.revature.globetrotters.security.CustomerDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,16 @@ public class CustomerDetailService implements UserDetailsService {
         return new User(
                 userAccount.get().getUsername(),
                 userAccount.get().getPassword(),
+                List.of()
+        );
+    }
+
+    public CustomerDetails loadCustomerByUsername(String username) {
+        Optional<UserAccount> userAccount = userAccountRepository.findByUsername(username);
+        return new CustomerDetails(
+                userAccount.get().getUsername(),
+                userAccount.get().getPassword(),
+                userAccount.get().getId(),
                 List.of()
         );
     }
