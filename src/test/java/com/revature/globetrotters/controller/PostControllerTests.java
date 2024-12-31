@@ -18,6 +18,7 @@ import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.net.URI;
@@ -62,8 +63,7 @@ public class PostControllerTests {
                 .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
 
         List<Post> expectedPosts = List.of(
                 new Post(1, convertToDate("2019-01-01"), 1),
@@ -74,6 +74,16 @@ public class PostControllerTests {
         });
         Assertions.assertEquals(expectedPosts, actualPosts,
                 String.format("Expected: %s.\nActual: %s.", expectedPosts, actualPosts));
+    }
+
+    @Test
+    public void getAllPostsByInvalidUserIdTest() throws IOException, InterruptedException, ParseException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/users/100/posts"))
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
+                .build();
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
 
     @ParameterizedTest
@@ -92,8 +102,7 @@ public class PostControllerTests {
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(newPost)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
 
         Post actualPost = objectMapper.readValue(response.body(), Post.class);
         Post expectedPost = new Post(actualPost.getId(), date, travelPlanId);
@@ -111,27 +120,35 @@ public class PostControllerTests {
                 .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
 
         Post expectedPost = new Post(postId, date, travelPlanId);
         Post actualPost = objectMapper.readValue(response.body(), Post.class);
         Assertions.assertEquals(expectedPost, actualPost);
     }
 
+    @Test
+    public void getPostByInvalidIDTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/posts/100"))
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
+                .build();
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
+    }
+
     @ParameterizedTest
     @CsvSource({
             "1"
     })
-    public void deletePostSuccesfulTest(Integer postId) throws IOException, InterruptedException {
+    public void deletePostSuccessfulTest(Integer postId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts/" + postId))
                 .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .DELETE()
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
     }
 
     @ParameterizedTest
@@ -145,8 +162,7 @@ public class PostControllerTests {
                 .DELETE()
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(404, status);
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
 
     @ParameterizedTest
@@ -159,12 +175,21 @@ public class PostControllerTests {
                 .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
 
         Integer expectedLikes = 1;
         Integer actualLikes = objectMapper.readValue(response.body(), Integer.class);
         Assertions.assertEquals(expectedLikes, actualLikes);
+    }
+
+    @Test
+    public void getNumberOfLikesOnNonExistentPostTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/posts/100/likes"))
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
+                .build();
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
 
     @Test
@@ -175,8 +200,7 @@ public class PostControllerTests {
                 .GET()
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
 
         List<Comment> expectedComments = List.of(
                 new Comment(1, convertToDate("2019-01-01"), 1, "content", 3),
@@ -186,6 +210,17 @@ public class PostControllerTests {
         List<Comment> actualComments = objectMapper.readValue(response.body(), new TypeReference<>() {
         });
         Assertions.assertEquals(expectedComments, actualComments);
+    }
+
+    @Test
+    public void getCommentsByNonExistentPostIdTest() throws IOException, InterruptedException, ParseException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/posts/100/comments"))
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
+                .GET()
+                .build();
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
 
     @ParameterizedTest
@@ -203,8 +238,7 @@ public class PostControllerTests {
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(expectedComment)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
 
         Comment actualComment = objectMapper.readValue(response.body(), Comment.class);
         expectedComment.setId(actualComment.getId());
@@ -234,6 +268,18 @@ public class PostControllerTests {
         Assertions.assertEquals(expectedComment, actualComment);
     }
 
+    @Test
+    public void getNonExistentCommentByIdTest()
+            throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/comments/100"))
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
+                .GET()
+                .build();
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
+    }
+
     @ParameterizedTest
     @CsvSource({
             "1"
@@ -245,26 +291,45 @@ public class PostControllerTests {
                 .DELETE()
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
+    }
+
+    @Test
+    public void deleteNonExistentCommentTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/comments/100"))
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
+                .DELETE()
+                .build();
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
 
     @ParameterizedTest
     @CsvSource({
             "1"
     })
-    public void getNumberOfLikesOnCommenttByIdTest(Integer commentId) throws IOException, InterruptedException {
+    public void getNumberOfLikesOnCommentByIdTest(Integer commentId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/comments/" + commentId + "/likes"))
                 .header(JwtConsts.AUTHORIZATION, getWebToken())
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
 
         Integer expectedLikes = 1;
         Integer actualLikes = objectMapper.readValue(response.body(), Integer.class);
         Assertions.assertEquals(expectedLikes, actualLikes);
+    }
+
+    @Test
+    public void getNumberOfLikesOnNonExistentCommentByIdTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/comments/100/likes"))
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
+                .build();
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
 
     @ParameterizedTest
@@ -281,8 +346,17 @@ public class PostControllerTests {
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
+    }
+
+    @Test
+    public void likeNonExistentCommentTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/comments/100/likes"))
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
+                .build();
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
 
     @ParameterizedTest
@@ -299,8 +373,7 @@ public class PostControllerTests {
                 .method("DELETE", HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
     }
 
     @ParameterizedTest
@@ -317,8 +390,17 @@ public class PostControllerTests {
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
+    }
+
+    @Test
+    public void likeNonExistentPostTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/posts/100/likes"))
+                .header(JwtConsts.AUTHORIZATION, getWebToken())
+                .build();
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
 
     @ParameterizedTest
@@ -335,7 +417,6 @@ public class PostControllerTests {
                 .method("DELETE", HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userAccount)))
                 .build();
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int status = response.statusCode();
-        Assertions.assertEquals(200, status);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
     }
 }
