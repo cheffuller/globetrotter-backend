@@ -102,4 +102,8 @@ public class TravelPlanService {
 
         return commentRepository.findNumberOfCommentsByPostId(post.getId());
     }
+
+    public List<TravelPlan> getTravelPlansByAccountId(Integer accountId) {
+        return travelPlanRepository.getTravelPlansByAccountId(accountId);
+    }
 }

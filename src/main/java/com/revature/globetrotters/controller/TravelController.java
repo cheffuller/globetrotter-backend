@@ -117,5 +117,10 @@ public class TravelController {
     public ResponseEntity<Integer> getNumberOfCommentsOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfCommentsOnPostByTravelPlanId(travelPlanId));
     }
+
+    @GetMapping("/{accountId}")
+    public ResponseEntity<List<TravelPlan>> getTravelPlansByAccountId(@PathVariable("accountId") int accountId) {
+        return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getTravelPlansByAccountId(accountId));
+    }
     
 }
