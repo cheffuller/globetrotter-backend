@@ -38,6 +38,8 @@ public class AccountService {
     @Autowired
     private PostRepository postRepository;
     @Autowired
+    private TokenService tokenService;
+    @Autowired
     private TravelPlanRepository planRepository;
     @Autowired
     private UserAccountRepository userAccountRepository;
@@ -107,7 +109,9 @@ public class AccountService {
     }
 
 
-    public void followUser(int followerId, int followingId) throws NotFoundException, BadRequestException {
+    public void followUser(int followingId) throws NotFoundException, BadRequestException {
+        int followerId = tokenService.getUserAccountId();
+
         if (!userAccountRepository.existsById(followerId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", followerId));
         }
@@ -130,7 +134,8 @@ public class AccountService {
         }
     }
 
-    public void unfollowUser(int followerId, int followingId) throws BadRequestException {
+    public void unfollowUser(int followingId) throws BadRequestException {
+        int followerId = tokenService.getUserAccountId();
         Follow followToDelete = new Follow(followerId, followingId);
 
         if (followRepository.existsById(followToDelete.getId())) {

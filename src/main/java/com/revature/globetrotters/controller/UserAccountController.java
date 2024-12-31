@@ -1,6 +1,6 @@
 package com.revature.globetrotters.controller;
 
-import com.revature.globetrotters.entity.Post;
+import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/users")
@@ -68,25 +70,19 @@ public class UserAccountController {
     }
 
     @PostMapping("/{userId}/following")
-    public ResponseEntity<?> follow(@PathVariable int userId, @RequestBody UserAccount account)
-            throws NotFoundException, BadRequestException {
-        accountService.followUser(account.getId(), userId);
+    public ResponseEntity follow(@PathVariable int userId) throws NotFoundException, BadRequestException {
+        accountService.followUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @DeleteMapping("/{userId}/following")
-    public ResponseEntity<?> unfollow(@PathVariable int userId, @RequestBody UserAccount account) throws BadRequestException {
-        accountService.unfollowUser(account.getId(), userId);
+    public ResponseEntity unfollow(@PathVariable int userId) throws BadRequestException {
+        accountService.unfollowUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("/{user-id}/plans")
-    public ResponseEntity<?> getPlans(@PathVariable("user-id") int userId) throws NotFoundException {
+    public ResponseEntity<List<TravelPlan>> getPlans(@PathVariable("user-id") int userId) throws NotFoundException {
         return ResponseEntity.ok(accountService.getPlans(userId));
-    }
-
-    @PostMapping("/{user-id}/posts")
-    public ResponseEntity<?> createPost(@PathVariable("user-id") int userId, @RequestBody Post post) throws NotFoundException {
-        return ResponseEntity.ok(accountService.createPost(userId, post));
     }
 }

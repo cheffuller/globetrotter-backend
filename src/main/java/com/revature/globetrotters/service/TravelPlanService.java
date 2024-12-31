@@ -20,21 +20,25 @@ import java.util.Optional;
 @Service
 public class TravelPlanService {
     @Autowired
-    TravelPlanRepository travelPlanRepository;
+    private CommentRepository commentRepository;
     @Autowired
-    TravelPlanLocationRepository travelPlanLocationRepository;
+    private PostLikeRepository postLikeRepository;
     @Autowired
-    PostRepository postRepository;
+    private PostRepository postRepository;
     @Autowired
-    PostLikeRepository postLikeRepository;
+    private TokenService tokenService;
     @Autowired
-    CommentRepository commentRepository;
+    private TravelPlanRepository travelPlanRepository;
+    @Autowired
+    private TravelPlanLocationRepository travelPlanLocationRepository;
 
     public TravelPlanService(TravelPlanRepository travelPlanRepository) {
         this.travelPlanRepository = travelPlanRepository;
     }
 
     public TravelPlan createTravelPlan(TravelPlan travelPlan) {
+        travelPlan.setAccountId(tokenService.getUserAccountId());
+        // Add validation for travel plan
         return travelPlanRepository.save(travelPlan);
     }
 
@@ -42,9 +46,9 @@ public class TravelPlanService {
         return travelPlanRepository.getTravelPlanById(travelPlanId);
     }
 
+    // Add authorization so only the poster or a moderator can update
     public TravelPlanLocation updateTravelPlan(TravelPlanLocation travelPlan) {
         Optional<TravelPlanLocation> existingTravelPlan = travelPlanLocationRepository.findById(travelPlan.getId());
-        System.out.println(existingTravelPlan);
         if (existingTravelPlan == null) {
             throw new IllegalArgumentException("Travel plan not found");
         }
@@ -58,6 +62,7 @@ public class TravelPlanService {
         return travelPlanLocationRepository.save(updatedTravelPlan);
     }
 
+    // Add authorization so only the poster or a moderator can delete
     public void deleteTravelPlan(Integer travelPlanId) {
         if (travelPlanRepository.getTravelPlanById(travelPlanId) == null) {
             throw new IllegalArgumentException("Travel plan not found");
