@@ -118,7 +118,7 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfCommentsOnPostByTravelPlanId(travelPlanId));
     }
 
-    @GetMapping("/{accountId}")
+    @GetMapping("users/{accountId}/plans")
     public ResponseEntity<List<TravelPlan>> getTravelPlansByAccountId(@PathVariable("accountId") int accountId) {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getTravelPlansByAccountId(accountId));
     }
