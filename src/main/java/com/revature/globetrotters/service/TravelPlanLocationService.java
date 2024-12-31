@@ -7,8 +7,6 @@ import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,7 +40,7 @@ public class TravelPlanLocationService {
     }
 
     public List<TravelPlanLocation> getTravelPlanLocationsByTravelPlanId(int travelPlanId) {
-        return travelPlanLocationRepository.findLocationsByTravelPlanId(travelPlanId);
+        return travelPlanLocationRepository.findAllByTravelPlanId(travelPlanId);
     }
 
     public TravelPlanLocation getTravelPlanLocationById(int locationId) throws NotFoundException {
@@ -51,7 +49,7 @@ public class TravelPlanLocationService {
     }
 
     public TravelPlanLocation getTravelPlanLocationByIdAndTravelPlanId(int travelPlanId, int id) throws NotFoundException {
-        return travelPlanLocationRepository.findLocationByTravelPlanIdAndLocationId(travelPlanId, id).orElseThrow(() ->
+        return travelPlanLocationRepository.findByTravelPlanIdAndId(travelPlanId, id).orElseThrow(() ->
                 new NotFoundException(String.format(
                         "Travel plan location with ID %d and travel plan ID %d not found",
                         id,
@@ -61,7 +59,7 @@ public class TravelPlanLocationService {
 
     public TravelPlanLocation getTravelPlanLocationWithOffsetByTravelPlanId(int travelPlanId, int offset)
             throws NotFoundException {
-        return travelPlanLocationRepository.findNthLocationByTravelPlanId(travelPlanId, offset)
+        return travelPlanLocationRepository.findByTravelPlanIdAndOffset(travelPlanId, offset)
                 .orElseThrow(() -> new NotFoundException(String.format(
                         "Travel plan location with offset %d not found for travel plan with ID %d",
                         offset,
