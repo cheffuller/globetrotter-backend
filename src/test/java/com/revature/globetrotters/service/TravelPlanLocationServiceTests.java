@@ -67,7 +67,7 @@ public class TravelPlanLocationServiceTests {
     }
 
     @Test
-    void getTravelPlanLocationsByTravelPlanIdTest() throws ParseException {
+    void getTravelPlanLocationsByTravelPlanIdTest() throws ParseException, NotFoundException {
         DateArgumentConverter converter = new DateArgumentConverter();
         List<TravelPlanLocation> expectedResult = List.of(
                 (new TravelPlanLocation(

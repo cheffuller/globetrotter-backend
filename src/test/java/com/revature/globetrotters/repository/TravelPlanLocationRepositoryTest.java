@@ -14,7 +14,6 @@ import org.springframework.context.ApplicationContext;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 
 import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
 

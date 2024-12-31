@@ -56,7 +56,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}")
-    public ResponseEntity<?> getTravelPlansById(@PathVariable("planId") int travelPlanId) {
+    public ResponseEntity<?> getTravelPlansById(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         // call service layer to get travel plan by id
         TravelPlan travelPlan = travelPlanService.getTravelPlanById(travelPlanId);
         // and then probably call travel plan location service layer to get travel plan location
@@ -79,7 +79,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}/locations")
-    public ResponseEntity<List<TravelPlanLocation>> getTravelPlanLocations(@PathVariable("planId") int travelPlanId) {
+    public ResponseEntity<List<TravelPlanLocation>> getTravelPlanLocations(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         // call travel plan location service layer to get travel plan location by its id
         List<TravelPlanLocation> locations = travelPlanLocationService.getTravelPlanLocationsByTravelPlanId(travelPlanId);
         return ResponseEntity.status(HttpStatus.OK).body(locations);

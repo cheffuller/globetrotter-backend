@@ -39,7 +39,10 @@ public class TravelPlanLocationService {
         }
     }
 
-    public List<TravelPlanLocation> getTravelPlanLocationsByTravelPlanId(int travelPlanId) {
+    public List<TravelPlanLocation> getTravelPlanLocationsByTravelPlanId(int travelPlanId) throws NotFoundException {
+        if (!travelPlanRepository.existsById(travelPlanId)) {
+            throw new NotFoundException(String.format("Travel plan with ID %d does not exist", travelPlanId));
+        }
         return travelPlanLocationRepository.findAllByTravelPlanId(travelPlanId);
     }
 
