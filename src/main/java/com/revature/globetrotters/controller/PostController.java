@@ -2,7 +2,6 @@ package com.revature.globetrotters.controller;
 
 import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.service.PostService;

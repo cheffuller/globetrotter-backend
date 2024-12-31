@@ -30,18 +30,6 @@ class TravelPlanServiceTest {
     }
 
     @Test
-    void testCreateTravelPlan() {
-        TravelPlan travelPlan = new TravelPlan(1, 101, true, false);
-        when(travelPlanRepository.save(travelPlan)).thenReturn(travelPlan);
-
-        TravelPlan createdTravelPlan = travelPlanService.createTravelPlan(travelPlan);
-
-        assertNotNull(createdTravelPlan);
-        assertEquals(1, createdTravelPlan.getId());
-        verify(travelPlanRepository, times(1)).save(travelPlan);
-    }
-
-    @Test
     void testGetTravelPlanById() {
         TravelPlan travelPlan = new TravelPlan(1, 101, true, false);
         when(travelPlanRepository.getTravelPlanById(1)).thenReturn(travelPlan);

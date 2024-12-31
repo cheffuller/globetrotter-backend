@@ -5,6 +5,8 @@ import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.security.CustomerAuthenticationToken;
+import com.revature.globetrotters.security.CustomerDetails;
 import com.revature.globetrotters.util.DateArgumentConverter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -27,8 +30,10 @@ import static com.revature.globetrotters.util.DateArgumentConverter.convertToDat
 @SpringBootTest
 public class PostServiceTests {
     @Autowired
-    PostService postService;
-    ApplicationContext app;
+    private CustomerDetailService customerDetailService;
+    @Autowired
+    private PostService postService;
+    private ApplicationContext app;
 
     @BeforeEach
     public void setUp() throws InterruptedException {
@@ -43,17 +48,30 @@ public class PostServiceTests {
         SpringApplication.exit(app);
     }
 
+    private void setUpSecurityContextHolder(String username) {
+        CustomerDetails customerDetails = customerDetailService.loadCustomerByUsername(username);
+        CustomerAuthenticationToken authentication = new CustomerAuthenticationToken(
+                customerDetails.getUsername(),
+                customerDetails.getPassword(),
+                customerDetails.getUserAccountId(),
+                customerDetails.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
     @Test
     public void createPostTest() throws BadRequestException, ParseException {
         Post post = new Post(0, convertToDate("2020-01-01"), 1);
-        Post expectedPost = new Post(2, convertToDate("2020-01-01"), 1);
+        Post expectedPost = new Post(7, convertToDate("2020-01-01"), 1);
         Post actualPost = postService.createPost(post);
         Assertions.assertEquals(expectedPost, actualPost);
     }
 
     @Test
     public void findPostsByUserIdTest() throws NotFoundException, ParseException {
-        List<Post> expectedPosts = List.of(new Post(1, convertToDate("2019-01-01"), 1));
+        List<Post> expectedPosts = List.of(
+                new Post(1, convertToDate("2019-01-01"), 1),
+                new Post(5, convertToDate("2019-01-01"), 5));
         List<Post> actualPosts = postService.findPostsByUserId(1);
         Assertions.assertEquals(expectedPosts, actualPosts);
     }
@@ -89,7 +107,8 @@ public class PostServiceTests {
 
     @Test
     public void likePostTest() throws NotFoundException {
-        postService.likePost(1, 1);
+        setUpSecurityContextHolder("john_doe");
+        postService.likePost(1);
         int expectedLike = 2;
         Integer actualLiked = postService.getNumberOfLikesOnPostById(1);
         Assertions.assertEquals(expectedLike, actualLiked);
@@ -97,7 +116,8 @@ public class PostServiceTests {
 
     @Test
     public void unlikePostTest() throws BadRequestException, NotFoundException {
-        postService.unlikePost(1, 3);
+        setUpSecurityContextHolder("clark_kent");
+        postService.unlikePost(1);
         int expectedLike = 0;
         Integer actualLiked = postService.getNumberOfLikesOnPostById(1);
         Assertions.assertEquals(expectedLike, actualLiked);
@@ -111,22 +131,6 @@ public class PostServiceTests {
                 new Comment(4, convertToDate("2019-01-01"), 1, "content", 1));
         List<Comment> actualComments = postService.findCommentsByPostId(1);
         Assertions.assertEquals(expectedComments, actualComments);
-    }
-
-    @Test
-    public void postCommentTest() throws BadRequestException, ParseException {
-        Comment comment = new Comment(null, convertToDate("2019-01-02"), 1, "more-content", 3);
-
-        Comment expectedComment = new Comment(
-                7,
-                convertToDate("2019-01-02"),
-                1,
-                "more-content",
-                3
-        );
-
-        Comment actualComment = postService.postComment(comment);
-        Assertions.assertEquals(expectedComment, actualComment);
     }
 
     @ParameterizedTest
@@ -157,7 +161,8 @@ public class PostServiceTests {
 
     @Test
     public void likeCommentTest() throws NotFoundException {
-        postService.likeComment(1, 1);
+        setUpSecurityContextHolder("john_doe");
+        postService.likeComment(1);
         int expectedLike = 2;
         Integer actualLiked = postService.getNumberOfLikesOnCommentById(1);
         Assertions.assertEquals(expectedLike, actualLiked);
@@ -165,7 +170,8 @@ public class PostServiceTests {
 
     @Test
     public void unlikeCommentTest() throws BadRequestException, NotFoundException {
-        postService.unlikeComment(1, 3);
+        setUpSecurityContextHolder("clark_kent");
+        postService.unlikeComment(1);
         int expectedLike = 0;
         Integer actualLiked = postService.getNumberOfLikesOnCommentById(1);
         Assertions.assertEquals(expectedLike, actualLiked);

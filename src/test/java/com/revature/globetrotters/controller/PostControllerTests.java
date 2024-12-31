@@ -190,7 +190,7 @@ public class PostControllerTests {
 
     @ParameterizedTest
     @CsvSource({
-            "'2020-01-01', 1, 'content', 3"
+            "'2020-01-01', 1, 'content', 1"
     })
     public void postCommentTest(
             @ConvertWith(DateArgumentConverter.class) Date date,
@@ -208,7 +208,6 @@ public class PostControllerTests {
 
         Comment actualComment = objectMapper.readValue(response.body(), Comment.class);
         expectedComment.setId(actualComment.getId());
-        ;
         Assertions.assertEquals(expectedComment, actualComment);
     }
 
@@ -217,8 +216,11 @@ public class PostControllerTests {
             "1, '2019-01-01', 1, 'content', 3"
     })
     public void getCommentByIdTest(
-            Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
-            Integer postId, String content, Integer userId)
+            Integer commentId,
+            @ConvertWith(DateArgumentConverter.class) Date date,
+            Integer postId,
+            String content,
+            Integer userId)
             throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/comments/" + commentId))

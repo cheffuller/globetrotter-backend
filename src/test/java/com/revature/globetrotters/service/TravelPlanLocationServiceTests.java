@@ -54,8 +54,8 @@ public class TravelPlanLocationServiceTests {
                 7,
                 "New York",
                 "United States",
-                convertToDate("2020-12-31"),
                 convertToDate("2020-12-01"),
+                convertToDate("2020-12-31"),
                 1
         );
 
@@ -84,13 +84,12 @@ public class TravelPlanLocationServiceTests {
 
     @Test
     void getTravelPlanLocationByIdTest() throws BadRequestException, ParseException {
-        DateArgumentConverter converter = new DateArgumentConverter();
         TravelPlanLocation expectedResult = new TravelPlanLocation(
-                7,
-                "New York",
-                "United States",
-                convertToDate("2020-12-31"),
-                convertToDate("2020-12-01"),
+                1,
+                "Sydney",
+                "Australia",
+                convertToDate("2018-12-31"),
+                convertToDate("2018-12-01"),
                 1);
         TravelPlanLocation actualResult = travelPlanLocationService.getTravelPlanLocationById(1, 1);
 
