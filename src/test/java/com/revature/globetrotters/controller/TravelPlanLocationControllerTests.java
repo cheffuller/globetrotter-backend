@@ -87,6 +87,19 @@ public class TravelPlanLocationControllerTests {
         Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
     }
 
+    @Test
+    public void getNonExistentTravelPlanLocationsTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/plans/100/locations"))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken())
+                .GET()
+                .build();
+
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
+    }
+
     @ParameterizedTest
     @CsvSource({
             "1, 'Sydney', 'Australia', '2018-12-31', '2018-12-01', 1"
@@ -108,5 +121,29 @@ public class TravelPlanLocationControllerTests {
         Assertions.assertEquals(expected, actual);
     }
 
+    @Test
+    public void getNonExistentTravelPlanLocationByExistingTravelPlanIdTest() throws IOException, InterruptedException, JSONException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/plans/1/locations/100"))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken())
+                .GET()
+                .build();
 
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
+    }
+
+    @Test
+    public void getExistingTravelPlanLocationByInvalidTravelPlanIdTest() throws IOException, InterruptedException, JSONException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/plans/10/locations/1"))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken())
+                .GET()
+                .build();
+
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
+    }
 }

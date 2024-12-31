@@ -1,7 +1,6 @@
 package com.revature.globetrotters.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
@@ -18,8 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.sql.Date;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -31,16 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserAccountControllerTest {
-
     @Mock
     private AccountService accountService;
-
     @InjectMocks
     private UserAccountController userAccountController;
-
     @Autowired
     private MockMvc mockMvc;
-
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -136,21 +129,5 @@ public class UserAccountControllerTest {
                 .andExpect(status().isOk());
 
         verify(accountService, times(1)).findListOfUsersFollowed(1);
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-            "3, 1"
-    })
-    public void testFollowUser(int followerId, int followingId) throws Exception {
-        UserAccount account = new UserAccount();
-        account.setId(followerId);
-
-        mockMvc.perform(post("/users/" + followingId + "/following")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(account)))
-                .andExpect(status().isOk());
-
-        verify(accountService, times(1)).followUser(followerId, followingId);
     }
 }

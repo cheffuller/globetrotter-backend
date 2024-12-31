@@ -1,6 +1,5 @@
 package com.revature.globetrotters.service;
 
-import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
@@ -42,8 +41,10 @@ public class TravelPlanService {
         return travelPlanRepository.save(travelPlan);
     }
 
-    public TravelPlan getTravelPlanById(Integer travelPlanId) {
-        return travelPlanRepository.getTravelPlanById(travelPlanId);
+    public TravelPlan getTravelPlanById(Integer travelPlanId) throws NotFoundException {
+        return travelPlanRepository.findById(travelPlanId).orElseThrow(() ->
+                new NotFoundException(String.format("Travel plan with ID %d not found.", travelPlanId))
+        );
     }
 
     // Add authorization so only the poster or a moderator can update
@@ -64,7 +65,7 @@ public class TravelPlanService {
 
     // Add authorization so only the poster or a moderator can delete
     public void deleteTravelPlan(Integer travelPlanId) {
-        if (travelPlanRepository.getTravelPlanById(travelPlanId) == null) {
+        if (travelPlanRepository.findById(travelPlanId) == null) {
             throw new IllegalArgumentException("Travel plan not found");
         }
         travelPlanRepository.deleteById(travelPlanId);
