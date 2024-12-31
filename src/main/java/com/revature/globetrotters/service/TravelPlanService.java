@@ -35,6 +35,7 @@ public class TravelPlanService {
     }
 
     public TravelPlan createTravelPlan(TravelPlan travelPlan) {
+
         return travelPlanRepository.save(travelPlan);
     }
 
