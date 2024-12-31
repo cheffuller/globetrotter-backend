@@ -104,6 +104,7 @@ public class PostService {
         return optionalComment.orElseThrow(() -> new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
     }
 
+    // Add authorization so only the commenter or a moderator can delete a comment
     public void deleteComment(Integer commentId) throws NotFoundException {
         if (commentRepository.existsById(commentId)) {
             commentRepository.deleteById(commentId);
@@ -119,17 +120,14 @@ public class PostService {
         return commentLikeRepository.findNumberOfLikesByCommentId(commentId);
     }
 
-    public void likeComment(Integer commentId, Integer userId) throws NotFoundException {
+    public void likeComment(Integer commentId) throws NotFoundException {
         if (!commentRepository.existsById(commentId)) {
             throw new NotFoundException(String.format("Comment with ID %d not found.", commentId));
         }
-        if (!userAccountRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("User with ID %d not found.", userId));
-        }
-        commentLikeRepository.save(new CommentLike(commentId, userId));
+        commentLikeRepository.save(new CommentLike(commentId, tokenService.getUserAccountId()));
     }
 
-    public void unlikeComment(Integer commentId, Integer userId) {
-        commentLikeRepository.delete(new CommentLike(commentId, userId));
+    public void unlikeComment(Integer commentId) {
+        commentLikeRepository.delete(new CommentLike(commentId, tokenService.getUserAccountId()));
     }
 }
