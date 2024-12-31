@@ -92,7 +92,7 @@ public class TravelPlanLocationServiceTests {
                 convertToDate("2018-12-31"),
                 convertToDate("2018-12-01"),
                 1);
-        TravelPlanLocation actualResult = travelPlanLocationService.getTravelPlanLocationById(1, 1);
+        TravelPlanLocation actualResult = travelPlanLocationService.getTravelPlanLocationByIdAndTravelPlanId(1, 1);
 
         Assertions.assertEquals(expectedResult, actualResult,
                 "Expected: " + expectedResult + ". Actual: " + actualResult);

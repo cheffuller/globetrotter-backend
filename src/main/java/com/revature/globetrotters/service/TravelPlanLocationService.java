@@ -1,14 +1,15 @@
 package com.revature.globetrotters.service;
 
-import com.revature.globetrotters.exception.NotFoundException;
-import org.springframework.stereotype.Service;
-import com.revature.globetrotters.exception.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
-import com.revature.globetrotters.repository.TravelPlanRepository;
+import com.revature.globetrotters.exception.BadRequestException;
+import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
+import com.revature.globetrotters.repository.TravelPlanRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 @Service
 public class TravelPlanLocationService {
-    
+
     @Autowired
     TravelPlanRepository travelPlanRepository;
     @Autowired
@@ -28,11 +29,11 @@ public class TravelPlanLocationService {
     }
 
     public TravelPlanLocation createTravelPlanLocation(TravelPlanLocation travelPlanLocation) throws BadRequestException {
-        if(travelPlanLocation.getCity().isEmpty() || travelPlanLocation.getCountry().isEmpty() || travelPlanLocation.getStartDate() == null || travelPlanLocation.getEndDate() == null) {
+        if (travelPlanLocation.getCity().isEmpty() || travelPlanLocation.getCountry().isEmpty() || travelPlanLocation.getStartDate() == null || travelPlanLocation.getEndDate() == null) {
             throw new BadRequestException("Invalid travel plan location");
         }
         Optional<TravelPlan> travelPlan = travelPlanRepository.findById(travelPlanLocation.getTravelPlanId());
-        if(travelPlan.isEmpty()) {
+        if (travelPlan.isEmpty()) {
             throw new BadRequestException("Travel plan does not exist");
         } else {
             //we want to set the travel plan location to the travel plan
@@ -44,15 +45,27 @@ public class TravelPlanLocationService {
         return travelPlanLocationRepository.findLocationsByTravelPlanId(travelPlanId);
     }
 
-    public TravelPlanLocation getTravelPlanLocationById(int travelPlanId, int locationId) throws NotFoundException {
-        if(travelPlanRepository.findById(travelPlanId).isEmpty()) {
-            throw new NotFoundException("Travel plan does not exist");
-        } 
-        Optional<TravelPlanLocation> travelPlanLocation = travelPlanLocationRepository.findById(locationId);
-        if(travelPlanLocation.isEmpty()) {
-            throw new NotFoundException("Travel plan location does not exist");
-        } else {
-            return travelPlanLocation.get();
-        }
+    public TravelPlanLocation getTravelPlanLocationById(int locationId) throws NotFoundException {
+        return travelPlanLocationRepository.findById(locationId).orElseThrow(() ->
+                new NotFoundException(String.format("Travel plan location with ID %d not found", locationId)));
+    }
+
+    public TravelPlanLocation getTravelPlanLocationByIdAndTravelPlanId(int travelPlanId, int id) throws NotFoundException {
+        return travelPlanLocationRepository.findLocationByTravelPlanIdAndLocationId(travelPlanId, id).orElseThrow(() ->
+                new NotFoundException(String.format(
+                        "Travel plan location with ID %d and travel plan ID %d not found",
+                        id,
+                        travelPlanId
+                )));
+    }
+
+    public TravelPlanLocation getTravelPlanLocationWithOffsetByTravelPlanId(int travelPlanId, int offset)
+            throws NotFoundException {
+        return travelPlanLocationRepository.findNthLocationByTravelPlanId(travelPlanId, offset)
+                .orElseThrow(() -> new NotFoundException(String.format(
+                        "Travel plan location with offset %d not found for travel plan with ID %d",
+                        offset,
+                        travelPlanId
+                )));
     }
 }

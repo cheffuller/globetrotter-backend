@@ -99,7 +99,7 @@ public class TravelController {
             @PathVariable("locationId") int travelPlanId, @PathVariable("planId") int locationId)
             throws NotFoundException {
         // call travel plan location service layer to get travel plan location by its id
-        TravelPlanLocation location = travelPlanLocationService.getTravelPlanLocationById(travelPlanId, locationId);
+        TravelPlanLocation location = travelPlanLocationService.getTravelPlanLocationByIdAndTravelPlanId(travelPlanId, locationId);
         return ResponseEntity.status(HttpStatus.OK).body(location);
     }
 
@@ -109,7 +109,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}/likes")
-    public ResponseEntity<Integer> getNumberOfLikesOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException{
+    public ResponseEntity<Integer> getNumberOfLikesOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfLikesOnPostByTravelPlanId(travelPlanId));
     }
 
