@@ -1,5 +1,6 @@
 package com.revature.globetrotters.service;
 
+import com.revature.globetrotters.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import com.revature.globetrotters.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +44,13 @@ public class TravelPlanLocationService {
         return travelPlanLocationRepository.findLocationsByTravelPlanId(travelPlanId);
     }
 
-    public TravelPlanLocation getTravelPlanLocationById(int travelPlanId, int locationId) throws BadRequestException {
+    public TravelPlanLocation getTravelPlanLocationById(int travelPlanId, int locationId) throws NotFoundException {
         if(travelPlanRepository.findById(travelPlanId).isEmpty()) {
-            throw new BadRequestException("Travel plan does not exist");
+            throw new NotFoundException("Travel plan does not exist");
         } 
         Optional<TravelPlanLocation> travelPlanLocation = travelPlanLocationRepository.findById(locationId);
         if(travelPlanLocation.isEmpty()) {
-            throw new BadRequestException("Travel plan location does not exist");
+            throw new NotFoundException("Travel plan location does not exist");
         } else {
             return travelPlanLocation.get();
         }
