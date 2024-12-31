@@ -1,6 +1,5 @@
 package com.revature.globetrotters.controller;
 
-import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.BadRequestException;

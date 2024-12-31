@@ -57,6 +57,7 @@ public class PostService {
         return optionalPost.orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
     }
 
+    // Add authorization so only the poster or a moderator can delete a post
     public void deletePost(Integer postId) throws NotFoundException {
         if (postRepository.existsById(postId)) {
             postRepository.deleteById(postId);
@@ -91,9 +92,7 @@ public class PostService {
     }
 
     public Comment postComment(Comment comment) throws BadRequestException {
-        if (!userAccountRepository.existsById(comment.getUserId())) {
-            throw new BadRequestException(String.format("User with ID %d does not exist.", comment.getUserId()));
-        }
+        comment.setUserId(tokenService.getUserAccountId());
         if (!postRepository.existsById(comment.getPostId())) {
             throw new BadRequestException(String.format("Post with ID %d does not exist.", comment.getPostId()));
         }
