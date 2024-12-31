@@ -86,9 +86,4 @@ public class UserAccountController {
     public ResponseEntity<List<TravelPlan>> getPlans(@PathVariable("user-id") int userId) throws NotFoundException {
         return ResponseEntity.ok(accountService.getPlans(userId));
     }
-
-    @PostMapping("/{user-id}/posts")
-    public ResponseEntity<?> createPost(@PathVariable("user-id") int userId, @RequestBody Post post) throws NotFoundException {
-        return ResponseEntity.ok(accountService.createPost(userId, post));
-    }
 }
