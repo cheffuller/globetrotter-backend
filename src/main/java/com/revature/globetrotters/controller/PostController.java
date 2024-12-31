@@ -115,7 +115,7 @@ public class PostController {
     }
 
     @DeleteMapping("posts/{postId}/likes")
-    public ResponseEntity<?> unlikePost(@PathVariable int postId) {
+    public ResponseEntity unlikePost(@PathVariable int postId) {
         postService.unlikePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
