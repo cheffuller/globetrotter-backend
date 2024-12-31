@@ -72,14 +72,11 @@ public class PostService {
         return postLikeRepository.findNumberOfLikesByPostId(postId);
     }
 
-    public void likePost(Integer postId, Integer userId) throws NotFoundException {
+    public void likePost(Integer postId) throws NotFoundException {
         if (!postRepository.existsById(postId)) {
             throw new NotFoundException(String.format("Post with ID %d not found.", postId));
         }
-        if (!userAccountRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("User with ID %d not found.", userId));
-        }
-        postLikeRepository.save(new PostLike(postId, userId));
+        postLikeRepository.save(new PostLike(postId, tokenService.getUserAccountId()));
     }
 
     public void unlikePost(Integer postId) {

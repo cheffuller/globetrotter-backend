@@ -109,8 +109,8 @@ public class PostController {
     }
 
     @PostMapping("posts/{postId}/likes")
-    public ResponseEntity likePost(@PathVariable int postId, @RequestBody UserAccount account) throws NotFoundException {
-        postService.likePost(postId, account.getId());
+    public ResponseEntity likePost(@PathVariable int postId) throws NotFoundException {
+        postService.likePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
