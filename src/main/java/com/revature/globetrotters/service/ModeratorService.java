@@ -5,6 +5,7 @@ import com.revature.globetrotters.entity.BannedUser;
 import com.revature.globetrotters.entity.ModeratorAccount;
 import com.revature.globetrotters.enums.AccountRole;
 import com.revature.globetrotters.exception.BadRequestException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.BannedUserRepository;
 import com.revature.globetrotters.repository.CommentRepository;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.revature.globetrotters.utils.SecurityUtil.isModerator;
+
 @Service
 public class ModeratorService {
     @Autowired
@@ -28,21 +31,30 @@ public class ModeratorService {
     @Autowired
     private ModeratorAccountRepository moderatorAccountRepository;
 
-    public void banUser(int userId) throws NotFoundException {
+    public void banUser(int userId) throws NotFoundException, UnauthorizedException {
+        if (!isModerator()) {
+            throw new UnauthorizedException("Unauthorized request to ban user.");
+        }
         if (!moderatorAccountRepository.existsById(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
         bannedUserRepository.save(new BannedUser(userId));
     }
 
-    public void unbanUser(int userId) throws NotFoundException {
+    public void unbanUser(int userId) throws NotFoundException, UnauthorizedException {
+        if (!isModerator()) {
+            throw new UnauthorizedException("Unauthorized request to ban user.");
+        }
         if (!bannedUserRepository.existsById(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
         bannedUserRepository.delete(new BannedUser(userId));
     }
 
-    public void deleteComment(int commentId) throws NotFoundException {
+    public void deleteComment(int commentId) throws NotFoundException, UnauthorizedException {
+        if (!isModerator()) {
+            throw new UnauthorizedException("Unauthorized request to ban user.");
+        }
         if (!commentRepository.existsById(commentId)) {
             throw new NotFoundException(String.format("Comment with ID %d does not exist.", commentId));
         }

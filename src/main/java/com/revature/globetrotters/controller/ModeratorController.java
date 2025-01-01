@@ -1,8 +1,8 @@
 package com.revature.globetrotters.controller;
 
 import com.revature.globetrotters.entity.ModeratorAccount;
-import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.BadRequestException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.service.ModeratorService;
 import org.slf4j.Logger;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +35,11 @@ public class ModeratorController {
     public ResponseEntity handleNotFoundException(NotFoundException exception) {
         logger.info(exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity handleUnauthorizedException(UnauthorizedException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
     @PostMapping("/login")
