@@ -85,7 +85,7 @@ public class UserAccountServiceTest {
     }
 
     @Test
-    public void testAuthenticateSuccess() throws NotFoundException, BadRequestException {
+    public void testLoginSuccess() throws NotFoundException, BadRequestException {
         String username = "username";
         String password = "password";
         UserAccount account = createUserAccount(username, password);
@@ -95,33 +95,33 @@ public class UserAccountServiceTest {
         when(userAccountRepository.findByUsername(username)).thenReturn(Optional.of(foundAccount));
         when(mockPasswordEncoder.matches(password, foundAccount.getPassword())).thenReturn(true);
 
-        String token = accountService.authenticate(account);
+        String token = accountService.login(account);
         String tokenSubject = JwtUtil.extractSubjectFromToken(token);
         assertEquals(username, tokenSubject);
     }
 
     @Test
-    public void testAuthenticateNullUsername() {
+    public void testLoginNullUsername() {
         assertThrows(BadRequestException.class,
-                () -> accountService.authenticate(createUserAccount(null, "password")));
+                () -> accountService.login(createUserAccount(null, "password")));
     }
 
     @Test
-    public void testAuthenticateEmptyUsername() {
+    public void testLoginEmptyUsername() {
         assertThrows(BadRequestException.class,
-                () -> accountService.authenticate(createUserAccount("", "password")));
+                () -> accountService.login(createUserAccount("", "password")));
     }
 
     @Test
-    public void testAuthenticateNullPassword() {
+    public void testLoginNullPassword() {
         assertThrows(BadRequestException.class,
-                () -> accountService.authenticate(createUserAccount("testuser", null)));
+                () -> accountService.login(createUserAccount("testuser", null)));
     }
 
     @Test
-    public void testAuthenticateEmptyPassword() {
+    public void testLoginEmptyPassword() {
         assertThrows(BadRequestException.class,
-                () -> accountService.authenticate(createUserAccount("testuser", "")));
+                () -> accountService.login(createUserAccount("testuser", "")));
     }
 
     @Test

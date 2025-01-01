@@ -4,6 +4,7 @@ import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +43,14 @@ public class UserAccountController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity handleUnauthorizedException(UnauthorizedException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserAccount account) throws NotFoundException, BadRequestException {
-        String token = accountService.authenticate(account);
+        String token = accountService.login(account);
         return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 

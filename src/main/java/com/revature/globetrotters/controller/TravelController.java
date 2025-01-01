@@ -4,6 +4,7 @@ import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.service.TravelPlanLocationService;
 import com.revature.globetrotters.service.TravelPlanService;
 import org.slf4j.Logger;
@@ -44,6 +45,11 @@ public class TravelController {
     public ResponseEntity handleNotFoundException(NotFoundException exception) {
         logger.info(exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity handleUnauthorizedException(UnauthorizedException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
     @PostMapping("")
