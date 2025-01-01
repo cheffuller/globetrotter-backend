@@ -3,7 +3,7 @@ package com.revature.globetrotters.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.TravelPlanLocation;
-import com.revature.globetrotters.security.JwtUtil;
+import com.revature.globetrotters.utils.JwtUtil;
 import com.revature.globetrotters.util.DateArgumentConverter;
 
 import org.json.JSONException;

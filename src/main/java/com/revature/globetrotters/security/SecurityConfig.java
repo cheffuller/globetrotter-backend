@@ -1,5 +1,6 @@
 package com.revature.globetrotters.security;
 
+import com.revature.globetrotters.enums.PublicUrl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -10,15 +11,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> {
-                    authorize.requestMatchers("/users/login").permitAll();
-                    authorize.requestMatchers("/users/register").permitAll();
-                    authorize.requestMatchers("/moderators/login").permitAll();
+                    Arrays.stream(PublicUrl.values()).forEach(endpoint ->
+                            authorize.requestMatchers(endpoint.getUrl()).permitAll()
+                    );
                     authorize.anyRequest().authenticated();
                 })
                 .cors(Customizer.withDefaults())

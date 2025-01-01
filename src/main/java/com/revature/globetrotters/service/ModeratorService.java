@@ -10,7 +10,7 @@ import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.BannedUserRepository;
 import com.revature.globetrotters.repository.CommentRepository;
 import com.revature.globetrotters.repository.ModeratorAccountRepository;
-import com.revature.globetrotters.security.JwtUtil;
+import com.revature.globetrotters.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
