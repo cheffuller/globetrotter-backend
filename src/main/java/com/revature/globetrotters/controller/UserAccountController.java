@@ -44,7 +44,7 @@ public class UserAccountController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserAccount account) throws NotFoundException, BadRequestException {
-        String token = accountService.authenticate(account);
+        String token = accountService.login(account);
         return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 

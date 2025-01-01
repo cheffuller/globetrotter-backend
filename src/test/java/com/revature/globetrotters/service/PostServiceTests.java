@@ -5,8 +5,7 @@ import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
-import com.revature.globetrotters.security.CustomerAuthenticationToken;
-import com.revature.globetrotters.security.CustomerDetails;
+import com.revature.globetrotters.security.UserAuthenticationToken;
 import com.revature.globetrotters.util.DateArgumentConverter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -30,7 +29,7 @@ import static com.revature.globetrotters.util.DateArgumentConverter.convertToDat
 @SpringBootTest
 public class PostServiceTests {
     @Autowired
-    private CustomerDetailService customerDetailService;
+    private AuthenticationTokenService authenticationTokenService;
     @Autowired
     private PostService postService;
     private ApplicationContext app;
@@ -48,14 +47,8 @@ public class PostServiceTests {
         SpringApplication.exit(app);
     }
 
-    private void setUpSecurityContextHolder(String username) {
-        CustomerDetails customerDetails = customerDetailService.loadCustomerByUsername(username);
-        CustomerAuthenticationToken authentication = new CustomerAuthenticationToken(
-                customerDetails.getUsername(),
-                customerDetails.getPassword(),
-                customerDetails.getUserAccountId(),
-                customerDetails.getAuthorities()
-        );
+    private void setUpSecurityContextHolder(String username) throws NotFoundException {
+        UserAuthenticationToken authentication = authenticationTokenService.getAuthenticationTokenByUsername(username);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

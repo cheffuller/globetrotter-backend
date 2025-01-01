@@ -57,7 +57,7 @@ public class UserAccountControllerTest {
                         .content(objectMapper.writeValueAsString(account)))
                 .andExpect(status().isOk());
 
-        verify(accountService, times(1)).authenticate(account);
+        verify(accountService, times(1)).login(account);
     }
 
     @Test
@@ -65,14 +65,14 @@ public class UserAccountControllerTest {
         UserAccount account = new UserAccount();
         account.setUsername("invalid_user");
         account.setPassword("wrong_password");
-        when(accountService.authenticate(account)).thenThrow(new BadRequestException(""));
+        when(accountService.login(account)).thenThrow(new BadRequestException(""));
 
         mockMvc.perform(post("/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(account)))
                 .andExpect(status().isBadRequest());
 
-        verify(accountService, times(1)).authenticate(account);
+        verify(accountService, times(1)).login(account);
     }
 
     @Test

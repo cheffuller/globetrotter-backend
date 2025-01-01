@@ -18,6 +18,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/users/login").permitAll();
                     authorize.requestMatchers("/users/register").permitAll();
+                    authorize.requestMatchers("/moderators/login").permitAll();
                     authorize.anyRequest().authenticated();
                 })
                 .cors(Customizer.withDefaults())

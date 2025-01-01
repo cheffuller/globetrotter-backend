@@ -1,12 +1,14 @@
 package com.revature.globetrotters.service;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.revature.globetrotters.consts.JwtConsts;
 import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.FollowRequest;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.entity.UserProfile;
+import com.revature.globetrotters.enums.AccountRole;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.FollowRepository;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -51,7 +54,7 @@ public class AccountService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public String authenticate(UserAccount account) throws NotFoundException, BadRequestException {
+    public String login(UserAccount account) throws NotFoundException, BadRequestException {
         if (!account.isPasswordValid() || !account.isUsernameValid()) {
             throw new BadRequestException("Username and password are required.");
         }
@@ -63,10 +66,12 @@ public class AccountService {
 
         if (!passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword())) {
             throw new BadRequestException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
-                    ".\nPassword: " + account.getPassword() + ".\nFound passwrd hash: " + foundAccount.get().getPassword());
+                    ".\nPassword: " + account.getPassword() + ".\nFound password hash: " + foundAccount.get().getPassword());
         }
 
-        return JwtUtil.generateTokenFromUserName(account.getUsername(), new HashMap<>());
+        return JwtUtil.generateTokenFromUserName(account.getUsername(), Map.of(
+                JwtConsts.ACCOUNT_ROLE, AccountRole.Customer.getRole()
+        ));
     }
 
     public void register(UserAccount account) throws BadRequestException {

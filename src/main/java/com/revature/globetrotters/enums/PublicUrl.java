@@ -1,7 +1,8 @@
 package com.revature.globetrotters.enums;
 
 public enum PublicUrl {
-    LOGIN("/users/login"),
+    CUSTOMER_LOGIN("/users/login"),
+    MODERATOR_LOGIN("/moderators/login"),
     REGISTER("/users/register");
 
     private final String url;
