@@ -1,4 +1,4 @@
-package com.revature.globetrotters.security;
+package com.revature.globetrotters.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

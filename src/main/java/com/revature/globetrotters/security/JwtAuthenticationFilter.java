@@ -4,6 +4,7 @@ import com.revature.globetrotters.consts.JwtConsts;
 import com.revature.globetrotters.enums.AccountRole;
 import com.revature.globetrotters.enums.PublicUrl;
 import com.revature.globetrotters.service.AuthenticationTokenService;
+import com.revature.globetrotters.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
