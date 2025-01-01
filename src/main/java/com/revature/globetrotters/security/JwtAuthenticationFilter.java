@@ -29,27 +29,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
-        String requestURI = request.getRequestURI();
-        if (PublicUrl.isPublicUrl(requestURI)) {
-            logger.info("{} is a public URL.", requestURI);
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        final String token = request.getHeader(JwtConsts.AUTHORIZATION);
-        logger.info("Token received: {}", token);
-        if (token == null) {
-            logger.info("Filtered null token.");
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
-        final String username = JwtUtil.extractSubjectFromToken(token);
-        final AccountRole role = AccountRole.valueOf(
-                (String) JwtUtil.extractValueFromTokenByKey(token, JwtConsts.ACCOUNT_ROLE));
+            @NonNull FilterChain filterChain) throws IOException {
         try {
+            String requestURI = request.getRequestURI();
+            if (PublicUrl.isPublicUrl(requestURI)) {
+                logger.info("{} is a public URL.", requestURI);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            final String token = request.getHeader(JwtConsts.AUTHORIZATION);
+            logger.info("Token received: {}", token);
+            if (token == null) {
+                logger.info("Filtered null token.");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            final String username = JwtUtil.extractSubjectFromToken(token);
+            final AccountRole role = AccountRole.valueOf(
+                    (String) JwtUtil.extractValueFromTokenByKey(token, JwtConsts.ACCOUNT_ROLE));
             UserAuthenticationToken authenticationToken;
             switch (role) {
                 case Moderator:
@@ -63,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             logger.info("Authentication for {} {} successful.", role, username);
         } catch (Exception e) {
-            logger.info("Filtered invalid authentication token.");
+            logger.info(e.getMessage());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         }
     }
