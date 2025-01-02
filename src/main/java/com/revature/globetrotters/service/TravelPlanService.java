@@ -1,9 +1,12 @@
 package com.revature.globetrotters.service;
 
+import com.revature.globetrotters.entity.Collaborator;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
+import com.revature.globetrotters.repository.CollaboratorRepository;
 import com.revature.globetrotters.repository.CommentRepository;
 import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
@@ -16,8 +19,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static com.revature.globetrotters.utils.SecurityUtil.isModerator;
+import static com.revature.globetrotters.utils.SecurityUtil.userIdMatchAuthentication;
+
 @Service
 public class TravelPlanService {
+    @Autowired
+    private CollaboratorRepository collaboratorRepository;
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
@@ -38,16 +46,19 @@ public class TravelPlanService {
     public TravelPlan createTravelPlan(TravelPlan travelPlan) {
         travelPlan.setAccountId(tokenService.getUserAccountId());
         // Add validation for travel plan
-        return travelPlanRepository.save(travelPlan);
+        TravelPlan plan = travelPlanRepository.save(travelPlan);
+        collaboratorRepository.save(new Collaborator(travelPlan.getAccountId(), travelPlan.getId()));
+        return plan;
     }
 
     public TravelPlan getTravelPlanById(Integer travelPlanId) throws NotFoundException {
-        return travelPlanRepository.findById(travelPlanId).orElseThrow(() ->
-                new NotFoundException(String.format("Travel plan with ID %d not found.", travelPlanId))
+        return travelPlanRepository.findById(travelPlanId)
+                .orElseThrow(() -> new NotFoundException(String.format("Travel plan with ID %d not found.", travelPlanId))
         );
     }
 
-    // Add authorization so only the poster or a moderator can update
+    // TODO: fix this function. It's not saving the updated information to the database
+    // Add authorization so only collaborators can update
     public TravelPlanLocation updateTravelPlan(TravelPlanLocation travelPlan) {
         Optional<TravelPlanLocation> existingTravelPlan = travelPlanLocationRepository.findById(travelPlan.getId());
         if (existingTravelPlan == null) {
@@ -63,11 +74,18 @@ public class TravelPlanService {
         return travelPlanLocationRepository.save(updatedTravelPlan);
     }
 
-    // Add authorization so only the poster or a moderator can delete
-    public void deleteTravelPlan(Integer travelPlanId) {
-        if (travelPlanRepository.findById(travelPlanId) == null) {
-            throw new IllegalArgumentException("Travel plan not found");
+    public void deleteTravelPlan(Integer travelPlanId) throws NotFoundException, UnauthorizedException {
+        TravelPlan plan = travelPlanRepository.findById(travelPlanId)
+                .orElseThrow(() -> new NotFoundException("Travel plan not found."));
+
+        if (!isModerator() && !userIdMatchAuthentication(plan.getAccountId())) {
+            throw new UnauthorizedException(String.format(
+                    "User with ID %d is not authorized to delete travel plan with ID %d",
+                    tokenService.getUserAccountId(),
+                    travelPlanId
+            ));
         }
+
         travelPlanRepository.deleteById(travelPlanId);
     }
 

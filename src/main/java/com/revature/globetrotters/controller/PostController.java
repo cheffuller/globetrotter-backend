@@ -43,6 +43,7 @@ public class PostController {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity handleUnauthorizedException(UnauthorizedException exception) {
+        logger.info(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
@@ -53,7 +54,7 @@ public class PostController {
     }
 
     @PostMapping("posts")
-    public ResponseEntity<Post> postPost(@RequestBody Post newPost) throws BadRequestException {
+    public ResponseEntity<Post> postPost(@RequestBody Post newPost) throws BadRequestException, UnauthorizedException {
         Post post = postService.createPost(newPost);
         return ResponseEntity.status(HttpStatus.OK).body(post);
     }
@@ -64,7 +65,7 @@ public class PostController {
     }
 
     @DeleteMapping("posts/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable int postId) throws NotFoundException {
+    public ResponseEntity<String> deletePost(@PathVariable int postId) throws NotFoundException, UnauthorizedException {
         postService.deletePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
@@ -90,7 +91,8 @@ public class PostController {
     }
 
     @DeleteMapping("comments/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable int commentId) throws NotFoundException {
+    public ResponseEntity<String> deleteComment(@PathVariable int commentId)
+            throws NotFoundException, UnauthorizedException {
         postService.deleteComment(commentId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }

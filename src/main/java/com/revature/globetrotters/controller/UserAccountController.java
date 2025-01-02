@@ -45,6 +45,7 @@ public class UserAccountController {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity handleUnauthorizedException(UnauthorizedException exception) {
+        logger.info(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 

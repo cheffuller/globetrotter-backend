@@ -5,6 +5,7 @@ import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.security.UserAuthenticationToken;
 import com.revature.globetrotters.util.DateArgumentConverter;
 import org.junit.jupiter.api.AfterEach;
@@ -48,12 +49,12 @@ public class PostServiceTests {
     }
 
     private void setUpSecurityContextHolder(String username) throws NotFoundException {
-        UserAuthenticationToken authentication = authenticationTokenService.getAuthenticationTokenByUsername(username);
+        UserAuthenticationToken authentication = authenticationTokenService.getUserTokenByUsername(username);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Test
-    public void createPostTest() throws BadRequestException, ParseException {
+    public void createPostTest() throws BadRequestException, ParseException, UnauthorizedException {
         Post post = new Post(0, convertToDate("2020-01-01"), 1);
         Post expectedPost = new Post(7, convertToDate("2020-01-01"), 1);
         Post actualPost = postService.createPost(post);
@@ -81,7 +82,7 @@ public class PostServiceTests {
     }
 
     @Test
-    public void deletePostTest() throws NotFoundException {
+    public void deletePostTest() throws NotFoundException, UnauthorizedException {
         postService.deletePost(1);
         Assertions.assertThrows(NotFoundException.class, () -> postService.findPostById(1));
     }

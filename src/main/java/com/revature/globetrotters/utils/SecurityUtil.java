@@ -9,4 +9,9 @@ public class SecurityUtil {
         UserAuthenticationToken token = (UserAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         return token.getAccountRole().equals(AccountRole.Moderator);
     }
+
+    public static boolean userIdMatchAuthentication(int userId) {
+        UserAuthenticationToken token = (UserAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        return userId == token.getUserAccountId();
+    }
 }

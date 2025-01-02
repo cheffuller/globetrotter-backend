@@ -4,7 +4,6 @@ import ch.qos.logback.core.util.StringUtil;
 import com.revature.globetrotters.consts.JwtConsts;
 import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.FollowRequest;
-import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.entity.UserProfile;
@@ -163,12 +162,5 @@ public class AccountService {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
         return planRepository.getTravelPlansByAccountId(userId);
-    }
-
-    public Post createPost(int userId, Post post) throws NotFoundException {
-        if (!userAccountRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
-        }
-        return postRepository.save(post); // Assuming the createPost method should save the post
     }
 }

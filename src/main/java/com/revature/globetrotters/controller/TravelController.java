@@ -49,6 +49,7 @@ public class TravelController {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity handleUnauthorizedException(UnauthorizedException exception) {
+        logger.info(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
@@ -94,7 +95,7 @@ public class TravelController {
     @PostMapping("/{planId}/locations")
     public ResponseEntity<TravelPlanLocation> createTravelPlanLocation(
             @PathVariable("planId") int travelPlanId, @RequestBody TravelPlanLocation travelPlanLocation)
-            throws BadRequestException {
+            throws BadRequestException, UnauthorizedException {
         // call travel plan location service layer to create travel plan location
         TravelPlanLocation newLocation = travelPlanLocationService.createTravelPlanLocation(travelPlanLocation);
         return ResponseEntity.status(HttpStatus.OK).body(newLocation);
