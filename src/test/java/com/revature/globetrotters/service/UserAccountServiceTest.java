@@ -4,6 +4,7 @@ import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.FollowRepository;
 import com.revature.globetrotters.repository.FollowRequestRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
@@ -85,7 +86,7 @@ public class UserAccountServiceTest {
     }
 
     @Test
-    public void testLoginSuccess() throws NotFoundException, BadRequestException {
+    public void testLoginSuccess() throws UnauthorizedException {
         String username = "username";
         String password = "password";
         UserAccount account = createUserAccount(username, password);

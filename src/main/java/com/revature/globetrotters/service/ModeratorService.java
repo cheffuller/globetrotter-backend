@@ -61,18 +61,18 @@ public class ModeratorService {
         commentRepository.deleteById(commentId);
     }
 
-    public String login(ModeratorAccount account) throws NotFoundException, BadRequestException {
+    public String login(ModeratorAccount account) throws UnauthorizedException {
         if (!account.isPasswordValid() || !account.isUsernameValid()) {
-            throw new BadRequestException("Username and password are required.");
+            throw new UnauthorizedException("Username and password are required.");
         }
 
         Optional<ModeratorAccount> foundAccount = moderatorAccountRepository.findByUsername(account.getUsername());
         if (foundAccount.isEmpty()) {
-            throw new NotFoundException(String.format("User with username %s not found.", account.getUsername()));
+            throw new UnauthorizedException(String.format("User with username %s not found.", account.getUsername()));
         }
 
         if (!passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword())) {
-            throw new BadRequestException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
+            throw new UnauthorizedException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
                     ".\nPassword: " + account.getPassword() + ".\nFound password hash: " + foundAccount.get().getPassword());
         }
 
