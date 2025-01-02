@@ -12,7 +12,7 @@ import java.util.List;
 public interface CollaboratorRepository extends JpaRepository<Collaborator, Collaborator.CollaboratorId> {
     @Query("""
             SELECT c
-            FROM Collaborator
+            FROM Collaborator c
             WHERE c.id.travelPlanId = :travelPlanId""")
     List<Collaborator> findAllByPlanId(@Param("travelPlanId") Integer travelPlanId);
 }

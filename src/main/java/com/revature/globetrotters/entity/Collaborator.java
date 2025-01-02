@@ -61,6 +61,9 @@ public class Collaborator {
         @Column(name = "travel_plan_id")
         private Integer travelPlanId;
 
+        public CollaboratorId() {
+        }
+
         public CollaboratorId(Integer collaboratorId, Integer travelPlanId) {
             this.collaboratorId = collaboratorId;
             this.travelPlanId = travelPlanId;

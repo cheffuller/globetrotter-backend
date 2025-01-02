@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,7 @@ class TravelPlanServiceTest {
     }
 
     @Test
-    void testDeleteTravelPlan() {
+    void testDeleteTravelPlan() throws NotFoundException, UnauthorizedException {
         TravelPlan travelPlan = new TravelPlan(1, 101, true, false);
         when(travelPlanRepository.findById(1)).thenReturn(Optional.of(travelPlan));
         doNothing().when(travelPlanRepository).deleteById(1);
