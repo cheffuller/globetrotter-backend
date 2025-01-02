@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -26,30 +27,24 @@ public class TravelPlanLocationService {
     @Autowired
     private TravelPlanLocationRepository travelPlanLocationRepository;
 
-    public TravelPlanLocation createTravelPlanLocation(TravelPlanLocation travelPlanLocation)
+    public TravelPlanLocation createTravelPlanLocation(TravelPlanLocation location)
             throws BadRequestException, UnauthorizedException {
-        if (travelPlanLocation.getCity().isEmpty() ||
-                travelPlanLocation.getCountry().isEmpty() ||
-                travelPlanLocation.getStartDate() == null ||
-                travelPlanLocation.getEndDate() == null) {
-            throw new BadRequestException("Invalid travel plan location");
-        }
-
-        TravelPlan plan = travelPlanRepository.findById(travelPlanLocation.getTravelPlanId()).orElseThrow(() ->
+        TravelPlan plan = travelPlanRepository.findById(location.getTravelPlanId()).orElseThrow(() ->
                 new BadRequestException(String.format(
                         "Travel plan with ID %d does not exist",
-                        travelPlanLocation.getTravelPlanId()
+                        location.getTravelPlanId()
                 ))
         );
 
-        int authTokenUserId = tokenService.getUserAccountId();
-        List<Collaborator> collaborators = collaboratorRepository.findAllByPlanId(plan.getId());
-        collaborators.stream().filter(collaborator -> collaborator.getId().getCollaboratorId() == authTokenUserId);
-        if (collaborators.isEmpty()) {
+        if (isNotACollaborator(plan.getId())) {
             throw new UnauthorizedException("User is unauthorized to create a location for this travel plan.");
         }
 
-        return travelPlanLocationRepository.save(travelPlanLocation);
+        if (isInvalidLocation(location)) {
+            throw new BadRequestException("Invalid location details.");
+        }
+
+        return travelPlanLocationRepository.save(location);
     }
 
     public List<TravelPlanLocation> getTravelPlanLocationsByTravelPlanId(int travelPlanId) throws NotFoundException {
@@ -81,5 +76,42 @@ public class TravelPlanLocationService {
                         offset,
                         travelPlanId
                 )));
+    }
+
+    public TravelPlanLocation updateTravelPlanLocation(TravelPlanLocation location) throws NotFoundException, UnauthorizedException, BadRequestException {
+        TravelPlanLocation locationFound = travelPlanLocationRepository.findById(location.getId())
+                .orElseThrow(() -> new NotFoundException("Travel plan location not found."));
+
+        TravelPlan plan = travelPlanRepository.findById(locationFound.getTravelPlanId()).orElseThrow(() ->
+                new NotFoundException("Travel plan not found."));
+
+        if (isNotACollaborator(plan.getId())) {
+            throw new UnauthorizedException("User is unauthorized to create a location for this travel plan.");
+        }
+
+        if (isInvalidLocation(location)) {
+            throw new BadRequestException("Invalid location details.");
+        }
+
+        return travelPlanLocationRepository.save(location);
+    }
+
+    private boolean isInvalidLocation(TravelPlanLocation location) {
+        return location.getCity() == null ||
+                location.getCity().trim().isEmpty() ||
+                location.getCountry() == null ||
+                location.getCountry().trim().isEmpty() ||
+                location.getStartDate() == null ||
+                location.getEndDate() == null ||
+                location.getEndDate().before(location.getStartDate());
+    }
+
+    private boolean isNotACollaborator(int planId) {
+        List<Collaborator> collaborators = collaboratorRepository.findAllByPlanId(planId);
+        return collaborators.stream()
+                .filter(collaborator ->
+                        Objects.equals(collaborator.getId().getCollaboratorId(), tokenService.getUserAccountId())
+                ).toList()
+                .isEmpty();
     }
 }

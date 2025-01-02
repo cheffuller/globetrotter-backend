@@ -32,6 +32,14 @@ VALUES (1, 1, false, false),
     (5, 1, false, true), 
     (6, 2, false, true);
 
+INSERT INTO travel_plan_collaborator(collaborator_id, travel_plan_id)
+VALUES (1, 1),
+    (2, 2),
+    (3, 3),
+    (3, 4),
+    (1, 5),
+    (2, 6);
+
 -- unhashed password is 'password1'
 INSERT INTO moderator_account (id, email, first_name, last_name, password, username)
 VALUES (10, 'admin@gmail.com', 'Barry', 'Allen',
@@ -75,9 +83,6 @@ VALUES (1, 'Sydney', 'Australia', '2018-12-31', '2018-12-01', 1),
     (4, 'Beijing', 'China', '2021-2-10', '2021-2-28', 4),
     (5, 'Rio de Janeiro', 'Brazil', '2022-5-18', '2022-5-25', 5),
     (6, 'Abu Dhabi', 'United Arab Emirates', '2023-8-12', '2023-9-12', 6);
-
-INSERT INTO travel_plan_collaborator(collaborator_id, travel_plan_id)
-VALUES (3, 1);
 
 INSERT INTO banned_user(account_id) VALUES (4);
 

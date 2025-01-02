@@ -51,27 +51,12 @@ public class TravelPlanService {
         return plan;
     }
 
+    // TODO: add and remove collaborator function
+
     public TravelPlan getTravelPlanById(Integer travelPlanId) throws NotFoundException {
         return travelPlanRepository.findById(travelPlanId)
                 .orElseThrow(() -> new NotFoundException(String.format("Travel plan with ID %d not found.", travelPlanId))
         );
-    }
-
-    // TODO: fix this function. It's not saving the updated information to the database
-    // Add authorization so only collaborators can update
-    public TravelPlanLocation updateTravelPlan(TravelPlanLocation travelPlan) {
-        Optional<TravelPlanLocation> existingTravelPlan = travelPlanLocationRepository.findById(travelPlan.getId());
-        if (existingTravelPlan == null) {
-            throw new IllegalArgumentException("Travel plan not found");
-        }
-
-        TravelPlanLocation updatedTravelPlan = existingTravelPlan.get();
-
-        if (updatedTravelPlan.getCity().isEmpty() || updatedTravelPlan.getCountry().isEmpty() || updatedTravelPlan.getStartDate() == null || updatedTravelPlan.getEndDate() == null) {
-            throw new IllegalArgumentException("Invalid travel plan location");
-        }
-
-        return travelPlanLocationRepository.save(updatedTravelPlan);
     }
 
     public void deleteTravelPlan(Integer travelPlanId) throws NotFoundException, UnauthorizedException {
