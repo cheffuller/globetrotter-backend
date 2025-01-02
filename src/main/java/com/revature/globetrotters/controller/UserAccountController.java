@@ -50,7 +50,7 @@ public class UserAccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserAccount account) throws NotFoundException, BadRequestException {
+    public ResponseEntity<String> login(@RequestBody UserAccount account) throws UnauthorizedException {
         String token = accountService.login(account);
         return ResponseEntity.status(HttpStatus.OK).body(token);
     }

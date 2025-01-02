@@ -10,6 +10,7 @@ import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.enums.AccountRole;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.FollowRepository;
 import com.revature.globetrotters.repository.FollowRequestRepository;
 import com.revature.globetrotters.repository.PostRepository;
@@ -52,18 +53,18 @@ public class AccountService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public String login(UserAccount account) throws NotFoundException, BadRequestException {
+    public String login(UserAccount account) throws UnauthorizedException {
         if (!account.isPasswordValid() || !account.isUsernameValid()) {
-            throw new BadRequestException("Username and password are required.");
+            throw new UnauthorizedException("Username and password are required.");
         }
 
         Optional<UserAccount> foundAccount = userAccountRepository.findByUsername(account.getUsername());
         if (foundAccount.isEmpty()) {
-            throw new NotFoundException(String.format("User with username %s not found.", account.getUsername()));
+            throw new UnauthorizedException(String.format("User with username %s not found.", account.getUsername()));
         }
 
         if (!passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword())) {
-            throw new BadRequestException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
+            throw new UnauthorizedException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
                     ".\nPassword: " + account.getPassword() + ".\nFound password hash: " + foundAccount.get().getPassword());
         }
 
