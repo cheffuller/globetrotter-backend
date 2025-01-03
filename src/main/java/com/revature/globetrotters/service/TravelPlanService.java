@@ -3,7 +3,6 @@ package com.revature.globetrotters.service;
 import com.revature.globetrotters.entity.Collaborator;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
-import com.revature.globetrotters.entity.TravelPlanLocation;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.CollaboratorRepository;

@@ -125,4 +125,10 @@ public class PostController {
         postService.unlikePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
+
+    @GetMapping("posts/{postId}/liked")
+    public ResponseEntity<Boolean> userLikedPost(@PathVariable int postId) throws BadRequestException {
+        postService.userLikedPost(postId);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 }

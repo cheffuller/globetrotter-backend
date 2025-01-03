@@ -148,4 +148,13 @@ public class PostService {
     public void unlikeComment(Integer commentId) {
         commentLikeRepository.delete(new CommentLike(commentId, tokenService.getUserAccountId()));
     }
+
+    public boolean userLikedPost(Integer postId) throws BadRequestException {
+        if (!postRepository.existsById(postId)) {
+            throw new BadRequestException(String.format("Post with ID %d does not exist.", postId));
+        }
+
+        return postLikeRepository.findById(new PostLike.PostLikeId(postId, tokenService.getUserAccountId()))
+                .isPresent();
+    }
 }
