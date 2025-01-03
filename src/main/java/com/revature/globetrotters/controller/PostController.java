@@ -64,6 +64,11 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findPostById(postId));
     }
 
+    @GetMapping("posts/plans/{travelPlanId}")
+    public ResponseEntity<Integer> getPostIdByTravelPlanId(@PathVariable int travelPlanId) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.findPostIdByTravelPlanId(travelPlanId));
+    }
+
     @DeleteMapping("posts/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable int postId) throws NotFoundException, UnauthorizedException {
         postService.deletePost(postId);
