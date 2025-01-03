@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 
 @Service
@@ -58,19 +57,22 @@ public class AccountService {
             throw new UnauthorizedException("Username and password are required.");
         }
 
-        Optional<UserAccount> foundAccount = userAccountRepository.findByUsername(account.getUsername());
-        if (foundAccount.isEmpty()) {
-            throw new UnauthorizedException(String.format("User with username %s not found.", account.getUsername()));
-        }
+        UserAccount foundAccount = userAccountRepository.findByUsername(account.getUsername())
+                .orElseThrow(() -> new UnauthorizedException(String.format(
+                        "User with username %s not found.",
+                        account.getUsername())
+                ));
 
-        if (!passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword())) {
-            throw new UnauthorizedException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
-                    ".\nPassword: " + account.getPassword() + ".\nFound password hash: " + foundAccount.get().getPassword());
+        if (!passwordEncoder.matches(account.getPassword(), foundAccount.getPassword())) {
+            throw new UnauthorizedException("Invalid login credentials." +
+                    passwordEncoder.matches(account.getPassword(), foundAccount.getPassword()) +
+                    ".\nPassword: " + account.getPassword() +
+                    ".\nFound password hash: " + foundAccount.getPassword());
         }
 
         return JwtUtil.generateTokenFromUserName(account.getUsername(), Map.of(
                 JwtConsts.ACCOUNT_ROLE, AccountRole.Customer.getRole(),
-                JwtConsts.ACCOUNT_ID, account.getId().toString()
+                JwtConsts.ACCOUNT_ID, foundAccount.getId().toString()
         ));
     }
 
