@@ -1,29 +1,31 @@
 package com.revature.globetrotters.service;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.revature.globetrotters.consts.JwtConsts;
 import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.FollowRequest;
-import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.entity.UserProfile;
+import com.revature.globetrotters.enums.AccountRole;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.FollowRepository;
 import com.revature.globetrotters.repository.FollowRequestRepository;
 import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import com.revature.globetrotters.repository.UserProfileRepository;
-import com.revature.globetrotters.security.JwtUtil;
+import com.revature.globetrotters.utils.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -51,22 +53,25 @@ public class AccountService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public String authenticate(UserAccount account) throws NotFoundException, BadRequestException {
+    public String login(UserAccount account) throws UnauthorizedException {
         if (!account.isPasswordValid() || !account.isUsernameValid()) {
-            throw new BadRequestException("Username and password are required.");
+            throw new UnauthorizedException("Username and password are required.");
         }
 
         Optional<UserAccount> foundAccount = userAccountRepository.findByUsername(account.getUsername());
         if (foundAccount.isEmpty()) {
-            throw new NotFoundException(String.format("User with username %s not found.", account.getUsername()));
+            throw new UnauthorizedException(String.format("User with username %s not found.", account.getUsername()));
         }
 
         if (!passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword())) {
-            throw new BadRequestException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
-                    ".\nPassword: " + account.getPassword() + ".\nFound passwrd hash: " + foundAccount.get().getPassword());
+            throw new UnauthorizedException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
+                    ".\nPassword: " + account.getPassword() + ".\nFound password hash: " + foundAccount.get().getPassword());
         }
 
-        return JwtUtil.generateTokenFromUserName(account.getUsername(), new HashMap<>());
+        return JwtUtil.generateTokenFromUserName(account.getUsername(), Map.of(
+                JwtConsts.ACCOUNT_ROLE, AccountRole.Customer.getRole(),
+                JwtConsts.ACCOUNT_ID, account.getId().toString()
+        ));
     }
 
     public void register(UserAccount account) throws BadRequestException {
@@ -86,7 +91,8 @@ public class AccountService {
         }
 
         account.setPassword(passwordEncoder.encode(account.getPassword()));
-        userAccountRepository.save(account);
+        int userId = userAccountRepository.save(account).getId();
+        userProfileRepository.save(new UserProfile(userId, "", account.getUsername(), true));
     }
 
     public UserAccount getUser(int userId) throws NotFoundException {
@@ -161,10 +167,22 @@ public class AccountService {
         return planRepository.getTravelPlansByAccountId(userId);
     }
 
-    public Post createPost(int userId, Post post) throws NotFoundException {
-        if (!userAccountRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+    public void updateUserProfile(UserProfile profile) throws NotFoundException, BadRequestException {
+        profile.setAccountId(tokenService.getUserAccountId());
+        if (!userProfileRepository.existsById(profile.getAccountId())) {
+            throw new NotFoundException("User profile not found.");
         }
-        return postRepository.save(post); // Assuming the createPost method should save the post
+
+        if (profile.getDisplayName() == null ||
+                profile.getDisplayName().trim().isEmpty()) {
+            throw new BadRequestException("Invalid profile details.");
+        }
+
+        userProfileRepository.save(profile);
+    }
+
+    public UserProfile findUserProfile(int userId) throws NotFoundException {
+        return userProfileRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("User profile not found"));
     }
 }

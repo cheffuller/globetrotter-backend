@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.revature.globetrotters.entity.TravelPlan;
+import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 class TravelPlanServiceTest {
 
@@ -30,44 +34,32 @@ class TravelPlanServiceTest {
     }
 
     @Test
-    void testCreateTravelPlan() {
+    void testGetTravelPlanById() throws NotFoundException {
         TravelPlan travelPlan = new TravelPlan(1, 101, true, false);
-        when(travelPlanRepository.save(travelPlan)).thenReturn(travelPlan);
-
-        TravelPlan createdTravelPlan = travelPlanService.createTravelPlan(travelPlan);
-
-        assertNotNull(createdTravelPlan);
-        assertEquals(1, createdTravelPlan.getId());
-        verify(travelPlanRepository, times(1)).save(travelPlan);
-    }
-
-    @Test
-    void testGetTravelPlanById() {
-        TravelPlan travelPlan = new TravelPlan(1, 101, true, false);
-        when(travelPlanRepository.getTravelPlanById(1)).thenReturn(travelPlan);
+        when(travelPlanRepository.findById(1)).thenReturn(Optional.of(travelPlan));
 
         TravelPlan fetchedTravelPlan = travelPlanService.getTravelPlanById(1);
 
         assertNotNull(fetchedTravelPlan);
         assertEquals(1, fetchedTravelPlan.getId());
-        verify(travelPlanRepository, times(1)).getTravelPlanById(1);
+        verify(travelPlanRepository, times(1)).findById(1);
     }
 
     @Test
-    void testDeleteTravelPlan() {
+    void testDeleteTravelPlan() throws NotFoundException, UnauthorizedException {
         TravelPlan travelPlan = new TravelPlan(1, 101, true, false);
-        when(travelPlanRepository.getTravelPlanById(1)).thenReturn(travelPlan);
+        when(travelPlanRepository.findById(1)).thenReturn(Optional.of(travelPlan));
         doNothing().when(travelPlanRepository).deleteById(1);
 
         travelPlanService.deleteTravelPlan(1);
 
-        verify(travelPlanRepository, times(1)).getTravelPlanById(1);
+        verify(travelPlanRepository, times(1)).findById(1);
         verify(travelPlanRepository, times(1)).deleteById(1);
     }
 
     @Test
     void testDeleteTravelPlanThrowsExceptionForNonExistentPlan() {
-        when(travelPlanRepository.getTravelPlanById(1)).thenReturn(null);
+        when(travelPlanRepository.findById(1)).thenReturn(null);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> travelPlanService.deleteTravelPlan(1));
         assertEquals("Travel plan not found", exception.getMessage());

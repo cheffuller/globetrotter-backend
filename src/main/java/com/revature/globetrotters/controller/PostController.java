@@ -2,9 +2,9 @@ package com.revature.globetrotters.controller;
 
 import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
-import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +41,12 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity handleUnauthorizedException(UnauthorizedException exception) {
+        logger.info(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+
     @GetMapping("users/{userId}/posts")
     public ResponseEntity<List<Post>> getAllPostsByUserId(@PathVariable int userId)
             throws NotFoundException {
@@ -48,7 +54,7 @@ public class PostController {
     }
 
     @PostMapping("posts")
-    public ResponseEntity<Post> postPost(@RequestBody Post newPost) throws BadRequestException {
+    public ResponseEntity<Post> postPost(@RequestBody Post newPost) throws BadRequestException, UnauthorizedException {
         Post post = postService.createPost(newPost);
         return ResponseEntity.status(HttpStatus.OK).body(post);
     }
@@ -59,7 +65,7 @@ public class PostController {
     }
 
     @DeleteMapping("posts/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable int postId) throws NotFoundException {
+    public ResponseEntity<String> deletePost(@PathVariable int postId) throws NotFoundException, UnauthorizedException {
         postService.deletePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
@@ -85,7 +91,8 @@ public class PostController {
     }
 
     @DeleteMapping("comments/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable int commentId) throws NotFoundException {
+    public ResponseEntity<String> deleteComment(@PathVariable int commentId)
+            throws NotFoundException, UnauthorizedException {
         postService.deleteComment(commentId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
@@ -116,6 +123,12 @@ public class PostController {
     @DeleteMapping("posts/{postId}/likes")
     public ResponseEntity unlikePost(@PathVariable int postId) {
         postService.unlikePost(postId);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @GetMapping("posts/{postId}/liked")
+    public ResponseEntity<Boolean> userLikedPost(@PathVariable int postId) throws BadRequestException {
+        postService.userLikedPost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

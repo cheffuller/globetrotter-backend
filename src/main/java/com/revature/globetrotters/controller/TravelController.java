@@ -4,6 +4,7 @@ import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.service.TravelPlanLocationService;
 import com.revature.globetrotters.service.TravelPlanService;
 import org.slf4j.Logger;
@@ -46,6 +47,12 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity handleUnauthorizedException(UnauthorizedException exception) {
+        logger.info(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+
     @PostMapping("")
     public ResponseEntity<?> createTravelPlan(@RequestBody TravelPlan travelPlan) {
         //call travel plan service layer to create travel plan
@@ -56,7 +63,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}")
-    public ResponseEntity<?> getTravelPlansById(@PathVariable("planId") int travelPlanId) {
+    public ResponseEntity<?> getTravelPlansById(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         // call service layer to get travel plan by id
         TravelPlan travelPlan = travelPlanService.getTravelPlanById(travelPlanId);
         // and then probably call travel plan location service layer to get travel plan location
@@ -87,7 +94,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}/locations")
-    public ResponseEntity<List<TravelPlanLocation>> getTravelPlanLocations(@PathVariable("planId") int travelPlanId) {
+    public ResponseEntity<List<TravelPlanLocation>> getTravelPlanLocations(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         // call travel plan location service layer to get travel plan location by its id
         List<TravelPlanLocation> locations = travelPlanLocationService.getTravelPlanLocationsByTravelPlanId(travelPlanId);
         return ResponseEntity.status(HttpStatus.OK).body(locations);
@@ -96,7 +103,7 @@ public class TravelController {
     @PostMapping("/{planId}/locations")
     public ResponseEntity<TravelPlanLocation> createTravelPlanLocation(
             @PathVariable("planId") int travelPlanId, @RequestBody TravelPlanLocation travelPlanLocation)
-            throws BadRequestException {
+            throws BadRequestException, UnauthorizedException {
         // call travel plan location service layer to create travel plan location
         TravelPlanLocation newLocation = travelPlanLocationService.createTravelPlanLocation(travelPlanLocation);
         return ResponseEntity.status(HttpStatus.OK).body(newLocation);
@@ -105,9 +112,9 @@ public class TravelController {
     @GetMapping("/{planId}/locations/{locationId}")
     public ResponseEntity<TravelPlanLocation> getTravelPlanLocationsById(
             @PathVariable("locationId") int travelPlanId, @PathVariable("planId") int locationId)
-            throws BadRequestException {
+            throws NotFoundException {
         // call travel plan location service layer to get travel plan location by its id
-        TravelPlanLocation location = travelPlanLocationService.getTravelPlanLocationById(travelPlanId, locationId);
+        TravelPlanLocation location = travelPlanLocationService.getTravelPlanLocationByIdAndTravelPlanId(travelPlanId, locationId);
         return ResponseEntity.status(HttpStatus.OK).body(location);
     }
 
@@ -117,7 +124,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}/likes")
-    public ResponseEntity<Integer> getNumberOfLikesOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException{
+    public ResponseEntity<Integer> getNumberOfLikesOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfLikesOnPostByTravelPlanId(travelPlanId));
     }
 
@@ -130,5 +137,5 @@ public class TravelController {
     public ResponseEntity<List<TravelPlan>> getTravelPlansByAccountId(@PathVariable("accountId") int accountId) {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getTravelPlansByAccountId(accountId));
     }
-    
 }
+    

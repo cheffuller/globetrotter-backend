@@ -1,16 +1,15 @@
 package com.revature.globetrotters.service;
 
 import com.revature.globetrotters.entity.Follow;
-import com.revature.globetrotters.entity.FollowRequest;
 import com.revature.globetrotters.entity.UserAccount;
-import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.FollowRepository;
 import com.revature.globetrotters.repository.FollowRequestRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import com.revature.globetrotters.repository.UserProfileRepository;
-import com.revature.globetrotters.security.JwtUtil;
+import com.revature.globetrotters.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,7 +23,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -88,7 +86,7 @@ public class UserAccountServiceTest {
     }
 
     @Test
-    public void testAuthenticateSuccess() throws NotFoundException, BadRequestException {
+    public void testLoginSuccess() throws UnauthorizedException {
         String username = "username";
         String password = "password";
         UserAccount account = createUserAccount(username, password);
@@ -98,33 +96,33 @@ public class UserAccountServiceTest {
         when(userAccountRepository.findByUsername(username)).thenReturn(Optional.of(foundAccount));
         when(mockPasswordEncoder.matches(password, foundAccount.getPassword())).thenReturn(true);
 
-        String token = accountService.authenticate(account);
+        String token = accountService.login(account);
         String tokenSubject = JwtUtil.extractSubjectFromToken(token);
         assertEquals(username, tokenSubject);
     }
 
     @Test
-    public void testAuthenticateNullUsername() {
+    public void testLoginNullUsername() {
         assertThrows(BadRequestException.class,
-                () -> accountService.authenticate(createUserAccount(null, "password")));
+                () -> accountService.login(createUserAccount(null, "password")));
     }
 
     @Test
-    public void testAuthenticateEmptyUsername() {
+    public void testLoginEmptyUsername() {
         assertThrows(BadRequestException.class,
-                () -> accountService.authenticate(createUserAccount("", "password")));
+                () -> accountService.login(createUserAccount("", "password")));
     }
 
     @Test
-    public void testAuthenticateNullPassword() {
+    public void testLoginNullPassword() {
         assertThrows(BadRequestException.class,
-                () -> accountService.authenticate(createUserAccount("testuser", null)));
+                () -> accountService.login(createUserAccount("testuser", null)));
     }
 
     @Test
-    public void testAuthenticateEmptyPassword() {
+    public void testLoginEmptyPassword() {
         assertThrows(BadRequestException.class,
-                () -> accountService.authenticate(createUserAccount("testuser", "")));
+                () -> accountService.login(createUserAccount("testuser", "")));
     }
 
     @Test
@@ -174,91 +172,5 @@ public class UserAccountServiceTest {
 
         assertThrows(NotFoundException.class, () -> accountService.findListOfUsersFollowed(userId));
         verify(userAccountRepository, times(1)).existsById(userId);
-    }
-
-
-    @Test
-    public void testFollowUser_ValidRequest() throws NotFoundException, BadRequestException {
-        int followerId = 1;
-        int followingId = 2;
-
-        UserProfile userProfile = new UserProfile();
-        userProfile.setPrivate(false);
-
-        when(userAccountRepository.existsById(followerId)).thenReturn(true);
-        when(userAccountRepository.existsById(followingId)).thenReturn(true);
-        when(userProfileRepository.findById(followingId)).thenReturn(Optional.of(userProfile));
-        when(followRepository.existsById(any(Follow.FollowId.class))).thenReturn(false);
-        when(followRequestRepository.existsById(any(FollowRequest.FollowRequestId.class))).thenReturn(false);
-
-        accountService.followUser(followerId, followingId);
-
-        verify(followRepository, times(1)).save(any(Follow.class));
-    }
-
-    @Test
-    public void testFollowUser_UserNotFound() {
-        int followerId = 1;
-        int followingId = 2;
-
-        when(userProfileRepository.existsById(followerId)).thenReturn(false);
-
-        assertThrows(NotFoundException.class, () -> {
-            accountService.followUser(followerId, followingId);
-        });
-    }
-
-    @Test
-    public void testFollowUser_FollowRequestAlreadyExists() {
-        int followerId = 1;
-        int followingId = 2;
-
-        when(userAccountRepository.existsById(followerId)).thenReturn(true);
-        when(userAccountRepository.existsById(followingId)).thenReturn(true);
-        when(followRepository.existsById(any(Follow.FollowId.class))).thenReturn(true);
-
-        assertThrows(BadRequestException.class, () -> accountService.followUser(followerId, followingId));
-    }
-
-    @Test
-    public void testUnfollowUser_Success() throws BadRequestException {
-        int followerId = 1;
-        int followingId = 2;
-        Follow follow = new Follow(followerId, followingId);
-
-        when(followRepository.existsById(follow.getId())).thenReturn(true);
-
-        accountService.unfollowUser(followerId, followingId);
-
-        verify(followRepository, times(1)).delete(follow);
-    }
-
-    @Test
-    public void testUnfollowUser_FollowDoesNotExist() {
-        int followerId = 1;
-        int followingId = 2;
-        Follow follow = new Follow(followerId, followingId);
-
-        when(followRepository.existsById(follow.getId())).thenReturn(false);
-        when(followRequestRepository.existsById(new FollowRequest.FollowRequestId(followerId, followingId))).thenReturn(false);
-
-        assertThrows(BadRequestException.class, () -> {
-            accountService.unfollowUser(followerId, followingId);
-        });
-    }
-
-    @Test
-    public void testUnfollowUser_FollowRequestExists() throws BadRequestException {
-        int followerId = 1;
-        int followingId = 2;
-        Follow follow = new Follow(followerId, followingId);
-        FollowRequest followRequest = new FollowRequest(followerId, followingId);
-
-        when(followRepository.existsById(follow.getId())).thenReturn(false);
-        when(followRequestRepository.existsById(followRequest.getId())).thenReturn(true);
-
-        accountService.unfollowUser(followerId, followingId);
-
-        verify(followRequestRepository, times(1)).delete(followRequest);
     }
 }

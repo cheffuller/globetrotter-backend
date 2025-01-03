@@ -1,24 +1,26 @@
 package com.revature.globetrotters.enums;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 public enum PublicUrl {
-    LOGIN("/users/login"),
+    CUSTOMER_LOGIN("/users/login"),
+    MODERATOR_LOGIN("/moderators/login"),
     REGISTER("/users/register");
 
     private final String url;
+    private static final HashSet<String> urlSet = new HashSet<>();
 
     PublicUrl(String url) {
         this.url = url;
     }
 
-    // If the number of Public URL enum values increases to be > 100, switch to a hashmap-based implementation
-    // for O(1) lookup time. Else, stick with O(N) for loop because loops are optimized by the compiler
+    static {
+        Arrays.stream(PublicUrl.values()).forEach(endpoint -> urlSet.add(endpoint.getUrl()));
+    }
+
     public static boolean isPublicUrl(String url) {
-        for (PublicUrl publicUrl : PublicUrl.values()) {
-            if (publicUrl.getUrl().equals(url)) {
-                return true;
-            }
-        }
-        return false;
+        return urlSet.contains(url);
     }
 
     public String getUrl() {

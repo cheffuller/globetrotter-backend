@@ -4,8 +4,10 @@ import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.CommentLike;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.PostLike;
+import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.CommentLikeRepository;
 import com.revature.globetrotters.repository.CommentRepository;
 import com.revature.globetrotters.repository.PostLikeRepository;
@@ -19,6 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.revature.globetrotters.utils.SecurityUtil.isModerator;
+import static com.revature.globetrotters.utils.SecurityUtil.userIdMatchAuthentication;
 
 @Service
 public class PostService {
@@ -38,9 +43,11 @@ public class PostService {
     private UserAccountRepository userAccountRepository;
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
-    public Post createPost(Post post) throws BadRequestException {
-        if (!travelPlanRepository.existsById(post.getTravelPlanId())) {
-            throw new BadRequestException(String.format("Travel plan with ID %d does not exist.", post.getTravelPlanId()));
+    public Post createPost(Post post) throws BadRequestException, UnauthorizedException {
+        TravelPlan travelPlan = travelPlanRepository.findById(post.getTravelPlanId())
+                .orElseThrow(() -> new BadRequestException("Cannot make a post for a travel plan that doesn't exist."));
+        if (!userIdMatchAuthentication(travelPlan.getAccountId())) {
+            throw new UnauthorizedException("User is not authorized to create a post for this travel plan.");
         }
         return postRepository.save(post);
     }
@@ -57,13 +64,18 @@ public class PostService {
         return optionalPost.orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
     }
 
-    // Add authorization so only the poster or a moderator can delete a post
-    public void deletePost(Integer postId) throws NotFoundException {
-        if (postRepository.existsById(postId)) {
-            postRepository.deleteById(postId);
-        } else {
-            throw new NotFoundException(String.format("Post with ID %d not found.", postId));
+    public void deletePost(Integer postId) throws NotFoundException, UnauthorizedException {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
+        int posterId = travelPlanRepository.findById(post.getTravelPlanId()).get().getAccountId();
+        if (!isModerator() && !userIdMatchAuthentication(posterId)) {
+            throw new UnauthorizedException(String.format(
+                    "User with ID %d is not authorized to delete post with ID %d",
+                    tokenService.getUserAccountId(),
+                    postId
+            ));
         }
+        postRepository.deleteById(postId);
     }
 
     public Integer getNumberOfLikesOnPostById(Integer postId) throws NotFoundException {
@@ -101,16 +113,22 @@ public class PostService {
 
     public Comment findCommentById(Integer commentId) throws NotFoundException {
         Optional<Comment> optionalComment = commentRepository.findById(commentId);
-        return optionalComment.orElseThrow(() -> new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
+        return optionalComment.orElseThrow(() ->
+                new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
     }
 
     // Add authorization so only the commenter or a moderator can delete a comment
-    public void deleteComment(Integer commentId) throws NotFoundException {
-        if (commentRepository.existsById(commentId)) {
-            commentRepository.deleteById(commentId);
-        } else {
-            throw new NotFoundException(String.format("Comment with ID %d not found.", commentId));
+    public void deleteComment(Integer commentId) throws NotFoundException, UnauthorizedException {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
+        if (!isModerator() && !userIdMatchAuthentication(comment.getUserId())) {
+            throw new UnauthorizedException(String.format(
+                    "User with ID %d is not authorized to delete comment with ID %d",
+                    tokenService.getUserAccountId(),
+                    commentId
+            ));
         }
+        commentRepository.deleteById(commentId);
     }
 
     public Integer getNumberOfLikesOnCommentById(Integer commentId) throws NotFoundException {
@@ -129,5 +147,14 @@ public class PostService {
 
     public void unlikeComment(Integer commentId) {
         commentLikeRepository.delete(new CommentLike(commentId, tokenService.getUserAccountId()));
+    }
+
+    public boolean userLikedPost(Integer postId) throws BadRequestException {
+        if (!postRepository.existsById(postId)) {
+            throw new BadRequestException(String.format("Post with ID %d does not exist.", postId));
+        }
+
+        return postLikeRepository.findById(new PostLike.PostLikeId(postId, tokenService.getUserAccountId()))
+                .isPresent();
     }
 }

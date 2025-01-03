@@ -1,57 +1,117 @@
 package com.revature.globetrotters.service;
 
-import org.springframework.stereotype.Service;
-import com.revature.globetrotters.exception.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import com.revature.globetrotters.entity.Collaborator;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
-import com.revature.globetrotters.repository.TravelPlanRepository;
+import com.revature.globetrotters.exception.BadRequestException;
+import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
+import com.revature.globetrotters.repository.CollaboratorRepository;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
+import com.revature.globetrotters.repository.TravelPlanRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 
 @Service
 public class TravelPlanLocationService {
-    
     @Autowired
-    TravelPlanRepository travelPlanRepository;
+    private CollaboratorRepository collaboratorRepository;
     @Autowired
-    TravelPlanLocationRepository travelPlanLocationRepository;
+    private TokenService tokenService;
+    @Autowired
+    private TravelPlanRepository travelPlanRepository;
+    @Autowired
+    private TravelPlanLocationRepository travelPlanLocationRepository;
 
-    public TravelPlanLocationService(TravelPlanLocationRepository travelPlanLocationRepository, TravelPlanRepository travelPlanRepository) {
-        this.travelPlanLocationRepository = travelPlanLocationRepository;
-        this.travelPlanRepository = travelPlanRepository;
+    public TravelPlanLocation createTravelPlanLocation(TravelPlanLocation location)
+            throws BadRequestException, UnauthorizedException {
+        TravelPlan plan = travelPlanRepository.findById(location.getTravelPlanId()).orElseThrow(() ->
+                new BadRequestException(String.format(
+                        "Travel plan with ID %d does not exist",
+                        location.getTravelPlanId()
+                ))
+        );
+
+        if (isNotACollaborator(plan.getId())) {
+            throw new UnauthorizedException("User is unauthorized to create a location for this travel plan.");
+        }
+
+        if (isInvalidLocation(location)) {
+            throw new BadRequestException("Invalid location details.");
+        }
+
+        return travelPlanLocationRepository.save(location);
     }
 
-    public TravelPlanLocation createTravelPlanLocation(TravelPlanLocation travelPlanLocation) throws BadRequestException {
-        if(travelPlanLocation.getCity().isEmpty() || travelPlanLocation.getCountry().isEmpty() || travelPlanLocation.getStartDate() == null || travelPlanLocation.getEndDate() == null) {
-            throw new BadRequestException("Invalid travel plan location");
+    public List<TravelPlanLocation> getTravelPlanLocationsByTravelPlanId(int travelPlanId) throws NotFoundException {
+        if (!travelPlanRepository.existsById(travelPlanId)) {
+            throw new NotFoundException(String.format("Travel plan with ID %d does not exist", travelPlanId));
         }
-        Optional<TravelPlan> travelPlan = travelPlanRepository.findById(travelPlanLocation.getTravelPlanId());
-        if(travelPlan.isEmpty()) {
-            throw new BadRequestException("Travel plan does not exist");
-        } else {
-            //we want to set the travel plan location to the travel plan
-            return travelPlanLocationRepository.save(travelPlanLocation);
-        }
+        return travelPlanLocationRepository.findAllByTravelPlanId(travelPlanId);
     }
 
-    public List<TravelPlanLocation> getTravelPlanLocationsByTravelPlanId(int travelPlanId) {
-        return travelPlanLocationRepository.findLocationsByTravelPlanId(travelPlanId);
+    public TravelPlanLocation getTravelPlanLocationById(int locationId) throws NotFoundException {
+        return travelPlanLocationRepository.findById(locationId).orElseThrow(() ->
+                new NotFoundException(String.format("Travel plan location with ID %d not found", locationId)));
     }
 
-    public TravelPlanLocation getTravelPlanLocationById(int travelPlanId, int locationId) throws BadRequestException {
-        if(travelPlanRepository.findById(travelPlanId).isEmpty()) {
-            throw new BadRequestException("Travel plan does not exist");
-        } 
-        Optional<TravelPlanLocation> travelPlanLocation = travelPlanLocationRepository.findById(locationId);
-        if(travelPlanLocation.isEmpty()) {
-            throw new BadRequestException("Travel plan location does not exist");
-        } else {
-            return travelPlanLocation.get();
+    public TravelPlanLocation getTravelPlanLocationByIdAndTravelPlanId(int travelPlanId, int id) throws NotFoundException {
+        return travelPlanLocationRepository.findByTravelPlanIdAndId(travelPlanId, id)
+                .orElseThrow(() -> new NotFoundException(String.format(
+                        "Travel plan location with ID %d and travel plan ID %d not found",
+                        id,
+                        travelPlanId
+                )));
+    }
+
+    public TravelPlanLocation getTravelPlanLocationWithOffsetByTravelPlanId(int travelPlanId, int offset)
+            throws NotFoundException {
+        return travelPlanLocationRepository.findByTravelPlanIdAndOffset(travelPlanId, offset)
+                .orElseThrow(() -> new NotFoundException(String.format(
+                        "Travel plan location with offset %d not found for travel plan with ID %d",
+                        offset,
+                        travelPlanId
+                )));
+    }
+
+    public TravelPlanLocation updateTravelPlanLocation(TravelPlanLocation location) throws NotFoundException, UnauthorizedException, BadRequestException {
+        TravelPlanLocation locationFound = travelPlanLocationRepository.findById(location.getId())
+                .orElseThrow(() -> new NotFoundException("Travel plan location not found."));
+
+        TravelPlan plan = travelPlanRepository.findById(locationFound.getTravelPlanId()).orElseThrow(() ->
+                new NotFoundException("Travel plan not found."));
+
+        if (isNotACollaborator(plan.getId())) {
+            throw new UnauthorizedException("User is unauthorized to create a location for this travel plan.");
         }
+
+        if (isInvalidLocation(location)) {
+            throw new BadRequestException("Invalid location details.");
+        }
+
+        return travelPlanLocationRepository.save(location);
+    }
+
+    private boolean isInvalidLocation(TravelPlanLocation location) {
+        return location.getCity() == null ||
+                location.getCity().trim().isEmpty() ||
+                location.getCountry() == null ||
+                location.getCountry().trim().isEmpty() ||
+                location.getStartDate() == null ||
+                location.getEndDate() == null ||
+                location.getEndDate().before(location.getStartDate());
+    }
+
+    private boolean isNotACollaborator(int planId) {
+        List<Collaborator> collaborators = collaboratorRepository.findAllByPlanId(planId);
+        return collaborators.stream()
+                .filter(collaborator ->
+                        Objects.equals(collaborator.getId().getCollaboratorId(), tokenService.getUserAccountId())
+                ).toList()
+                .isEmpty();
     }
 }

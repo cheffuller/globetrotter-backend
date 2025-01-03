@@ -27,7 +27,6 @@ public class ModeratorAccount {
     @Column(name = "username")
     private String username;
 
-
     public ModeratorAccount() {
 
     }
@@ -39,6 +38,41 @@ public class ModeratorAccount {
         this.lastName = lastName;
         this.password = password;
         this.username = username;
+    }
+
+    public boolean isPasswordValid() {
+        return password != null && !password.trim().isEmpty();
+    }
+
+    public boolean isUsernameValid() {
+        return username != null && !username.trim().isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ModeratorAccount that = (ModeratorAccount) o;
+        return Objects.equals(id, that.id) && Objects.equals(email, that.email) &&
+                Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) &&
+                Objects.equals(username, that.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, firstName, lastName, password, username);
+    }
+
+    @Override
+    public String toString() {
+        return "ModeratorAccount{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", password='" + password + '\'' +
+                ", username='" + username + '\'' +
+                '}';
     }
 
     public Integer getId() {
@@ -87,32 +121,5 @@ public class ModeratorAccount {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ModeratorAccount that = (ModeratorAccount) o;
-        return Objects.equals(id, that.id) && Objects.equals(email, that.email) &&
-                Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) &&
-                Objects.equals(username, that.username);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, email, firstName, lastName, password, username);
-    }
-
-    @Override
-    public String toString() {
-        return "ModeratorAccount{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", password='" + password + '\'' +
-                ", username='" + username + '\'' +
-                '}';
     }
 }
