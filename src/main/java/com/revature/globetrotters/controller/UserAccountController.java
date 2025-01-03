@@ -2,7 +2,6 @@ package com.revature.globetrotters.controller;
 
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
-import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
@@ -92,11 +91,5 @@ public class UserAccountController {
     @GetMapping("/{userId}/plans")
     public ResponseEntity<List<TravelPlan>> getPlans(@PathVariable("userId") int userId) throws NotFoundException {
         return ResponseEntity.ok(accountService.getPlans(userId));
-    }
-
-    @PostMapping("/profile")
-    public ResponseEntity updateUserProfile(@RequestBody UserProfile userProfile) throws NotFoundException, BadRequestException {
-        accountService.updateUserProfile(userProfile);
-        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

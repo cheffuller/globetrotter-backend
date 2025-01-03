@@ -69,7 +69,8 @@ public class AccountService {
         }
 
         return JwtUtil.generateTokenFromUserName(account.getUsername(), Map.of(
-                JwtConsts.ACCOUNT_ROLE, AccountRole.Customer.getRole()
+                JwtConsts.ACCOUNT_ROLE, AccountRole.Customer.getRole(),
+                JwtConsts.ACCOUNT_ID, account.getId().toString()
         ));
     }
 
@@ -169,7 +170,7 @@ public class AccountService {
     public void updateUserProfile(UserProfile profile) throws NotFoundException, BadRequestException {
         profile.setAccountId(tokenService.getUserAccountId());
         if (!userProfileRepository.existsById(profile.getAccountId())) {
-            throw new NotFoundException("User profile does not exist.");
+            throw new NotFoundException("User profile not found.");
         }
 
         if (profile.getDisplayName() == null ||
@@ -178,5 +179,10 @@ public class AccountService {
         }
 
         userProfileRepository.save(profile);
+    }
+
+    public UserProfile findUserProfile(int userId) throws NotFoundException {
+        return userProfileRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("User profile not found"));
     }
 }
