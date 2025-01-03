@@ -90,7 +90,8 @@ public class AccountService {
         }
 
         account.setPassword(passwordEncoder.encode(account.getPassword()));
-        userAccountRepository.save(account);
+        int userId = userAccountRepository.save(account).getId();
+        userProfileRepository.save(new UserProfile(userId, "", account.getUsername(), true));
     }
 
     public UserAccount getUser(int userId) throws NotFoundException {
@@ -163,5 +164,19 @@ public class AccountService {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
         return planRepository.getTravelPlansByAccountId(userId);
+    }
+
+    public void updateUserProfile(UserProfile profile) throws NotFoundException, BadRequestException {
+        profile.setAccountId(tokenService.getUserAccountId());
+        if (!userProfileRepository.existsById(profile.getAccountId())) {
+            throw new NotFoundException("User profile does not exist.");
+        }
+
+        if (profile.getDisplayName() == null ||
+                profile.getDisplayName().trim().isEmpty()) {
+            throw new BadRequestException("Invalid profile details.");
+        }
+
+        userProfileRepository.save(profile);
     }
 }
