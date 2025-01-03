@@ -4,7 +4,6 @@ import com.revature.globetrotters.consts.JwtConsts;
 import com.revature.globetrotters.entity.BannedUser;
 import com.revature.globetrotters.entity.ModeratorAccount;
 import com.revature.globetrotters.enums.AccountRole;
-import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.BannedUserRepository;
