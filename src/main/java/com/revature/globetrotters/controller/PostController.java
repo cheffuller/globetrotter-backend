@@ -128,7 +128,6 @@ public class PostController {
 
     @GetMapping("posts/{postId}/liked")
     public ResponseEntity<Boolean> userLikedPost(@PathVariable int postId) throws BadRequestException {
-        postService.userLikedPost(postId);
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(postService.userLikedPost(postId));
     }
 }
