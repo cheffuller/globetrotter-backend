@@ -46,9 +46,25 @@ public class TravelPlanService {
         return travelPlanRepository.getTravelPlanById(travelPlanId);
     }
 
+    //add authorization so only the poster or a moderator can update
+    public TravelPlan updateTravelPlan(TravelPlan travelPlan) {
+        Optional<TravelPlan> existingTravelPlan = travelPlanRepository.findById(travelPlan.getId());
+        if (existingTravelPlan == null) {
+            throw new IllegalArgumentException("Travel plan not found");
+        }
+
+        TravelPlan updatedTravelPlan = existingTravelPlan.get();
+
+        if(updatedTravelPlan.getAccountId() != tokenService.getUserAccountId()) {
+            throw new IllegalArgumentException("Unauthorized to update travel plan");
+        }
+
+        return travelPlanRepository.save(updatedTravelPlan);
+    }
+
     // Add authorization so only the poster or a moderator can update
-    public TravelPlanLocation updateTravelPlan(TravelPlanLocation travelPlan) {
-        Optional<TravelPlanLocation> existingTravelPlan = travelPlanLocationRepository.findById(travelPlan.getId());
+    public TravelPlanLocation updateLocation(TravelPlanLocation travelPlanLocation) {
+        Optional<TravelPlanLocation> existingTravelPlan = travelPlanLocationRepository.findById(travelPlanLocation.getId());
         if (existingTravelPlan == null) {
             throw new IllegalArgumentException("Travel plan not found");
         }

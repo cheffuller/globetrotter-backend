@@ -62,12 +62,20 @@ public class TravelController {
         // and then probably call travel plan location service layer to get travel plan location
         return ResponseEntity.status(HttpStatus.OK).body(travelPlan);
     }
-
-    @PutMapping("")
-    public ResponseEntity<TravelPlanLocation> updateTravelPlan(@RequestBody TravelPlanLocation travelPlan) {
+    
+    @PutMapping("") 
+    public ResponseEntity<TravelPlan> updateTravelPlan(@RequestBody TravelPlan travelPlan) {
         // call travel plan service layer to update travel plan by its id
         // and then probably call travel plan location service layer to update travel plan location or times
-        TravelPlanLocation updatedTravelPlan = travelPlanService.updateTravelPlan(travelPlan);
+        TravelPlan updatedTravelPlan = travelPlanService.updateTravelPlan(travelPlan);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan);
+    }
+
+    @PutMapping("/{planId}/locations")
+    public ResponseEntity<TravelPlanLocation> updateTravelPlan(@PathVariable("planId") int travelPlanId, @RequestBody TravelPlanLocation travelPlan) {
+        // call travel plan service layer to update travel plan by its id
+        // and then probably call travel plan location service layer to update travel plan location or times
+        TravelPlanLocation updatedTravelPlan = travelPlanService.updateLocation(travelPlan);
         return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan);
     }
 
