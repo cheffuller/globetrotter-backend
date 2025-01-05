@@ -92,4 +92,9 @@ public class UserAccountController {
     public ResponseEntity<List<TravelPlan>> getPlans(@PathVariable("userId") int userId) throws NotFoundException {
         return ResponseEntity.ok(accountService.getPlans(userId));
     }
+
+    @GetMapping("/{userId}/follow-status")
+    public ResponseEntity<String> getFollowingStatus(@PathVariable("userId") int userId) throws NotFoundException {
+        return ResponseEntity.ok(accountService.findFollowingStatus(userId).toString());
+    }
 }

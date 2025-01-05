@@ -8,6 +8,7 @@ import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.enums.AccountRole;
+import com.revature.globetrotters.enums.FollowingStatus;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
@@ -160,6 +161,24 @@ public class AccountService {
         throw new BadRequestException(String.format(
                 "User with ID %d is not following or has not requested to follow user with ID %d.",
                 followerId, followingId));
+    }
+
+    public FollowingStatus findFollowingStatus(int followingId) throws NotFoundException {
+        if (!userAccountRepository.existsById(followingId)) {
+            throw new NotFoundException("User does not exist.");
+        }
+
+        int followerId = tokenService.getUserAccountId();
+
+        if (followRepository.existsById(new Follow.FollowId(followerId, followingId))) {
+            return FollowingStatus.Following;
+        }
+
+        if (followRequestRepository.existsById(new FollowRequest.FollowRequestId(followerId, followingId))) {
+            return FollowingStatus.FollowRequested;
+        }
+
+        return FollowingStatus.NotFollowing;
     }
 
     public List<TravelPlan> getPlans(int userId) throws NotFoundException {
