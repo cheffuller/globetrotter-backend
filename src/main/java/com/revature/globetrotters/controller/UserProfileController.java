@@ -53,7 +53,7 @@ public class UserProfileController {
     }
 
     @GetMapping("/{username}/profile")
-    public ResponseEntity<UserProfile> getProfile(@PathVariable("userId") String username) throws NotFoundException {
+    public ResponseEntity<UserProfile> getProfile(@PathVariable("username") String username) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findUserProfile(username));
     }
 }
