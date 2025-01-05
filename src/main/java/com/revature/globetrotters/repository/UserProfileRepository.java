@@ -14,7 +14,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Intege
             SELECT up 
             FROM UserProfile up
             JOIN UserAccount ua
-            WHERE ua.id = up.account_id
+            ON ua.id = up.accountId
             WHERE ua.username = :username""")
     Optional<UserProfile> findByUsername(@Param("username") String username);
 }
