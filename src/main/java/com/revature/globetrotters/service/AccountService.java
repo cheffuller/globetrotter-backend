@@ -168,23 +168,4 @@ public class AccountService {
         }
         return planRepository.getTravelPlansByAccountId(userId);
     }
-
-    public void updateUserProfile(UserProfile profile) throws NotFoundException, BadRequestException {
-        profile.setAccountId(tokenService.getUserAccountId());
-        if (!userProfileRepository.existsById(profile.getAccountId())) {
-            throw new NotFoundException("User profile not found.");
-        }
-
-        if (profile.getDisplayName() == null ||
-                profile.getDisplayName().trim().isEmpty()) {
-            throw new BadRequestException("Invalid profile details.");
-        }
-
-        userProfileRepository.save(profile);
-    }
-
-    public UserProfile findUserProfile(int userId) throws NotFoundException {
-        return userProfileRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("User profile not found"));
-    }
 }
