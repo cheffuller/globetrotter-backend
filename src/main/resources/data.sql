@@ -19,10 +19,10 @@ VALUES (4, '1112', 'London', 'United Kingdom', 'evil@gmail.com', 'Lex', 'Luthor'
 
 INSERT INTO user_profile (account_id, bio, display_name, is_private)
 VALUES
-	(1, 'bio', 'display_name', false),
-	(2, 'bio', 'display name 2', false),
-    (3, 'bio', 'display name 3', false),
-    (4, 'bio', 'display name 4', true);
+	(1, 'bio', 'JoHnDoE', false),
+	(2, 'bio', '', false),
+    (3, 'bio', 'Superman', false),
+    (4, 'bio', 'ilovekryptonite', true);
 
 INSERT INTO travel_plan (id, account_id, is_favorited, is_published)
 VALUES (1, 1, false, false),
@@ -54,14 +54,14 @@ VALUES (1, '2019-01-01', 1),
     (6, '2019-01-01', 6);
 
 INSERT INTO post_comment (id, commented_date, commented_on, content, made_by)
-VALUES (1, '2019-01-01', 1, 'content', 3),
-    (2, '2020-01-01', 1, 'content', 2),
-    (3, '2019-01-01', 2, 'content', 3),
-    (4, '2019-01-01', 1, 'content', 1),
-    (5, '2019-01-01', 4, 'content', 1),
-    (6, '2019-01-01', 4, 'content', 1),
-    (7, '2019-01-01', 4, 'content', 1),
-    (8, '2019-01-01', 6, 'content', 4);
+VALUES (1, '2019-01-01', 1, 'WOW! This trip looks amazing!', 3),
+    (2, '2020-01-01', 3, "I can't believe you're going there at that time of year!!!", 2),
+    (3, '2019-01-01', 2, "What places are you going to visit while you're there?", 3),
+    (4, '2019-01-01', 3, "I went there with my mom last year and we had a great time!", 1),
+    (5, '2019-01-01', 4, "The weather should be great!", 1),
+    (6, '2019-01-01', 4, "Do you have room for one more?", 1),
+    (7, '2019-01-01', 4, "Why do you always plan these great trips without me!", 1),
+    (8, '2019-01-01', 6, "You better take a lot of great pictures while you're there.", 4);
 
 INSERT INTO follow (follower, following)
 VALUES

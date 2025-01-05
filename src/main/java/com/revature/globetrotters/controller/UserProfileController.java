@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,8 +51,13 @@ public class UserProfileController {
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-    @PostMapping("/{userId}/profile")
+    @GetMapping("/{userId}/profile")
     public ResponseEntity<UserProfile> getProfile(@PathVariable("userId") int userId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(accountService.findUserProfile(userId));
+    }
+
+    @GetMapping("/{username}/display-name")
+    public ResponseEntity<String> getDisplayNameFromUsername(@PathVariable("username") String username) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.findDisplayNameFromUsername(username));
     }
 }
