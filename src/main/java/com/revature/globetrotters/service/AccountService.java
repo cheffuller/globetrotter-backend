@@ -8,6 +8,7 @@ import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.enums.AccountRole;
+import com.revature.globetrotters.enums.FollowingStatus;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
@@ -117,7 +118,12 @@ public class AccountService {
     }
 
 
-    public void followUser(int followingId) throws NotFoundException, BadRequestException {
+    public void followUser(String username) throws NotFoundException, BadRequestException {
+        UserAccount account = userAccountRepository.findByUsername(username).orElseThrow(() ->
+                new NotFoundException("User does not exist.")
+        );
+
+        int followingId = account.getId();
         int followerId = tokenService.getUserAccountId();
 
         if (!userAccountRepository.existsById(followerId)) {
@@ -142,10 +148,15 @@ public class AccountService {
         }
     }
 
-    public void unfollowUser(int followingId) throws BadRequestException {
-        int followerId = tokenService.getUserAccountId();
-        Follow followToDelete = new Follow(followerId, followingId);
+    public void unfollowUser(String username) throws BadRequestException, NotFoundException {
+        UserAccount account = userAccountRepository.findByUsername(username).orElseThrow(() ->
+                new NotFoundException("User does not exist.")
+        );
 
+        int followingId = account.getId();
+        int followerId = tokenService.getUserAccountId();
+
+        Follow followToDelete = new Follow(followerId, followingId);
         if (followRepository.existsById(followToDelete.getId())) {
             followRepository.delete(followToDelete);
             return;
@@ -160,6 +171,25 @@ public class AccountService {
         throw new BadRequestException(String.format(
                 "User with ID %d is not following or has not requested to follow user with ID %d.",
                 followerId, followingId));
+    }
+
+    public FollowingStatus findFollowingStatus(String username) throws NotFoundException {
+        UserAccount account = userAccountRepository.findByUsername(username).orElseThrow(() ->
+                new NotFoundException("User does not exist.")
+        );
+
+        int followingId = account.getId();
+        int followerId = tokenService.getUserAccountId();
+
+        if (followRepository.existsById(new Follow.FollowId(followerId, followingId))) {
+            return FollowingStatus.Following;
+        }
+
+        if (followRequestRepository.existsById(new FollowRequest.FollowRequestId(followerId, followingId))) {
+            return FollowingStatus.FollowRequested;
+        }
+
+        return FollowingStatus.NotFollowing;
     }
 
     public List<TravelPlan> getPlans(int userId) throws NotFoundException {
