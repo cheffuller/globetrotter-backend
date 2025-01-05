@@ -4,6 +4,7 @@ import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
+import com.revature.globetrotters.service.AccountService;
 import com.revature.globetrotters.service.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserProfileController {
     @Autowired
     private UserProfileService userProfileService;
+    @Autowired
+    private AccountService accountService;
     private static final Logger logger = LoggerFactory.getLogger(UserAccountController.class);
 
     @ExceptionHandler(BadRequestException.class)
