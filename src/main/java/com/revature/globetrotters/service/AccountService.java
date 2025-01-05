@@ -118,7 +118,12 @@ public class AccountService {
     }
 
 
-    public void followUser(int followingId) throws NotFoundException, BadRequestException {
+    public void followUser(String username) throws NotFoundException, BadRequestException {
+        UserAccount account = userAccountRepository.findByUsername(username).orElseThrow(() ->
+                new NotFoundException("User does not exist.")
+        );
+
+        int followingId = account.getId();
         int followerId = tokenService.getUserAccountId();
 
         if (!userAccountRepository.existsById(followerId)) {
@@ -143,10 +148,15 @@ public class AccountService {
         }
     }
 
-    public void unfollowUser(int followingId) throws BadRequestException {
-        int followerId = tokenService.getUserAccountId();
-        Follow followToDelete = new Follow(followerId, followingId);
+    public void unfollowUser(String username) throws BadRequestException, NotFoundException {
+        UserAccount account = userAccountRepository.findByUsername(username).orElseThrow(() ->
+                new NotFoundException("User does not exist.")
+        );
 
+        int followingId = account.getId();
+        int followerId = tokenService.getUserAccountId();
+
+        Follow followToDelete = new Follow(followerId, followingId);
         if (followRepository.existsById(followToDelete.getId())) {
             followRepository.delete(followToDelete);
             return;
@@ -163,11 +173,12 @@ public class AccountService {
                 followerId, followingId));
     }
 
-    public FollowingStatus findFollowingStatus(int followingId) throws NotFoundException {
-        if (!userAccountRepository.existsById(followingId)) {
-            throw new NotFoundException("User does not exist.");
-        }
+    public FollowingStatus findFollowingStatus(String username) throws NotFoundException {
+        UserAccount account = userAccountRepository.findByUsername(username).orElseThrow(() ->
+                new NotFoundException("User does not exist.")
+        );
 
+        int followingId = account.getId();
         int followerId = tokenService.getUserAccountId();
 
         if (followRepository.existsById(new Follow.FollowId(followerId, followingId))) {
