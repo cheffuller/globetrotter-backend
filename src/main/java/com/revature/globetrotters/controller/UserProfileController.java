@@ -56,4 +56,9 @@ public class UserProfileController {
     public ResponseEntity<UserProfile> getProfile(@PathVariable("username") String username) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findUserProfile(username));
     }
+
+    @GetMapping("/{username}/display-name")
+    public ResponseEntity<String> getDisplayNameFromUsername(@PathVariable String username) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.findDisplayNameFromUsername(username));
+    }
 }

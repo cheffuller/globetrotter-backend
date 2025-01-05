@@ -163,4 +163,13 @@ public class PostService {
         return postLikeRepository.findById(new PostLike.PostLikeId(postId, tokenService.getUserAccountId()))
                 .isPresent();
     }
+
+    public boolean userLikedComment(Integer commentId) throws BadRequestException {
+        if (!commentRepository.existsById(commentId)) {
+            throw new BadRequestException(String.format("Comment with ID %d does not exist.", commentId));
+        }
+
+        return commentLikeRepository.findById(new CommentLike.CommentLikeId(commentId, tokenService.getUserAccountId()))
+                .isPresent();
+    }
 }
