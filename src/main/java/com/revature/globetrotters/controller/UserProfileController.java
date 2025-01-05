@@ -52,12 +52,12 @@ public class UserProfileController {
     }
 
     @GetMapping("/{userId}/profile")
-    public ResponseEntity<UserProfile> getProfile(@PathVariable("userId") int userId) throws NotFoundException {
+    public ResponseEntity<UserProfile> getProfile(@PathVariable int userId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(accountService.findUserProfile(userId));
     }
 
     @GetMapping("/{username}/display-name")
-    public ResponseEntity<String> getDisplayNameFromUsername(@PathVariable("username") String username) throws NotFoundException {
+    public ResponseEntity<String> getDisplayNameFromUsername(@PathVariable String username) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(accountService.findDisplayNameFromUsername(username));
     }
 }
