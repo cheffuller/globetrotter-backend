@@ -19,4 +19,13 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Intege
             WHERE ua.username = :username
             """)
     Optional<String> findDisplayNameFromUsername(@Param("username") String username);
+
+    @Query("""
+            SELECT up 
+            FROM UserProfile up
+            JOIN UserAccount ua
+            ON ua.id = up.accountId
+            WHERE ua.username = :username""")
+    Optional<UserProfile> findByUsername(@Param("username") String username);
+
 }

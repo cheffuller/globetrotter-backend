@@ -4,7 +4,7 @@ import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
-import com.revature.globetrotters.service.AccountService;
+import com.revature.globetrotters.service.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @CrossOrigin(origins = "http://localhost:5173/")
 public class UserProfileController {
     @Autowired
-    private AccountService accountService;
+    private UserProfileService userProfileService;
     private static final Logger logger = LoggerFactory.getLogger(UserAccountController.class);
 
     @ExceptionHandler(BadRequestException.class)
@@ -46,14 +46,15 @@ public class UserProfileController {
     }
 
     @PostMapping("/profile")
-    public ResponseEntity updateUserProfile(@RequestBody UserProfile userProfile) throws NotFoundException, BadRequestException {
-        accountService.updateUserProfile(userProfile);
+    public ResponseEntity updateUserProfile(@RequestBody UserProfile userProfile)
+            throws NotFoundException, BadRequestException {
+        userProfileService.updateUserProfile(userProfile);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-    @GetMapping("/{userId}/profile")
-    public ResponseEntity<UserProfile> getProfile(@PathVariable int userId) throws NotFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(accountService.findUserProfile(userId));
+    @GetMapping("/{username}/profile")
+    public ResponseEntity<UserProfile> getProfile(@PathVariable("username") String username) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findUserProfile(username));
     }
 
     @GetMapping("/{username}/display-name")

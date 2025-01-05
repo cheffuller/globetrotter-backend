@@ -76,20 +76,25 @@ public class UserAccountController {
         return ResponseEntity.ok(accountService.findListOfUsersFollowed(userId));
     }
 
-    @PostMapping("/{userId}/following")
-    public ResponseEntity follow(@PathVariable int userId) throws NotFoundException, BadRequestException {
-        accountService.followUser(userId);
+    @PostMapping("/{username}/following")
+    public ResponseEntity follow(@PathVariable String username) throws NotFoundException, BadRequestException {
+        accountService.followUser(username);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-    @DeleteMapping("/{userId}/following")
-    public ResponseEntity unfollow(@PathVariable int userId) throws BadRequestException {
-        accountService.unfollowUser(userId);
+    @DeleteMapping("/{username}/following")
+    public ResponseEntity unfollow(@PathVariable String username) throws BadRequestException, NotFoundException {
+        accountService.unfollowUser(username);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("/{userId}/plans")
     public ResponseEntity<List<TravelPlan>> getPlans(@PathVariable("userId") int userId) throws NotFoundException {
         return ResponseEntity.ok(accountService.getPlans(userId));
+    }
+
+    @GetMapping("/{username}/follow-status")
+    public ResponseEntity<String> getFollowingStatus(@PathVariable("username") String username) throws NotFoundException {
+        return ResponseEntity.ok(accountService.findFollowingStatus(username).toString());
     }
 }
