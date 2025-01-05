@@ -199,8 +199,4 @@ public class AccountService {
         return planRepository.getTravelPlansByAccountId(userId);
     }
 
-    public String findDisplayNameFromUsername(String username) throws NotFoundException {
-        return userProfileRepository.findDisplayNameFromUsername(username).orElseThrow(() ->
-                new NotFoundException(String.format("User profile not found for username %s.", username)));
-    }
 }

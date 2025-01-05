@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/users")
@@ -26,8 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserProfileController {
     @Autowired
     private UserProfileService userProfileService;
-    @Autowired
-    private AccountService accountService;
     private static final Logger logger = LoggerFactory.getLogger(UserAccountController.class);
 
     @ExceptionHandler(BadRequestException.class)
@@ -60,8 +59,13 @@ public class UserProfileController {
         return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findUserProfile(username));
     }
 
-    @GetMapping("/{username}/display-name")
+    @GetMapping("/{username}/profile/display-name")
     public ResponseEntity<String> getDisplayNameFromUsername(@PathVariable String username) throws NotFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(accountService.findDisplayNameFromUsername(username));
+        return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findDisplayNameFromUsername(username));
+    }
+
+    @GetMapping("/{userId}/display-name")
+    public ResponseEntity<String> getDisplayNameFromUserId(@PathVariable Integer userId) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findDisplayNameFromUserId(userId));
     }
 }

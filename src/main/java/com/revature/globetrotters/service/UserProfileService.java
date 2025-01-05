@@ -38,4 +38,14 @@ public class UserProfileService {
         return userProfileRepository.findByUsername(username).orElseThrow(() ->
                 new NotFoundException("User profile not found"));
     }
+
+    public String findDisplayNameFromUsername(String username) throws NotFoundException {
+        return userProfileRepository.findDisplayNameFromUsername(username).orElseThrow(() ->
+                new NotFoundException(String.format("User profile not found for username %s.", username)));
+    }
+
+    public String findDisplayNameFromUserId(Integer userId) throws NotFoundException {
+        return userProfileRepository.findDisplayNameFromUserId(userId).orElseThrow(() ->
+                new NotFoundException(String.format("User profile not found for userId %d.", userId)));
+    }
 }
