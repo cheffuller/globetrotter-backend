@@ -93,7 +93,12 @@ public class TravelPlanLocationService {
             throw new BadRequestException("Invalid location details.");
         }
 
-        return travelPlanLocationRepository.save(location);
+        locationFound.setCity(location.getCity());
+        locationFound.setCountry(location.getCountry());
+        locationFound.setStartDate(location.getStartDate());
+        locationFound.setEndDate(location.getEndDate());
+ 
+        return travelPlanLocationRepository.save(locationFound);
     }
 
     private boolean isInvalidLocation(TravelPlanLocation location) {

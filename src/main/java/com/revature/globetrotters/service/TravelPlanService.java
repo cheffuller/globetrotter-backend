@@ -87,21 +87,13 @@ public class TravelPlanService {
             throw new IllegalArgumentException("Unauthorized to update travel plan");
         }
 
+        updatedTravelPlan.setId(travelPlan.getId());
+        updatedTravelPlan.setAccountId(travelPlan.getAccountId());
+        updatedTravelPlan.setIsFavorited(travelPlan.getIsFavorited());
+        updatedTravelPlan.setIsPublished(travelPlan.getIsPublished());
+        
         return travelPlanRepository.save(updatedTravelPlan);
     }
-
-    // Add authorization so only the poster or a moderator can update
-    public TravelPlanLocation updateLocation(TravelPlanLocation travelPlanLocation) {
-        Optional<TravelPlanLocation> existingTravelPlan = travelPlanLocationRepository.findById(travelPlanLocation.getId());
-        if (existingTravelPlan == null) {
-            throw new IllegalArgumentException("Travel plan not found");
-        }
-
-        TravelPlanLocation updatedTravelPlan = existingTravelPlan.get();
-
-        return travelPlanLocationRepository.save(updatedTravelPlan);
-    }
-        
 
     public List<TravelPlan> findMostRecentPublicTravelPlan(int limit) {
         Pageable pageable = Pageable.ofSize(limit);
