@@ -8,6 +8,7 @@ import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.UserAccount;
 import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.enums.AccountRole;
+import com.revature.globetrotters.enums.FollowingStatus;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 
 @Service
@@ -58,19 +58,22 @@ public class AccountService {
             throw new UnauthorizedException("Username and password are required.");
         }
 
-        Optional<UserAccount> foundAccount = userAccountRepository.findByUsername(account.getUsername());
-        if (foundAccount.isEmpty()) {
-            throw new UnauthorizedException(String.format("User with username %s not found.", account.getUsername()));
-        }
+        UserAccount foundAccount = userAccountRepository.findByUsername(account.getUsername())
+                .orElseThrow(() -> new UnauthorizedException(String.format(
+                        "User with username %s not found.",
+                        account.getUsername())
+                ));
 
-        if (!passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword())) {
-            throw new UnauthorizedException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
-                    ".\nPassword: " + account.getPassword() + ".\nFound password hash: " + foundAccount.get().getPassword());
+        if (!passwordEncoder.matches(account.getPassword(), foundAccount.getPassword())) {
+            throw new UnauthorizedException("Invalid login credentials." +
+                    passwordEncoder.matches(account.getPassword(), foundAccount.getPassword()) +
+                    ".\nPassword: " + account.getPassword() +
+                    ".\nFound password hash: " + foundAccount.getPassword());
         }
 
         return JwtUtil.generateTokenFromUserName(account.getUsername(), Map.of(
                 JwtConsts.ACCOUNT_ROLE, AccountRole.Customer.getRole(),
-                JwtConsts.ACCOUNT_ID, account.getId().toString()
+                JwtConsts.ACCOUNT_ID, foundAccount.getId().toString()
         ));
     }
 
@@ -115,7 +118,12 @@ public class AccountService {
     }
 
 
-    public void followUser(int followingId) throws NotFoundException, BadRequestException {
+    public void followUser(String username) throws NotFoundException, BadRequestException {
+        UserAccount account = userAccountRepository.findByUsername(username).orElseThrow(() ->
+                new NotFoundException("User does not exist.")
+        );
+
+        int followingId = account.getId();
         int followerId = tokenService.getUserAccountId();
 
         if (!userAccountRepository.existsById(followerId)) {
@@ -140,10 +148,15 @@ public class AccountService {
         }
     }
 
-    public void unfollowUser(int followingId) throws BadRequestException {
-        int followerId = tokenService.getUserAccountId();
-        Follow followToDelete = new Follow(followerId, followingId);
+    public void unfollowUser(String username) throws BadRequestException, NotFoundException {
+        UserAccount account = userAccountRepository.findByUsername(username).orElseThrow(() ->
+                new NotFoundException("User does not exist.")
+        );
 
+        int followingId = account.getId();
+        int followerId = tokenService.getUserAccountId();
+
+        Follow followToDelete = new Follow(followerId, followingId);
         if (followRepository.existsById(followToDelete.getId())) {
             followRepository.delete(followToDelete);
             return;
@@ -160,6 +173,25 @@ public class AccountService {
                 followerId, followingId));
     }
 
+    public FollowingStatus findFollowingStatus(String username) throws NotFoundException {
+        UserAccount account = userAccountRepository.findByUsername(username).orElseThrow(() ->
+                new NotFoundException("User does not exist.")
+        );
+
+        int followingId = account.getId();
+        int followerId = tokenService.getUserAccountId();
+
+        if (followRepository.existsById(new Follow.FollowId(followerId, followingId))) {
+            return FollowingStatus.Following;
+        }
+
+        if (followRequestRepository.existsById(new FollowRequest.FollowRequestId(followerId, followingId))) {
+            return FollowingStatus.FollowRequested;
+        }
+
+        return FollowingStatus.NotFollowing;
+    }
+
     public List<TravelPlan> getPlans(int userId) throws NotFoundException {
         if (!userAccountRepository.existsById(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
@@ -167,22 +199,4 @@ public class AccountService {
         return planRepository.getTravelPlansByAccountId(userId);
     }
 
-    public void updateUserProfile(UserProfile profile) throws NotFoundException, BadRequestException {
-        profile.setAccountId(tokenService.getUserAccountId());
-        if (!userProfileRepository.existsById(profile.getAccountId())) {
-            throw new NotFoundException("User profile not found.");
-        }
-
-        if (profile.getDisplayName() == null ||
-                profile.getDisplayName().trim().isEmpty()) {
-            throw new BadRequestException("Invalid profile details.");
-        }
-
-        userProfileRepository.save(profile);
-    }
-
-    public UserProfile findUserProfile(int userId) throws NotFoundException {
-        return userProfileRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("User profile not found"));
-    }
 }

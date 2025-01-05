@@ -30,19 +30,19 @@ public class PostController {
     private static final Logger logger = LoggerFactory.getLogger(PostController.class);
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity handleBadRequestException(BadRequestException exception) {
+    public ResponseEntity<?> handleBadRequestException(BadRequestException exception) {
         logger.info(exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException(NotFoundException exception) {
+    public ResponseEntity<?> handleNotFoundException(NotFoundException exception) {
         logger.info(exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity handleUnauthorizedException(UnauthorizedException exception) {
+    public ResponseEntity<?> handleUnauthorizedException(UnauthorizedException exception) {
         logger.info(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
@@ -62,6 +62,11 @@ public class PostController {
     @GetMapping("posts/{postId}")
     public ResponseEntity<Post> getPostById(@PathVariable int postId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findPostById(postId));
+    }
+
+    @GetMapping("posts/plans/{travelPlanId}")
+    public ResponseEntity<Integer> getPostIdByTravelPlanId(@PathVariable int travelPlanId) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.findPostIdByTravelPlanId(travelPlanId));
     }
 
     @DeleteMapping("posts/{postId}")
@@ -103,7 +108,7 @@ public class PostController {
     }
 
     @PostMapping("comments/{commentId}/likes")
-    public ResponseEntity likeComment(@PathVariable int commentId) throws NotFoundException {
+    public ResponseEntity<?> likeComment(@PathVariable int commentId) throws NotFoundException {
         postService.likeComment(commentId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
@@ -115,20 +120,24 @@ public class PostController {
     }
 
     @PostMapping("posts/{postId}/likes")
-    public ResponseEntity likePost(@PathVariable int postId) throws NotFoundException {
+    public ResponseEntity<?> likePost(@PathVariable int postId) throws NotFoundException {
         postService.likePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @DeleteMapping("posts/{postId}/likes")
-    public ResponseEntity unlikePost(@PathVariable int postId) {
+    public ResponseEntity<?> unlikePost(@PathVariable int postId) {
         postService.unlikePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("posts/{postId}/liked")
     public ResponseEntity<Boolean> userLikedPost(@PathVariable int postId) throws BadRequestException {
-        postService.userLikedPost(postId);
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(postService.userLikedPost(postId));
+    }
+
+    @GetMapping("comments/{commentId}/liked")
+    public ResponseEntity<Boolean> userLikedComment(@PathVariable int commentId) throws BadRequestException {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.userLikedComment(commentId));
     }
 }

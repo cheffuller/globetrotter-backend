@@ -64,6 +64,12 @@ public class PostService {
         return optionalPost.orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
     }
 
+    public Integer findPostIdByTravelPlanId(Integer travelPlanId) throws NotFoundException {
+        Optional<Post> optionalPost = postRepository.findByTravelPlanId(travelPlanId);
+        Post post = optionalPost.orElseThrow(() -> new NotFoundException(String.format("Post with Travel Plan ID %d not found.", travelPlanId)));
+        return post.getId();
+    }
+
     public void deletePost(Integer postId) throws NotFoundException, UnauthorizedException {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
@@ -155,6 +161,15 @@ public class PostService {
         }
 
         return postLikeRepository.findById(new PostLike.PostLikeId(postId, tokenService.getUserAccountId()))
+                .isPresent();
+    }
+
+    public boolean userLikedComment(Integer commentId) throws BadRequestException {
+        if (!commentRepository.existsById(commentId)) {
+            throw new BadRequestException(String.format("Comment with ID %d does not exist.", commentId));
+        }
+
+        return commentLikeRepository.findById(new CommentLike.CommentLikeId(commentId, tokenService.getUserAccountId()))
                 .isPresent();
     }
 }

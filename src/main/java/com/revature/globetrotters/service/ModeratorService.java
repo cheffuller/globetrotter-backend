@@ -65,19 +65,22 @@ public class ModeratorService {
             throw new UnauthorizedException("Username and password are required.");
         }
 
-        Optional<ModeratorAccount> foundAccount = moderatorAccountRepository.findByUsername(account.getUsername());
-        if (foundAccount.isEmpty()) {
-            throw new UnauthorizedException(String.format("User with username %s not found.", account.getUsername()));
-        }
+        ModeratorAccount foundAccount = moderatorAccountRepository.findByUsername(account.getUsername())
+                .orElseThrow(() -> new UnauthorizedException(String.format(
+                        "User with username %s not found.",
+                        account.getUsername()
+                )));
 
-        if (!passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword())) {
-            throw new UnauthorizedException("Invalid login credentials." + passwordEncoder.matches(account.getPassword(), foundAccount.get().getPassword()) +
-                    ".\nPassword: " + account.getPassword() + ".\nFound password hash: " + foundAccount.get().getPassword());
+        if (!passwordEncoder.matches(account.getPassword(), foundAccount.getPassword())) {
+            throw new UnauthorizedException("Invalid login credentials." +
+                    passwordEncoder.matches(account.getPassword(), foundAccount.getPassword()) +
+                    ".\nPassword: " + account.getPassword() +
+                    ".\nFound password hash: " + foundAccount.getPassword());
         }
 
         return JwtUtil.generateTokenFromUserName(account.getUsername(), Map.of(
                 JwtConsts.ACCOUNT_ROLE, AccountRole.Moderator.getRole(),
-                JwtConsts.ACCOUNT_ID, account.getId().toString()
+                JwtConsts.ACCOUNT_ID, foundAccount.toString()
         ));
     }
 }

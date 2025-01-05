@@ -5,6 +5,7 @@ import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.service.AccountService;
+import com.revature.globetrotters.service.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +14,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/users")
 @CrossOrigin(origins = "http://localhost:5173/")
 public class UserProfileController {
     @Autowired
-    private AccountService accountService;
+    private UserProfileService userProfileService;
     private static final Logger logger = LoggerFactory.getLogger(UserAccountController.class);
 
     @ExceptionHandler(BadRequestException.class)
@@ -45,13 +48,24 @@ public class UserProfileController {
     }
 
     @PostMapping("/profile")
-    public ResponseEntity updateUserProfile(@RequestBody UserProfile userProfile) throws NotFoundException, BadRequestException {
-        accountService.updateUserProfile(userProfile);
+    public ResponseEntity updateUserProfile(@RequestBody UserProfile userProfile)
+            throws NotFoundException, BadRequestException {
+        userProfileService.updateUserProfile(userProfile);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-    @PostMapping("/{userId}/profile")
-    public ResponseEntity<UserProfile> getProfile(@PathVariable("userId") int userId) throws NotFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(accountService.findUserProfile(userId));
+    @GetMapping("/{username}/profile")
+    public ResponseEntity<UserProfile> getProfile(@PathVariable("username") String username) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findUserProfile(username));
+    }
+
+    @GetMapping("/{username}/profile/display-name")
+    public ResponseEntity<String> getDisplayNameFromUsername(@PathVariable String username) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findDisplayNameFromUsername(username));
+    }
+
+    @GetMapping("/{userId}/display-name")
+    public ResponseEntity<String> getDisplayNameFromUserId(@PathVariable Integer userId) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findDisplayNameFromUserId(userId));
     }
 }
