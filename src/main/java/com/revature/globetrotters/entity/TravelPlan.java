@@ -23,46 +23,46 @@ public class TravelPlan {
     @Column(name = "is_published")
     private Boolean isPublished;
 
-    public TravelPlan(){
+    public TravelPlan() {
 
     }
 
-    public TravelPlan(Integer id, Integer accountId, Boolean isFavorited, Boolean isPublished){
+    public TravelPlan(Integer id, Integer accountId, Boolean isFavorited, Boolean isPublished) {
         this.id = id;
         this.accountId = accountId;
         this.isFavorited = isFavorited;
         this.isPublished = isPublished;
     }
 
-    public Integer getId(){
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id){
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Integer getAccountId(){
+    public Integer getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Integer accountId){
+    public void setAccountId(Integer accountId) {
         this.accountId = accountId;
     }
 
-    public Boolean getIsFavorited(){
+    public Boolean getIsFavorited() {
         return isFavorited;
     }
 
-    public void setIsFavorited(Boolean isFavorited){
+    public void setIsFavorited(Boolean isFavorited) {
         this.isFavorited = isFavorited;
     }
 
-    public Boolean getIsPublished(){
+    public Boolean getIsPublished() {
         return isPublished;
     }
 
-    public void setIsPublished(Boolean isPublished){
+    public void setIsPublished(Boolean isPublished) {
         this.isPublished = isPublished;
     }
 

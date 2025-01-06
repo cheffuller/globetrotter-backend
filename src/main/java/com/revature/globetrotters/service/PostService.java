@@ -60,7 +60,7 @@ public class PostService {
     }
 
     public Post findPostById(Integer postId) throws NotFoundException {
-        Optional<Post> optionalPost = postRepository.findById(postId);
+        Optional<Post> optionalPost = postRepository.findByIdIncludingUsernameAndLikeCount(postId);
         return optionalPost.orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
     }
 

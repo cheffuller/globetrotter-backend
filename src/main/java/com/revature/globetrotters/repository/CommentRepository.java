@@ -53,5 +53,5 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             JOIN Post p
             ON c.postId = p.id
             WHERE p.id = :postId""")
-    List<Comment> findAllByPostIdIncludingUsername(Integer postId);
+    List<Comment> findAllByPostIdIncludingUsername(@Param("postId") Integer postId);
 }

@@ -26,6 +26,10 @@ public class Post {
     private Date postedDate;
     @Column(name = "travel_plan")
     private int travelPlanId;
+    @Transient
+    private String username;
+    @Transient
+    private Long numberOfLikes;
 
     public Post() {
     }
@@ -39,6 +43,14 @@ public class Post {
         this.id = id;
         this.postedDate = postedDate;
         this.travelPlanId = travelPlanId;
+    }
+
+    public Post(int id, Date postedDate, int travelPlanId, String username, Long numberOfLikes) {
+        this.id = id;
+        this.postedDate = postedDate;
+        this.travelPlanId = travelPlanId;
+        this.username = username;
+        this.numberOfLikes = numberOfLikes;
     }
 
     public int getId() {
@@ -63,6 +75,22 @@ public class Post {
 
     public void setTravelPlanId(int travelPlanId) {
         this.travelPlanId = travelPlanId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Long getNumberOfLikes() {
+        return numberOfLikes;
+    }
+
+    public void setNumberOfLikes(Long numberOfLikes) {
+        this.numberOfLikes = numberOfLikes;
     }
 
     @Override
