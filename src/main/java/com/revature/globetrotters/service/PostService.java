@@ -106,7 +106,7 @@ public class PostService {
         if (!postRepository.existsById(postId)) {
             throw new NotFoundException(String.format("Post with ID %d does not exist.", postId));
         }
-        return commentRepository.findAllByPostId(postId);
+        return commentRepository.findAllByPostIdIncludingUsername(postId);
     }
 
     public Comment postComment(Comment comment) throws BadRequestException {

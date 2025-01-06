@@ -38,4 +38,20 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             WHERE c.id = :id
             """)
     Optional<Comment> findByIdIncludingUsername(Integer id);
+
+    @Query("""
+            SELECT new Comment(
+                ua.username,
+                c.userId,
+                c.content,
+                c.postId,
+                c.commentedDate,
+                c.id
+            ) FROM Comment c
+            JOIN UserAccount ua
+            ON c.userId = ua.id
+            JOIN Post p
+            ON c.postId = p.id
+            WHERE p.id = :postId""")
+    List<Comment> findAllByPostIdIncludingUsername(Integer postId);
 }
