@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import java.util.Date;
 import java.util.Objects;
@@ -17,18 +18,16 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @Column(name = "commented_date", nullable = false)
     private Date commentedDate;
-
     @Column(name = "commented_on", nullable = false)
     private Integer postId;
-
     @Column(name = "content", nullable = false, length = 1000)
     private String content;
-
     @Column(name = "made_by", nullable = false)
     private Integer userId;
+    @Transient
+    private String username;
 
     public Comment() {
     }
@@ -46,6 +45,15 @@ public class Comment {
         this.postId = postId;
         this.content = content;
         this.userId = userId;
+    }
+
+    public Comment(String username, Integer userId, String content, Integer postId, Date commentedDate, Integer id) {
+        this.username = username;
+        this.userId = userId;
+        this.content = content;
+        this.postId = postId;
+        this.commentedDate = commentedDate;
+        this.id = id;
     }
 
     public Integer getId() {
@@ -86,6 +94,14 @@ public class Comment {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override

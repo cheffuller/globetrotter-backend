@@ -17,12 +17,31 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Optional<Post> findByTravelPlanId(Integer travelPlanId);
 
     @Query("""
-            SELECT p 
+            SELECT p
             FROM Post p
-            JOIN TravelPlan tp 
+            JOIN TravelPlan tp
             ON p.travelPlanId = tp.id
             JOIN UserAccount ua
             ON tp.accountId = ua.id
             WHERE ua.id = :userId""")
     List<Post> findAllByUserId(@Param("userId") Integer userId);
+
+    @Query("""
+            SELECT new Post(
+                p.id,
+                p.postedDate,
+                p.travelPlanId,
+                ua.username,
+                COUNT(pl)
+            ) FROM Post p
+            JOIN TravelPlan tp
+            ON p.travelPlanId = tp.id
+            JOIN UserAccount ua
+            ON ua.id = tp.accountId
+            JOIN PostLike pl
+            ON pl.id.postId = p.id
+            WHERE p.id = :id
+            GROUP BY p.id
+            """)
+    Optional<Post> findByIdIncludingUsernameAndLikeCount(@Param("id") Integer id);
 }

@@ -16,11 +16,11 @@ public interface TravelPlanLocationRepository extends JpaRepository<TravelPlanLo
     Optional<TravelPlanLocation> findByTravelPlanIdAndId(int travelPlanId, int id);
 
     @NativeQuery("""
-            SELECT * 
+            SELECT *
             FROM travel_plan_location
             WHERE travel_plan_id = :travelPlanId
             ORDER BY id ASC
-            LIMIT 1 
+            LIMIT 1
             OFFSET :offset""")
     Optional<TravelPlanLocation> findByTravelPlanIdAndOffset(@Param("travelPlanId") int travelPlanId,
                                                              @Param("offset") int offset);

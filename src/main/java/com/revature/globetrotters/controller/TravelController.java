@@ -111,7 +111,8 @@ public class TravelController {
     }
 
     @GetMapping("/recent/{limit}")
-    public ResponseEntity<List<TravelPlan>> findRecentPublishedPlans(@PathVariable("limit") int limit) {
+    public ResponseEntity<List<TravelPlan>> findRecentPublishedPlans(@PathVariable("limit") int limit)
+            throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.findMostRecentPublicTravelPlan(limit));
     }
 
