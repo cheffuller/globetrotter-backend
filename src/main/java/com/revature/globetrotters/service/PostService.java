@@ -118,7 +118,7 @@ public class PostService {
     }
 
     public Comment findCommentById(Integer commentId) throws NotFoundException {
-        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        Optional<Comment> optionalComment = commentRepository.findByIdIncludingUsername(commentId);
         return optionalComment.orElseThrow(() ->
                 new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
     }

@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,4 +23,19 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             WHERE c.postId = :postId
             """)
     Integer findNumberOfCommentsByPostId(@Param("postId") Integer postId);
+
+    @Query("""
+            SELECT new Comment(
+                ua.username,
+                c.userId,
+                c.content,
+                c.postId,
+                c.commentedDate,
+                c.id
+            ) FROM Comment c
+            JOIN UserAccount ua
+            ON c.userId = ua.id
+            WHERE c.id = :id
+            """)
+    Optional<Comment> findByIdIncludingUsername(Integer id);
 }
