@@ -56,9 +56,15 @@ public class TravelPlanService {
     // TODO: add and remove collaborator function
 
     public TravelPlan getTravelPlanById(Integer travelPlanId) throws NotFoundException {
-        return travelPlanRepository.findById(travelPlanId)
-                .orElseThrow(() -> new NotFoundException(String.format("Travel plan with ID %d not found.", travelPlanId))
+        TravelPlan plan = travelPlanRepository.findById(travelPlanId).orElseThrow(() ->
+                new NotFoundException(String.format("Travel plan with ID %d not found.", travelPlanId))
         );
+        try {
+            int postId = postService.findPostIdByTravelPlanId(travelPlanId);
+            plan.setPost(postService.findPostByIdIncludingAllFields(postId));
+        } catch (Exception e) {
+        }
+        return plan;
     }
 
     public void deleteTravelPlan(Integer travelPlanId) throws NotFoundException, UnauthorizedException {
@@ -115,7 +121,7 @@ public class TravelPlanService {
         Optional<Post> optionalPost = postRepository.findByTravelPlanId(planId);
 
         Post post = optionalPost.orElseThrow(() ->
-            new NotFoundException(String.format("Post with Travel Plan ID %d not found.", planId))
+                new NotFoundException(String.format("Post with Travel Plan ID %d not found.", planId))
         );
 
         return postLikeRepository.findNumberOfLikesByPostId(post.getId());
@@ -129,7 +135,7 @@ public class TravelPlanService {
         Optional<Post> optionalPost = postRepository.findByTravelPlanId(planId);
 
         Post post = optionalPost.orElseThrow(() ->
-            new NotFoundException(String.format("Post with Travel Plan ID %d not found.", planId))
+                new NotFoundException(String.format("Post with Travel Plan ID %d not found.", planId))
         );
 
         return commentRepository.findNumberOfCommentsByPostId(post.getId());
