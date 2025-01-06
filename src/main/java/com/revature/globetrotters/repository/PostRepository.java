@@ -31,17 +31,14 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 p.id,
                 p.postedDate,
                 p.travelPlanId,
-                ua.username,
-                COUNT(pl)
+                ua.username
             ) FROM Post p
             JOIN TravelPlan tp
             ON p.travelPlanId = tp.id
             JOIN UserAccount ua
             ON ua.id = tp.accountId
-            JOIN PostLike pl
-            ON pl.id.postId = p.id
             WHERE p.id = :id
             GROUP BY p.id
             """)
-    Optional<Post> findByIdIncludingUsernameAndLikeCount(@Param("id") Integer id);
+    Optional<Post> findByIdIncludingUsername(@Param("id") Integer id);
 }

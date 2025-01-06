@@ -91,7 +91,7 @@ public class TravelPlanService {
         return plans;
     }
 
-    public Integer getNumberOfLikesOnPostByTravelPlanId(Integer planId) throws NotFoundException {
+    public Long getNumberOfLikesOnPostByTravelPlanId(Integer planId) throws NotFoundException {
         if (!travelPlanRepository.existsById(planId)) {
             throw new NotFoundException(String.format("Travel plan with ID %d not found.", planId));
         }

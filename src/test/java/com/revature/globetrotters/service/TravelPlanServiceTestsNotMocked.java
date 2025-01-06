@@ -38,7 +38,7 @@ public class TravelPlanServiceTestsNotMocked {
         "3, 2"
     })
     public void getNumberOfLikesOnPostByTravelPlanId(Integer planId, int expectedLikes) throws BadRequestException, NotFoundException {
-        int actualLikes = travelPlanService.getNumberOfLikesOnPostByTravelPlanId(planId);
+        long actualLikes = travelPlanService.getNumberOfLikesOnPostByTravelPlanId(planId);
         Assertions.assertEquals(expectedLikes, actualLikes);
     }
 
