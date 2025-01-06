@@ -6,7 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +24,8 @@ public class TravelPlan {
     private Boolean isFavorited;
     @Column(name = "is_published")
     private Boolean isPublished;
+    @Transient
+    Post post;
 
     public TravelPlan() {
 
@@ -64,6 +68,14 @@ public class TravelPlan {
 
     public void setIsPublished(Boolean isPublished) {
         this.isPublished = isPublished;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
     }
 
     @Override

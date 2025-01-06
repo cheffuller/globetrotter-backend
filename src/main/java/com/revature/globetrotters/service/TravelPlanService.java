@@ -32,6 +32,8 @@ public class TravelPlanService {
     @Autowired
     private PostRepository postRepository;
     @Autowired
+    private PostService postService;
+    @Autowired
     private TokenService tokenService;
     @Autowired
     private TravelPlanRepository travelPlanRepository;
@@ -73,9 +75,14 @@ public class TravelPlanService {
         travelPlanRepository.deleteById(travelPlanId);
     }
 
-    public List<TravelPlan> findMostRecentPublicTravelPlan(int limit) {
+    public List<TravelPlan> findMostRecentPublicTravelPlan(int limit) throws NotFoundException {
         Pageable pageable = Pageable.ofSize(limit);
-        return travelPlanRepository.findRecentPublicTravelPlans(pageable);
+        List<TravelPlan> plans = travelPlanRepository.findRecentPublicTravelPlans(pageable);
+        for (TravelPlan plan : plans) {
+            int postId = postService.findPostIdByTravelPlanId(plan.getId());
+            plan.setPost(postService.findPostByIdIncludingAllFields(postId));
+        }
+        return plans;
     }
 
     public Integer getNumberOfLikesOnPostByTravelPlanId(Integer planId) throws NotFoundException {

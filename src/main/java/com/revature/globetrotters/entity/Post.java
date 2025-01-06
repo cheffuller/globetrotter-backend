@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,6 +31,10 @@ public class Post {
     private String username;
     @Transient
     private Long numberOfLikes;
+    @Transient
+    private List<Comment> comments;
+    @Transient
+    private List<TravelPlanLocation> locations;
 
     public Post() {
     }
@@ -51,6 +56,17 @@ public class Post {
         this.travelPlanId = travelPlanId;
         this.username = username;
         this.numberOfLikes = numberOfLikes;
+    }
+
+    public Post(int id, Date postedDate, int travelPlanId, String username, Long numberOfLikes,
+                List<Comment> comments, List<TravelPlanLocation> locations) {
+        this.id = id;
+        this.postedDate = postedDate;
+        this.travelPlanId = travelPlanId;
+        this.username = username;
+        this.numberOfLikes = numberOfLikes;
+        this.comments = comments;
+        this.locations = locations;
     }
 
     public int getId() {
@@ -91,6 +107,22 @@ public class Post {
 
     public void setNumberOfLikes(Long numberOfLikes) {
         this.numberOfLikes = numberOfLikes;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<TravelPlanLocation> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<TravelPlanLocation> locations) {
+        this.locations = locations;
     }
 
     @Override

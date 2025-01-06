@@ -12,6 +12,7 @@ import com.revature.globetrotters.repository.CommentLikeRepository;
 import com.revature.globetrotters.repository.CommentRepository;
 import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
+import com.revature.globetrotters.repository.TravelPlanLocationRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import org.slf4j.Logger;
@@ -40,6 +41,8 @@ public class PostService {
     @Autowired
     private TravelPlanRepository travelPlanRepository;
     @Autowired
+    private TravelPlanLocationRepository travelPlanLocationRepository;
+    @Autowired
     private UserAccountRepository userAccountRepository;
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
@@ -60,8 +63,18 @@ public class PostService {
     }
 
     public Post findPostById(Integer postId) throws NotFoundException {
-        Optional<Post> optionalPost = postRepository.findByIdIncludingUsernameAndLikeCount(postId);
-        return optionalPost.orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
+        return postRepository.findByIdIncludingUsernameAndLikeCount(postId).orElseThrow(() ->
+                new NotFoundException(String.format("Post with ID %d not found.", postId))
+        );
+    }
+
+    public Post findPostByIdIncludingAllFields(Integer postId) throws NotFoundException {
+        Post post = postRepository.findByIdIncludingUsernameAndLikeCount(postId).orElseThrow(() ->
+                new NotFoundException(String.format("Post with ID %d not found.", postId))
+        );
+        post.setComments(commentRepository.findAllByPostId(post.getId()));
+        post.setLocations(travelPlanLocationRepository.findAllByTravelPlanId(post.getTravelPlanId()));
+        return post;
     }
 
     public Integer findPostIdByTravelPlanId(Integer travelPlanId) throws NotFoundException {
