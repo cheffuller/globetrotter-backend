@@ -112,7 +112,7 @@ public class TravelPlanLocationService {
         if (isNotACollaborator(plan.getId())) {
             throw new UnauthorizedException("User is unauthorized to delete a location for this travel plan.");
         }
-
+        System.out.println("Deleting location");
         travelPlanLocationRepository.deleteById(locationId);
     }
 
