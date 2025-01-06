@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Transient;
+
 @Entity
 @Table(name = "post")
 public class Post {

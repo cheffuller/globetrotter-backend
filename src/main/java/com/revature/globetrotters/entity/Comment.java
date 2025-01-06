@@ -27,7 +27,6 @@ public class Comment {
     @Column(name = "made_by", nullable = false)
     private Integer userId;
     @Transient
-    @Column(name = "username")
     private String username;
 
     public Comment() {
