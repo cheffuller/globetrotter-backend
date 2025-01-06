@@ -72,7 +72,7 @@ public class PostService {
         Post post = postRepository.findByIdIncludingUsernameAndLikeCount(postId).orElseThrow(() ->
                 new NotFoundException(String.format("Post with ID %d not found.", postId))
         );
-        post.setComments(commentRepository.findAllByPostId(post.getId()));
+        post.setComments(commentRepository.findAllByPostIdIncludingUsername(post.getId()));
         post.setLocations(travelPlanLocationRepository.findAllByTravelPlanId(post.getTravelPlanId()));
         return post;
     }
