@@ -137,5 +137,12 @@ public class TravelController {
     public ResponseEntity<List<TravelPlan>> getTravelPlansByAccountId(@PathVariable("accountId") int accountId) {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getTravelPlansByAccountId(accountId));
     }
+
+    @DeleteMapping("/{planId}/locations/{locationId}")
+    public ResponseEntity<?> deleteTravelPlanLocation(@PathVariable("planId") int travelPlanId, @PathVariable("locationId") int locationId) throws NotFoundException, UnauthorizedException {
+        // call travel plan location service layer to delete travel plan location by its id
+        travelPlanLocationService.deleteTravelPlanLocation(travelPlanId, locationId);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 } 
     
