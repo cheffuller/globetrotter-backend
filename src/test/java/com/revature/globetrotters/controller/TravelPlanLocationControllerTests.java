@@ -26,6 +26,8 @@ import java.net.http.HttpResponse;
 import java.util.Date;
 import java.util.HashMap;
 
+import static com.revature.globetrotters.util.SecurityUtils.getWebToken;
+
 public class TravelPlanLocationControllerTests {
     ApplicationContext app;
     HttpClient webClient;
@@ -44,10 +46,6 @@ public class TravelPlanLocationControllerTests {
     public void tearDown() throws InterruptedException {
         Thread.sleep(500);
         SpringApplication.exit(app);
-    }
-
-    private String getWebToken(String username) {
-        return JwtUtil.generateTokenFromUserName(username, new HashMap<>());
     }
 
     @ParameterizedTest
