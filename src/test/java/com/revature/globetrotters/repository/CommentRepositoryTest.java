@@ -37,7 +37,7 @@ public class CommentRepositoryTest {
 
     @ParameterizedTest
     @CsvSource({
-            "1, '2019-01-01', 1, 'content', 3"
+            "1, '2019-01-01', 1, 'WOW! This trip looks amazing!', 3"
     })
     public void findPostCommentByIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
                                     Integer postId, String content, Integer userId) {

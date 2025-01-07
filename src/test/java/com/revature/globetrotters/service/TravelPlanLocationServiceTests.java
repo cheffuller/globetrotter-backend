@@ -2,10 +2,10 @@ package com.revature.globetrotters.service;
 
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.TravelPlanLocation;
+import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.util.DateArgumentConverter;
-import com.revature.globetrotters.exception.BadRequestException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +19,12 @@ import java.text.ParseException;
 import java.util.List;
 
 import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
+import static com.revature.globetrotters.util.SecurityUtils.setUpSecurityContextHolder;
 
 @SpringBootTest
 public class TravelPlanLocationServiceTests {
+    @Autowired
+    private AuthenticationTokenService authenticationTokenService;
     @Autowired
     TravelPlanLocationService travelPlanLocationService;
     ApplicationContext app;
@@ -40,15 +43,17 @@ public class TravelPlanLocationServiceTests {
     }
 
     @Test
-    public void createTravelPlanLocationTest() throws BadRequestException, ParseException, UnauthorizedException {
+    public void createTravelPlanLocationTest() throws BadRequestException, ParseException, UnauthorizedException,
+            NotFoundException {
+        setUpSecurityContextHolder("john_doe", authenticationTokenService);
         DateArgumentConverter converter = new DateArgumentConverter();
 
         TravelPlanLocation travelPlanLocation = new TravelPlanLocation(
                 null,
                 "New York",
                 "United States",
-                convertToDate("2020-12-01"),
                 convertToDate("2020-12-31"),
+                convertToDate("2020-12-01"),
                 1
         );
 
@@ -56,8 +61,8 @@ public class TravelPlanLocationServiceTests {
                 7,
                 "New York",
                 "United States",
-                convertToDate("2020-12-01"),
                 convertToDate("2020-12-31"),
+                convertToDate("2020-12-01"),
                 1
         );
 
