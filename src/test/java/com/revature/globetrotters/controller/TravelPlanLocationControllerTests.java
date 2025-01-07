@@ -46,8 +46,8 @@ public class TravelPlanLocationControllerTests {
         SpringApplication.exit(app);
     }
 
-    private String getWebToken() {
-        return JwtUtil.generateTokenFromUserName("john_doe", new HashMap<>());
+    private String getWebToken(String username) {
+        return JwtUtil.generateTokenFromUserName(username, new HashMap<>());
     }
 
     @ParameterizedTest
@@ -66,7 +66,7 @@ public class TravelPlanLocationControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/plans/" + travelPlanId + "/locations"))
                 .header("Content-Type", "application/json")
-                .header("authorization", getWebToken())
+                .header("authorization", getWebToken("john_doe"))
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(travelPlanLocation)))
                 .build();
 
@@ -79,7 +79,7 @@ public class TravelPlanLocationControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/plans/1/locations"))
                 .header("Content-Type", "application/json")
-                .header("authorization", getWebToken())
+                .header("authorization", getWebToken("john_doe"))
                 .GET()
                 .build();
 
@@ -92,7 +92,7 @@ public class TravelPlanLocationControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/plans/100/locations"))
                 .header("Content-Type", "application/json")
-                .header("authorization", getWebToken())
+                .header("authorization", getWebToken("john_doe"))
                 .GET()
                 .build();
 
@@ -112,7 +112,7 @@ public class TravelPlanLocationControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/plans/" + travelPlanId + "/locations/" + locationId))
                 .header("Content-Type", "application/json")
-                .header("authorization", getWebToken())
+                .header("authorization", getWebToken("john_doe"))
                 .GET()
                 .build();
 
@@ -126,7 +126,7 @@ public class TravelPlanLocationControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/plans/1/locations/100"))
                 .header("Content-Type", "application/json")
-                .header("authorization", getWebToken())
+                .header("authorization", getWebToken("john_doe"))
                 .GET()
                 .build();
 
@@ -139,7 +139,7 @@ public class TravelPlanLocationControllerTests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/plans/10/locations/1"))
                 .header("Content-Type", "application/json")
-                .header("authorization", getWebToken())
+                .header("authorization", getWebToken("john_doe"))
                 .GET()
                 .build();
 
