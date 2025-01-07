@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Transient;
 
@@ -23,7 +25,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "created_at")
-    @JsonProperty("timestamp")
+    @CreationTimestamp
     private Date postedDate;
     @Column(name = "travel_plan")
     private int travelPlanId;
@@ -37,6 +39,10 @@ public class Post {
     private List<TravelPlanLocation> locations;
 
     public Post() {
+    }
+
+    public Post(int travelPLanId) {
+        this.travelPlanId = travelPLanId;
     }
 
     public Post(Date postedDate, int travelPlanId) {
