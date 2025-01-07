@@ -93,7 +93,27 @@ public class TravelPlanLocationService {
             throw new BadRequestException("Invalid location details.");
         }
 
-        return travelPlanLocationRepository.save(location);
+        locationFound.setCity(location.getCity());
+        locationFound.setCountry(location.getCountry());
+        locationFound.setStartDate(location.getStartDate());
+        locationFound.setEndDate(location.getEndDate());
+ 
+        return travelPlanLocationRepository.save(locationFound);
+    }
+
+    public void deleteTravelPlanLocation(int travelPlanId, int locationId) throws NotFoundException, UnauthorizedException {
+
+        TravelPlanLocation location = travelPlanLocationRepository.findById(locationId)
+                .orElseThrow(() -> new NotFoundException(String.format("Travel plan location %d not found.", locationId)));
+
+        TravelPlan plan = travelPlanRepository.findById(travelPlanId).orElseThrow(() ->
+                new NotFoundException("Travel plan not found."));
+
+        if (isNotACollaborator(plan.getId())) {
+            throw new UnauthorizedException("User is unauthorized to delete a location for this travel plan.");
+        }
+        System.out.println("Deleting location");
+        travelPlanLocationRepository.deleteById(locationId);
     }
 
     private boolean isInvalidLocation(TravelPlanLocation location) {

@@ -69,18 +69,27 @@ public class TravelController {
         // and then probably call travel plan location service layer to get travel plan location
         return ResponseEntity.status(HttpStatus.OK).body(travelPlan);
     }
-
-    @PutMapping("")
-    public ResponseEntity<TravelPlanLocation> updateTravelPlan(@RequestBody TravelPlanLocation travelPlan) throws NotFoundException, UnauthorizedException, BadRequestException {
+    
+    @PutMapping("") 
+    public ResponseEntity<TravelPlan> updateTravelPlan(@RequestBody TravelPlan travelPlan) {
         // call travel plan service layer to update travel plan by its id
         // and then probably call travel plan location service layer to update travel plan location or times
-        TravelPlanLocation updatedTravelPlan = travelPlanLocationService.updateTravelPlanLocation(travelPlan);
+        TravelPlan updatedTravelPlan = travelPlanService.updateTravelPlan(travelPlan);
         return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan);
     }
 
+    @PutMapping("/{planId}/locations")
+    public ResponseEntity<TravelPlanLocation> updateTravelPlanLocation(@PathVariable("planId") int travelPlanId, @RequestBody TravelPlanLocation travelPlan) throws NotFoundException, UnauthorizedException, BadRequestException {
+        // call travel plan service layer to update travel plan by its id
+        // and then probably call travel plan location service layer to update travel plan location or times
+        TravelPlanLocation updatedTravelPlan = travelPlanLocationService.updateTravelPlanLocation(travelPlan);
+    return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan); // Ensure this is the updated object
+    }
+
     @DeleteMapping("/{planId}")
-    public ResponseEntity<?> deleteTravelPlan(@PathVariable("planId") int travelPlanId) {
+    public ResponseEntity<?> deleteTravelPlan(@PathVariable("planId") int travelPlanId) throws NotFoundException, UnauthorizedException {
         // call travel plan service layer to delete travel plan by its id
+        travelPlanService.deleteTravelPlan(travelPlanId);
         // and then probably call travel plan location service layer to delete travel plan location
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
@@ -125,4 +134,17 @@ public class TravelController {
     public ResponseEntity<Integer> getNumberOfCommentsOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfCommentsOnPostByTravelPlanId(travelPlanId));
     }
-}
+
+    @GetMapping("users/{accountId}/plans")
+    public ResponseEntity<List<TravelPlan>> getTravelPlansByAccountId(@PathVariable("accountId") int accountId) {
+        return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getTravelPlansByAccountId(accountId));
+    }
+
+    @DeleteMapping("/{planId}/locations/{locationId}")
+    public ResponseEntity<?> deleteTravelPlanLocation(@PathVariable("planId") int travelPlanId, @PathVariable("locationId") int locationId) throws NotFoundException, UnauthorizedException {
+        // call travel plan location service layer to delete travel plan location by its id
+        travelPlanLocationService.deleteTravelPlanLocation(travelPlanId, locationId);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+} 
+    
