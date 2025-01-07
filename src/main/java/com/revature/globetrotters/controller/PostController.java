@@ -61,7 +61,7 @@ public class PostController {
 
     @GetMapping("posts/{postId}")
     public ResponseEntity<Post> getPostById(@PathVariable int postId) throws NotFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.findPostById(postId));
+        return ResponseEntity.status(HttpStatus.OK).body(postService.findPostByIdIncludingAllFields(postId));
     }
 
     @GetMapping("posts/plans/{travelPlanId}")
@@ -76,7 +76,7 @@ public class PostController {
     }
 
     @GetMapping("posts/{postId}/likes")
-    public ResponseEntity<Integer> getNumberOfLikesOnPostById(@PathVariable int postId) throws NotFoundException {
+    public ResponseEntity<Long> getNumberOfLikesOnPostById(@PathVariable int postId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getNumberOfLikesOnPostById(postId));
     }
 

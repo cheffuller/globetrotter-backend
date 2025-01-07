@@ -94,7 +94,7 @@ public class PostServiceTests {
     public void getPostLikesTest(int postId, int userId) throws NotFoundException {
         int expectedLike = 1;
 
-        Integer actualLiked = postService.getNumberOfLikesOnPostById(postId);
+        Long actualLiked = postService.getNumberOfLikesOnPostById(postId);
 
         Assertions.assertEquals(expectedLike, actualLiked);
     }
@@ -104,7 +104,7 @@ public class PostServiceTests {
         setUpSecurityContextHolder("john_doe");
         postService.likePost(1);
         int expectedLike = 2;
-        Integer actualLiked = postService.getNumberOfLikesOnPostById(1);
+        Long actualLiked = postService.getNumberOfLikesOnPostById(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
@@ -113,7 +113,7 @@ public class PostServiceTests {
         setUpSecurityContextHolder("clark_kent");
         postService.unlikePost(1);
         int expectedLike = 0;
-        Integer actualLiked = postService.getNumberOfLikesOnPostById(1);
+        Long actualLiked = postService.getNumberOfLikesOnPostById(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 

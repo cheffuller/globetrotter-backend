@@ -63,15 +63,18 @@ public class PostService {
     }
 
     public Post findPostById(Integer postId) throws NotFoundException {
-        return postRepository.findByIdIncludingUsernameAndLikeCount(postId).orElseThrow(() ->
+        Post post = postRepository.findByIdIncludingUsername(postId).orElseThrow(() ->
                 new NotFoundException(String.format("Post with ID %d not found.", postId))
         );
+        post.setNumberOfLikes(postLikeRepository.findNumberOfLikesByPostId(postId));
+        return post;
     }
 
     public Post findPostByIdIncludingAllFields(Integer postId) throws NotFoundException {
-        Post post = postRepository.findByIdIncludingUsernameAndLikeCount(postId).orElseThrow(() ->
+        Post post = postRepository.findByIdIncludingUsername(postId).orElseThrow(() ->
                 new NotFoundException(String.format("Post with ID %d not found.", postId))
         );
+        post.setNumberOfLikes(postLikeRepository.findNumberOfLikesByPostId(postId));
         post.setComments(commentRepository.findAllByPostIdIncludingUsername(post.getId()));
         post.setLocations(travelPlanLocationRepository.findAllByTravelPlanId(post.getTravelPlanId()));
         return post;
@@ -97,7 +100,7 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public Integer getNumberOfLikesOnPostById(Integer postId) throws NotFoundException {
+    public Long getNumberOfLikesOnPostById(Integer postId) throws NotFoundException {
         if (!postRepository.existsById(postId)) {
             throw new NotFoundException(String.format("Post with ID %d not found.", postId));
         }

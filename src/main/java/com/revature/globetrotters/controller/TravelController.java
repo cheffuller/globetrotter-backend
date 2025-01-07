@@ -125,7 +125,7 @@ public class TravelController {
     }
 
     @GetMapping("/{planId}/likes")
-    public ResponseEntity<Integer> getNumberOfLikesOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException {
+    public ResponseEntity<Long> getNumberOfLikesOnPostByTravelPlanId(@PathVariable("planId") int travelPlanId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(travelPlanService.getNumberOfLikesOnPostByTravelPlanId(travelPlanId));
     }
 

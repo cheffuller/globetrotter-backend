@@ -6,7 +6,8 @@ import java.util.HashSet;
 public enum PublicUrl {
     CUSTOMER_LOGIN("/users/login"),
     MODERATOR_LOGIN("/moderators/login"),
-    REGISTER("/users/register");
+    REGISTER("/users/register"),
+    TRAVEL_PLANS_RECENT("/plans/recent/10");
 
     private final String url;
     private static final HashSet<String> urlSet = new HashSet<>();

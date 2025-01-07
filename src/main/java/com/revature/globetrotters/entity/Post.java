@@ -50,12 +50,11 @@ public class Post {
         this.travelPlanId = travelPlanId;
     }
 
-    public Post(int id, Date postedDate, int travelPlanId, String username, Long numberOfLikes) {
+    public Post(int id, Date postedDate, int travelPlanId, String username) {
         this.id = id;
         this.postedDate = postedDate;
         this.travelPlanId = travelPlanId;
         this.username = username;
-        this.numberOfLikes = numberOfLikes;
     }
 
     public Post(int id, Date postedDate, int travelPlanId, String username, Long numberOfLikes,
