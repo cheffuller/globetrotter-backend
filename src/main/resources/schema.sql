@@ -44,7 +44,7 @@ CREATE TABLE moderator_account (
 
 CREATE TABLE post (
 	id INT AUTO_INCREMENT,
-    created_at DATE NOT NULL,
+    created_at DATETIME NOT NULL,
     travel_plan INT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (travel_plan) REFERENCES travel_plan(id) ON DELETE CASCADE
@@ -52,7 +52,7 @@ CREATE TABLE post (
 
 CREATE TABLE post_comment (
 	id INT AUTO_INCREMENT,
-    commented_date DATE NOT NULL,
+    commented_date DATETIME NOT NULL,
     commented_on int NOT NULL,
     content VARCHAR(1000) NOT NULL,
     made_by INT NOT NULL,
