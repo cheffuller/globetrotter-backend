@@ -63,17 +63,15 @@ public class PostService {
     }
 
     public Post findPostById(Integer postId) throws NotFoundException {
-        Post post = postRepository.findByIdIncludingUsername(postId).orElseThrow(() ->
-                new NotFoundException(String.format("Post with ID %d not found.", postId))
-        );
+        Post post = postRepository.findByIdIncludingUsername(postId)
+                .orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
         post.setNumberOfLikes(postLikeRepository.findNumberOfLikesByPostId(postId));
         return post;
     }
 
     public Post findPostByIdIncludingAllFields(Integer postId) throws NotFoundException {
-        Post post = postRepository.findByIdIncludingUsername(postId).orElseThrow(() ->
-                new NotFoundException(String.format("Post with ID %d not found.", postId))
-        );
+        Post post = postRepository.findByIdIncludingUsername(postId)
+                .orElseThrow(() -> new NotFoundException(String.format("Post with ID %d not found.", postId)));
         post.setNumberOfLikes(postLikeRepository.findNumberOfLikesByPostId(postId));
         post.setComments(commentRepository.findAllByPostIdIncludingUsername(post.getId()));
         post.setLocations(travelPlanLocationRepository.findAllByTravelPlanId(post.getTravelPlanId()));
@@ -82,7 +80,8 @@ public class PostService {
 
     public Integer findPostIdByTravelPlanId(Integer travelPlanId) throws NotFoundException {
         Optional<Post> optionalPost = postRepository.findByTravelPlanId(travelPlanId);
-        Post post = optionalPost.orElseThrow(() -> new NotFoundException(String.format("Post with Travel Plan ID %d not found.", travelPlanId)));
+        Post post = optionalPost.orElseThrow(
+                () -> new NotFoundException(String.format("Post with Travel Plan ID %d not found.", travelPlanId)));
         return post.getId();
     }
 
@@ -94,8 +93,7 @@ public class PostService {
             throw new UnauthorizedException(String.format(
                     "User with ID %d is not authorized to delete post with ID %d",
                     tokenService.getUserAccountId(),
-                    postId
-            ));
+                    postId));
         }
         postRepository.deleteById(postId);
     }
@@ -135,20 +133,27 @@ public class PostService {
 
     public Comment findCommentById(Integer commentId) throws NotFoundException {
         Optional<Comment> optionalComment = commentRepository.findByIdIncludingUsername(commentId);
-        return optionalComment.orElseThrow(() ->
-                new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
+        return optionalComment
+                .orElseThrow(() -> new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
+    }
+
+    public Comment updateCommentContentById(Integer commentId, Comment comment) throws NotFoundException {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        Comment foundComment = optionalComment
+                .orElseThrow(() -> new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
+        foundComment.setContent(comment.getContent());
+        return commentRepository.save(foundComment);
     }
 
     // Add authorization so only the commenter or a moderator can delete a comment
     public void deleteComment(Integer commentId) throws NotFoundException, UnauthorizedException {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
-                new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException(String.format("Comment with ID %d not found.", commentId)));
         if (!isModerator() && !userIdMatchAuthentication(comment.getUserId())) {
             throw new UnauthorizedException(String.format(
                     "User with ID %d is not authorized to delete comment with ID %d",
                     tokenService.getUserAccountId(),
-                    commentId
-            ));
+                    commentId));
         }
         commentRepository.deleteById(commentId);
     }
