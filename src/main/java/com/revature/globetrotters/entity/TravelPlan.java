@@ -31,6 +31,11 @@ public class TravelPlan {
 
     }
 
+    public TravelPlan(Boolean isFavorited, Boolean isPublished) {
+        this.isFavorited = isFavorited;
+        this.isPublished = isPublished;
+    }
+
     public TravelPlan(Integer id, Integer accountId, Boolean isFavorited, Boolean isPublished) {
         this.id = id;
         this.accountId = accountId;
