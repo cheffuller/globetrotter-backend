@@ -44,7 +44,7 @@ public class TravelPlanServiceTestsNotMocked {
 
     @ParameterizedTest
     @CsvSource({
-        "1, 3"
+        "1, 1"
     })
     public void getNumberofCommentsOnPostByTravelPlanId(Integer planId, int expectedComments) throws BadRequestException, NotFoundException {
         int actualComments = travelPlanService.getNumberOfCommentsOnPostByTravelPlanId(planId);

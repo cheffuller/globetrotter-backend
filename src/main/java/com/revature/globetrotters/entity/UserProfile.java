@@ -18,12 +18,12 @@ public class UserProfile {
     @Column(name = "display_name")
     private String displayName;
     @Column(name = "is_private")
-    private boolean isPrivate;
+    private Boolean isPrivate;
 
     public UserProfile() {
     }
 
-    public UserProfile(Integer accountId, String bio, String displayName, boolean isPrivate) {
+    public UserProfile(Integer accountId, String bio, String displayName, Boolean isPrivate) {
         this.accountId = accountId;
         this.bio = bio;
         this.displayName = displayName;
@@ -58,7 +58,7 @@ public class UserProfile {
         return isPrivate;
     }
 
-    public void setPrivate(boolean aPrivate) {
+    public void setPrivate(Boolean aPrivate) {
         isPrivate = aPrivate;
     }
 

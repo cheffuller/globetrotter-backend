@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
+import static com.revature.globetrotters.util.SecurityUtils.setUpSecurityContextHolder;
 
 @SpringBootTest
 public class PostServiceTests {
@@ -48,14 +49,10 @@ public class PostServiceTests {
         SpringApplication.exit(app);
     }
 
-    private void setUpSecurityContextHolder(String username) throws NotFoundException {
-        UserAuthenticationToken authentication = authenticationTokenService.getUserTokenByUsername(username);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
     @Test
-    public void createPostTest() throws BadRequestException, ParseException, UnauthorizedException {
-        Post post = new Post(0, convertToDate("2020-01-01"), 1);
+    public void createPostTest() throws BadRequestException, ParseException, UnauthorizedException, NotFoundException {
+        setUpSecurityContextHolder("john_doe", authenticationTokenService);
+        Post post = new Post(convertToDate("2020-01-01"), 1);
         Post expectedPost = new Post(7, convertToDate("2020-01-01"), 1);
         Post actualPost = postService.createPost(post);
         Assertions.assertEquals(expectedPost, actualPost);
@@ -83,6 +80,7 @@ public class PostServiceTests {
 
     @Test
     public void deletePostTest() throws NotFoundException, UnauthorizedException {
+        setUpSecurityContextHolder("john_doe", authenticationTokenService);
         postService.deletePost(1);
         Assertions.assertThrows(NotFoundException.class, () -> postService.findPostById(1));
     }
@@ -101,7 +99,7 @@ public class PostServiceTests {
 
     @Test
     public void likePostTest() throws NotFoundException {
-        setUpSecurityContextHolder("john_doe");
+        setUpSecurityContextHolder("john_doe", authenticationTokenService);
         postService.likePost(1);
         int expectedLike = 2;
         Long actualLiked = postService.getNumberOfLikesOnPostById(1);
@@ -110,7 +108,7 @@ public class PostServiceTests {
 
     @Test
     public void unlikePostTest() throws BadRequestException, NotFoundException {
-        setUpSecurityContextHolder("clark_kent");
+        setUpSecurityContextHolder("clark_kent", authenticationTokenService);
         postService.unlikePost(1);
         int expectedLike = 0;
         Long actualLiked = postService.getNumberOfLikesOnPostById(1);
@@ -120,18 +118,19 @@ public class PostServiceTests {
     @Test
     public void findCommentsByPostIdTest() throws NotFoundException, ParseException {
         List<Comment> expectedComments = List.of(
-                new Comment(1, convertToDate("2019-01-01"), 1, "content", 3),
-                new Comment(2, convertToDate("2020-01-01"), 1, "content", 2),
-                new Comment(4, convertToDate("2019-01-01"), 1, "content", 1));
+                new Comment(1, convertToDate("2019-01-01"), 1, "WOW! This trip looks amazing!", 3));
         List<Comment> actualComments = postService.findCommentsByPostId(1);
         Assertions.assertEquals(expectedComments, actualComments);
     }
 
     @ParameterizedTest
     @CsvSource({
-            "1, '2019-01-01', 1, 'content', 3"
+            "1, '2019-01-01', 1, 'WOW! This trip looks amazing!', 3, 'clark_kent'"
     })
-    public void findCommentByIdTest(Integer id, @ConvertWith(DateArgumentConverter.class) Date date, Integer postId, String content, Integer userId) throws NotFoundException {
+    public void findCommentByIdTest(Integer id, @ConvertWith(DateArgumentConverter.class) Date date, Integer postId,
+                                    String content, Integer userId, String username)
+            throws NotFoundException {
+        setUpSecurityContextHolder(username, authenticationTokenService);
         Comment expectedComment = new Comment(id, date, postId, content, userId);
         Comment actualComment = postService.findCommentById(id);
         Assertions.assertEquals(expectedComment, actualComment);
@@ -139,6 +138,7 @@ public class PostServiceTests {
 
     @Test
     public void deleteCommentTest() throws Exception {
+        setUpSecurityContextHolder("clark_kent", authenticationTokenService);
         postService.deleteComment(1);
         Assertions.assertThrows(NotFoundException.class, () -> postService.findCommentById(1));
     }
@@ -155,7 +155,7 @@ public class PostServiceTests {
 
     @Test
     public void likeCommentTest() throws NotFoundException {
-        setUpSecurityContextHolder("john_doe");
+        setUpSecurityContextHolder("john_doe", authenticationTokenService);
         postService.likeComment(1);
         int expectedLike = 2;
         Integer actualLiked = postService.getNumberOfLikesOnCommentById(1);
@@ -164,7 +164,7 @@ public class PostServiceTests {
 
     @Test
     public void unlikeCommentTest() throws BadRequestException, NotFoundException {
-        setUpSecurityContextHolder("clark_kent");
+        setUpSecurityContextHolder("clark_kent", authenticationTokenService);
         postService.unlikeComment(1);
         int expectedLike = 0;
         Integer actualLiked = postService.getNumberOfLikesOnCommentById(1);

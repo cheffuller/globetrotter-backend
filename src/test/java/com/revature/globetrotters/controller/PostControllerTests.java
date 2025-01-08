@@ -7,7 +7,6 @@ import com.revature.globetrotters.consts.JwtConsts;
 import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.UserAccount;
-import com.revature.globetrotters.utils.JwtUtil;
 import com.revature.globetrotters.util.DateArgumentConverter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -27,10 +26,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
+import static com.revature.globetrotters.util.SecurityUtils.getWebToken;
 
 public class PostControllerTests {
     private ApplicationContext app;
@@ -50,10 +49,6 @@ public class PostControllerTests {
     public void tearDown() throws InterruptedException {
         Thread.sleep(500);
         SpringApplication.exit(app);
-    }
-
-    private String getWebToken() {
-        return JwtUtil.generateTokenFromUserName("john_doe", new HashMap<>());
     }
 
     @Test
@@ -203,9 +198,7 @@ public class PostControllerTests {
         Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
 
         List<Comment> expectedComments = List.of(
-                new Comment(1, convertToDate("2019-01-01"), 1, "content", 3),
-                new Comment(2, convertToDate("2020-01-01"), 1, "content", 2),
-                new Comment(4, convertToDate("2019-01-01"), 1, "content", 1)
+                new Comment(1, convertToDate("2019-01-01"), 1, "WOW! This trip looks amazing!", 3)
         );
         List<Comment> actualComments = objectMapper.readValue(response.body(), new TypeReference<>() {
         });
@@ -247,7 +240,7 @@ public class PostControllerTests {
 
     @ParameterizedTest
     @CsvSource({
-            "1, '2019-01-01', 1, 'content', 3"
+            "1, '2019-01-01', 1, 'WOW! This trip looks amazing!', 3"
     })
     public void getCommentByIdTest(
             Integer commentId,
@@ -282,7 +275,7 @@ public class PostControllerTests {
 
     @ParameterizedTest
     @CsvSource({
-            "1"
+            "4"
     })
     public void deleteCommentTest(Integer commentId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()

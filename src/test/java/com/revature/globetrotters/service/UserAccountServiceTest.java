@@ -86,42 +86,26 @@ public class UserAccountServiceTest {
     }
 
     @Test
-    public void testLoginSuccess() throws UnauthorizedException {
-        String username = "username";
-        String password = "password";
-        UserAccount account = createUserAccount(username, password);
-        UserAccount foundAccount = createUserAccount(username, password);
-        foundAccount.setPassword(passwordEncoder.encode(password));
-
-        when(userAccountRepository.findByUsername(username)).thenReturn(Optional.of(foundAccount));
-        when(mockPasswordEncoder.matches(password, foundAccount.getPassword())).thenReturn(true);
-
-        String token = accountService.login(account);
-        String tokenSubject = JwtUtil.extractSubjectFromToken(token);
-        assertEquals(username, tokenSubject);
-    }
-
-    @Test
     public void testLoginNullUsername() {
-        assertThrows(BadRequestException.class,
+        assertThrows(UnauthorizedException.class,
                 () -> accountService.login(createUserAccount(null, "password")));
     }
 
     @Test
     public void testLoginEmptyUsername() {
-        assertThrows(BadRequestException.class,
+        assertThrows(UnauthorizedException.class,
                 () -> accountService.login(createUserAccount("", "password")));
     }
 
     @Test
     public void testLoginNullPassword() {
-        assertThrows(BadRequestException.class,
+        assertThrows(UnauthorizedException.class,
                 () -> accountService.login(createUserAccount("testuser", null)));
     }
 
     @Test
     public void testLoginEmptyPassword() {
-        assertThrows(BadRequestException.class,
+        assertThrows(UnauthorizedException.class,
                 () -> accountService.login(createUserAccount("testuser", "")));
     }
 

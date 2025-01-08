@@ -3,7 +3,8 @@ package com.revature.globetrotters.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.globetrotters.GlobeTrottersApplication;
 import com.revature.globetrotters.entity.TravelPlanLocation;
-import com.revature.globetrotters.utils.JwtUtil;
+import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.service.AuthenticationTokenService;
 import com.revature.globetrotters.util.DateArgumentConverter;
 
 import org.json.JSONException;
@@ -14,7 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 
@@ -24,12 +27,17 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Date;
-import java.util.HashMap;
 
+import static com.revature.globetrotters.util.SecurityUtils.getWebToken;
+import static com.revature.globetrotters.util.SecurityUtils.setUpSecurityContextHolder;
+
+@SpringBootTest
 public class TravelPlanLocationControllerTests {
-    ApplicationContext app;
-    HttpClient webClient;
-    ObjectMapper objectMapper;
+    @Autowired
+    private AuthenticationTokenService authenticationTokenService;
+    private ApplicationContext app;
+    private HttpClient webClient;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setUp() throws InterruptedException {
@@ -44,10 +52,6 @@ public class TravelPlanLocationControllerTests {
     public void tearDown() throws InterruptedException {
         Thread.sleep(500);
         SpringApplication.exit(app);
-    }
-
-    private String getWebToken() {
-        return JwtUtil.generateTokenFromUserName("john_doe", new HashMap<>());
     }
 
     @ParameterizedTest
@@ -78,7 +82,6 @@ public class TravelPlanLocationControllerTests {
     public void getTravelPlanLocationsTest() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/plans/1/locations"))
-                .header("Content-Type", "application/json")
                 .header("authorization", getWebToken())
                 .GET()
                 .build();
@@ -88,7 +91,7 @@ public class TravelPlanLocationControllerTests {
     }
 
     @Test
-    public void getNonExistentTravelPlanLocationsTest() throws IOException, InterruptedException {
+    public void getNonExistentTravelPlanLocationsTest() throws IOException, InterruptedException, NotFoundException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/plans/100/locations"))
                 .header("Content-Type", "application/json")

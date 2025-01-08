@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/moderators")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173/", "http://host.docker.internal:5173/"})
 public class ModeratorController {
     @Autowired
     private ModeratorService moderatorService;

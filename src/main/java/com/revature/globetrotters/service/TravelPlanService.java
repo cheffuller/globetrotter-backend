@@ -3,6 +3,7 @@ package com.revature.globetrotters.service;
 import com.revature.globetrotters.entity.Collaborator;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
+import com.revature.globetrotters.entity.TravelPlanLocation;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.CollaboratorRepository;
@@ -81,6 +82,27 @@ public class TravelPlanService {
         travelPlanRepository.deleteById(travelPlanId);
     }
 
+    //add authorization so only the poster or a moderator can update
+    public TravelPlan updateTravelPlan(TravelPlan travelPlan) {
+        Optional<TravelPlan> existingTravelPlan = travelPlanRepository.findById(travelPlan.getId());
+        if (existingTravelPlan == null) {
+            throw new IllegalArgumentException("Travel plan not found");
+        }
+
+        TravelPlan updatedTravelPlan = existingTravelPlan.get();
+
+        if(updatedTravelPlan.getAccountId() != tokenService.getUserAccountId()) {
+            throw new IllegalArgumentException("Unauthorized to update travel plan");
+        }
+
+        updatedTravelPlan.setId(travelPlan.getId());
+        updatedTravelPlan.setAccountId(travelPlan.getAccountId());
+        updatedTravelPlan.setIsFavorited(travelPlan.getIsFavorited());
+        updatedTravelPlan.setIsPublished(travelPlan.getIsPublished());
+        
+        return travelPlanRepository.save(updatedTravelPlan);
+    }
+
     public List<TravelPlan> findMostRecentPublicTravelPlan(int limit) throws NotFoundException {
         Pageable pageable = Pageable.ofSize(limit);
         List<TravelPlan> plans = travelPlanRepository.findRecentPublicTravelPlans(pageable);
@@ -117,5 +139,9 @@ public class TravelPlanService {
         );
 
         return commentRepository.findNumberOfCommentsByPostId(post.getId());
+    }
+
+    public List<TravelPlan> getTravelPlansByAccountId(Integer accountId) {
+        return travelPlanRepository.getTravelPlansByAccountId(accountId);
     }
 }
