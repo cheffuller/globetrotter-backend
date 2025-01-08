@@ -1,5 +1,6 @@
 package com.revature.globetrotters.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,10 +41,12 @@ public class ModeratorAccount {
         this.username = username;
     }
 
+    @JsonIgnore
     public boolean isPasswordValid() {
         return password != null && !password.trim().isEmpty();
     }
 
+    @JsonIgnore
     public boolean isUsernameValid() {
         return username != null && !username.trim().isEmpty();
     }
