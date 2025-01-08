@@ -85,7 +85,6 @@ public class TravelPlanLocation {
         this.endDate = endDate;
     }
 
-
     public Date getStartDate() {
         return startDate;
     }
