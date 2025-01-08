@@ -24,7 +24,7 @@ public class JwtUtil {
 
 
     public static String generateTokenFromUserName(String username, Map<String, String> claims) {
-        logger.info("Jwtutil received username: {}", username);
+        logger.info("JwtUtil received username: {}", username);
         return Jwts.builder()
                 .subject(username)
                 .claims(claims)
@@ -35,7 +35,7 @@ public class JwtUtil {
     }
 
     public static String extractSubjectFromToken(String token) {
-        logger.info("Jwtutil received token: {}.", token);
+        logger.info("JwtUtil received token: {}.", token);
         Claims claims = Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
@@ -54,5 +54,19 @@ public class JwtUtil {
                 .getPayload();
         logger.info("JwtUtil extracted value: {}", claims.get(key));
         return claims.get(key);
+    }
+
+    public static Claims decodeJwt(String token) {
+        logger.info("JwtUtil received token for decoding.", token);
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public static boolean tokenMatches(String token1, String token2) {
+        logger.info("JwtUtil received tokens for match comparison.");
+        return decodeJwt(token1).equals(decodeJwt(token2));
     }
 }

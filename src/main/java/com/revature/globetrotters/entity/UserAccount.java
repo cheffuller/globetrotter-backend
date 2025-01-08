@@ -37,6 +37,18 @@ public class UserAccount {
 
     }
 
+    public UserAccount(String address, String city, String country, String email, String firstName, String lastName,
+                       String password, String username) {
+        this.address = address;
+        this.city = city;
+        this.country = country;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.username = username;
+    }
+
     public UserAccount(Integer id, String address, String city, String country, String email, String firstName,
                        String lastName, String password, String username) {
         this.id = id;
