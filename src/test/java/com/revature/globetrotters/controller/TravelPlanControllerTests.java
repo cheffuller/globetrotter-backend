@@ -142,4 +142,30 @@ public class TravelPlanControllerTests {
         HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
+
+    @Test
+    public void deleteTravelPlanTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/plans/1"))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken("john_doe", 1))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
+    }
+
+    @Test
+    public void unauthorizedDeleteTravelPlanTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/plans/2"))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken("john_doe", 1))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), response.statusCode());
+    }
 }
