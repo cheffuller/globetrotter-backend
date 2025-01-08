@@ -24,12 +24,10 @@ public class TravelPlanServiceTestsNotMocked {
     public void setUp() throws InterruptedException {
         String[] args = new String[]{};
         app = SpringApplication.run(GlobeTrottersApplication.class, args);
-        Thread.sleep(500);
     }
 
     @AfterEach
     public void tearDown() throws InterruptedException {
-        Thread.sleep(500);
         SpringApplication.exit(app);
     }
 
