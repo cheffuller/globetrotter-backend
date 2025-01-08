@@ -23,12 +23,12 @@ public class Post {
     @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column(name = "created_at")
     @CreationTimestamp
     private Date postedDate;
     @Column(name = "travel_plan")
-    private int travelPlanId;
+    private Integer travelPlanId;
     @Transient
     private String username;
     @Transient
@@ -41,29 +41,29 @@ public class Post {
     public Post() {
     }
 
-    public Post(int travelPLanId) {
+    public Post(Integer travelPLanId) {
         this.travelPlanId = travelPLanId;
     }
 
-    public Post(Date postedDate, int travelPlanId) {
+    public Post(Date postedDate, Integer travelPlanId) {
         this.postedDate = postedDate;
         this.travelPlanId = travelPlanId;
     }
 
-    public Post(int id, Date postedDate, int travelPlanId) {
+    public Post(Integer id, Date postedDate, Integer travelPlanId) {
         this.id = id;
         this.postedDate = postedDate;
         this.travelPlanId = travelPlanId;
     }
 
-    public Post(int id, Date postedDate, int travelPlanId, String username) {
+    public Post(Integer id, Date postedDate, Integer travelPlanId, String username) {
         this.id = id;
         this.postedDate = postedDate;
         this.travelPlanId = travelPlanId;
         this.username = username;
     }
 
-    public Post(int id, Date postedDate, int travelPlanId, String username, Long numberOfLikes,
+    public Post(Integer id, Date postedDate, Integer travelPlanId, String username, Long numberOfLikes,
                 List<Comment> comments, List<TravelPlanLocation> locations) {
         this.id = id;
         this.postedDate = postedDate;
@@ -74,11 +74,11 @@ public class Post {
         this.locations = locations;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -90,11 +90,11 @@ public class Post {
         this.postedDate = postedDate;
     }
 
-    public int getTravelPlanId() {
+    public Integer getTravelPlanId() {
         return travelPlanId;
     }
 
-    public void setTravelPlanId(int travelPlanId) {
+    public void setTravelPlanId(Integer travelPlanId) {
         this.travelPlanId = travelPlanId;
     }
 

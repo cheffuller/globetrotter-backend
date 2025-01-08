@@ -22,7 +22,7 @@ public class FollowRequest {
         this.id = id;
     }
 
-    public FollowRequest(int follower, int following) {
+    public FollowRequest(Integer follower, Integer following) {
         id = new FollowRequestId(follower, following);
     }
 

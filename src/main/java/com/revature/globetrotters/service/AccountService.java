@@ -54,6 +54,7 @@ public class AccountService {
     }
 
     public String login(UserAccount account) throws UnauthorizedException {
+        logger.info("");
         if (!account.isPasswordValid() || !account.isUsernameValid()) {
             throw new UnauthorizedException("Username and password are required.");
         }
