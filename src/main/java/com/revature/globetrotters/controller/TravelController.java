@@ -27,7 +27,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/plans")
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = {"http://localhost:5173/", "http://host.docker.internal:5173/"})
 public class TravelController {
     @Autowired
     private TravelPlanService travelPlanService;
@@ -69,8 +69,8 @@ public class TravelController {
         // and then probably call travel plan location service layer to get travel plan location
         return ResponseEntity.status(HttpStatus.OK).body(travelPlan);
     }
-    
-    @PutMapping("") 
+
+    @PutMapping("")
     public ResponseEntity<TravelPlan> updateTravelPlan(@RequestBody TravelPlan travelPlan) {
         // call travel plan service layer to update travel plan by its id
         // and then probably call travel plan location service layer to update travel plan location or times
@@ -83,7 +83,7 @@ public class TravelController {
         // call travel plan service layer to update travel plan by its id
         // and then probably call travel plan location service layer to update travel plan location or times
         TravelPlanLocation updatedTravelPlan = travelPlanLocationService.updateTravelPlanLocation(travelPlan);
-    return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan); // Ensure this is the updated object
+        return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan); // Ensure this is the updated object
     }
 
     @DeleteMapping("/{planId}")
