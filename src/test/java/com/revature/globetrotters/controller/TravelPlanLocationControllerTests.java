@@ -17,7 +17,6 @@ import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 
@@ -29,9 +28,7 @@ import java.net.http.HttpResponse;
 import java.util.Date;
 
 import static com.revature.globetrotters.util.SecurityUtils.getWebToken;
-import static com.revature.globetrotters.util.SecurityUtils.setUpSecurityContextHolder;
 
-@SpringBootTest
 public class TravelPlanLocationControllerTests {
     @Autowired
     private AuthenticationTokenService authenticationTokenService;
@@ -45,12 +42,10 @@ public class TravelPlanLocationControllerTests {
         objectMapper = new ObjectMapper();
         String[] args = new String[]{};
         app = SpringApplication.run(GlobeTrottersApplication.class, args);
-        Thread.sleep(500);
     }
 
     @AfterEach
     public void tearDown() throws InterruptedException {
-        Thread.sleep(500);
         SpringApplication.exit(app);
     }
 

@@ -71,7 +71,7 @@ public class TravelController {
     }
 
     @PutMapping("")
-    public ResponseEntity<TravelPlan> updateTravelPlan(@RequestBody TravelPlan travelPlan) {
+    public ResponseEntity<TravelPlan> updateTravelPlan(@RequestBody TravelPlan travelPlan) throws UnauthorizedException, NotFoundException, BadRequestException {
         // call travel plan service layer to update travel plan by its id
         // and then probably call travel plan location service layer to update travel plan location or times
         TravelPlan updatedTravelPlan = travelPlanService.updateTravelPlan(travelPlan);
