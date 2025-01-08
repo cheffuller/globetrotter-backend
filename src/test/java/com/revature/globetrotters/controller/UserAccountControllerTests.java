@@ -105,4 +105,39 @@ public class UserAccountControllerTests {
         Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
         Assertions.assertTrue(tokenMatches(getWebToken("john_doe", 1), response.body()));
     }
+
+    @Test
+    public void loginWithInvalidCredentials() throws IOException, InterruptedException {
+        UserAccount account = new UserAccount();
+        account.setPassword("password");
+        account.setUsername("john_do");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/users/login"))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken())
+                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(account)))
+                .build();
+
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), response.statusCode());
+    }
+
+    @Test
+    public void findUserByIdTest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/users/1"))
+                .header("Content-Type", "application/json")
+                .header("authorization", getWebToken())
+                .GET()
+                .build();
+
+        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
+
+        UserAccount expected = new UserAccount(1, "1234", "New York", "United States",
+                "test@gmail.com", "John", "Doe",
+                "$2a$10$seol2uAfLTyKI/gYKbL7G.XOAuOzZ2EAseMrgyI21Z9K9l9bhG.GO", "john_doe");
+        UserAccount actual = objectMapper.readValue(response.body(), UserAccount.class);
+        Assertions.assertEquals(expected, actual);
+    }
 }

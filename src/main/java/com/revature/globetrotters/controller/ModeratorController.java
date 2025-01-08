@@ -46,7 +46,6 @@ public class ModeratorController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody ModeratorAccount account) throws UnauthorizedException {
-        logger.info("MODERATOR LOGIN");
         String token = moderatorService.login(account);
         return ResponseEntity.status(HttpStatus.OK).body(token);
     }
