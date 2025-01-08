@@ -29,9 +29,7 @@ import java.net.http.HttpResponse;
 import java.util.Date;
 
 import static com.revature.globetrotters.util.SecurityUtils.getWebToken;
-import static com.revature.globetrotters.util.SecurityUtils.setUpSecurityContextHolder;
 
-@SpringBootTest
 public class TravelPlanLocationControllerTests {
     @Autowired
     private AuthenticationTokenService authenticationTokenService;
