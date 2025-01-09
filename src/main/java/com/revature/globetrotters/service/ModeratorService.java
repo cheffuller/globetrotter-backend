@@ -1,22 +1,22 @@
 package com.revature.globetrotters.service;
 
-import com.revature.globetrotters.consts.JwtConsts;
-import com.revature.globetrotters.entity.BannedUser;
-import com.revature.globetrotters.entity.ModeratorAccount;
-import com.revature.globetrotters.enums.AccountRole;
-import com.revature.globetrotters.exception.UnauthorizedException;
-import com.revature.globetrotters.exception.NotFoundException;
-import com.revature.globetrotters.repository.BannedUserRepository;
-import com.revature.globetrotters.repository.CommentRepository;
-import com.revature.globetrotters.repository.ModeratorAccountRepository;
-import com.revature.globetrotters.utils.JwtUtil;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Optional;
-
+import com.revature.globetrotters.consts.JwtConsts;
+import com.revature.globetrotters.entity.BannedUser;
+import com.revature.globetrotters.entity.ModeratorAccount;
+import com.revature.globetrotters.enums.AccountRole;
+import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.exception.UnauthorizedException;
+import com.revature.globetrotters.repository.BannedUserRepository;
+import com.revature.globetrotters.repository.CommentRepository;
+import com.revature.globetrotters.repository.ModeratorAccountRepository;
+import com.revature.globetrotters.repository.UserAccountRepository;
+import com.revature.globetrotters.utils.JwtUtil;
 import static com.revature.globetrotters.utils.SecurityUtil.isModerator;
 
 @Service
@@ -29,12 +29,14 @@ public class ModeratorService {
     private CommentRepository commentRepository;
     @Autowired
     private ModeratorAccountRepository moderatorAccountRepository;
+    @Autowired
+    private UserAccountRepository userAccountRepository;
 
     public void banUser(int userId) throws NotFoundException, UnauthorizedException {
         if (!isModerator()) {
             throw new UnauthorizedException("Unauthorized request to ban user.");
         }
-        if (!moderatorAccountRepository.existsById(userId)) {
+        if (!userAccountRepository.existsById(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
         bannedUserRepository.save(new BannedUser(userId));
