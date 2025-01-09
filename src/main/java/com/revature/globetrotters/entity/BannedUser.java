@@ -11,7 +11,7 @@ import java.util.Objects;
 @Table(name = "banned_user")
 public class BannedUser {
     @Id
-    @Column(name = "id")
+    @Column(name = "account_id")
     private Integer Id;
 
     public BannedUser() {
