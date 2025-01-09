@@ -13,7 +13,6 @@ import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Transient;
 
 @Entity
