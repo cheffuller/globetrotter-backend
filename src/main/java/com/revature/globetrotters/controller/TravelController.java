@@ -71,7 +71,7 @@ public class TravelController {
     }
 
     @PutMapping("")
-    public ResponseEntity<TravelPlan> updateTravelPlan(@RequestBody TravelPlan travelPlan) {
+    public ResponseEntity<TravelPlan> updateTravelPlan(@RequestBody TravelPlan travelPlan) throws UnauthorizedException, NotFoundException, BadRequestException {
         // call travel plan service layer to update travel plan by its id
         // and then probably call travel plan location service layer to update travel plan location or times
         TravelPlan updatedTravelPlan = travelPlanService.updateTravelPlan(travelPlan);
@@ -145,6 +145,12 @@ public class TravelController {
         // call travel plan location service layer to delete travel plan location by its id
         travelPlanLocationService.deleteTravelPlanLocation(travelPlanId, locationId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @GetMapping("/following")
+    public ResponseEntity<List<TravelPlan>> findTravelPlansFromFollowingList() {
+        List<TravelPlan> plans = travelPlanService.findTravelPlansFromFollowingList();
+        return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 } 
     

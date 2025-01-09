@@ -11,6 +11,8 @@ import jakarta.persistence.Transient;
 import java.util.Date;
 import java.util.Objects;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Entity
 @Table(name = "post_comment")
 public class Comment {
@@ -19,6 +21,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "commented_date", nullable = false)
+    @CreationTimestamp
     private Date commentedDate;
     @Column(name = "commented_on", nullable = false)
     private Integer postId;
@@ -33,7 +36,6 @@ public class Comment {
     }
 
     public Comment(Date commentedDate, Integer postId, String content, Integer userId) {
-        this.commentedDate = commentedDate;
         this.postId = postId;
         this.content = content;
         this.userId = userId;

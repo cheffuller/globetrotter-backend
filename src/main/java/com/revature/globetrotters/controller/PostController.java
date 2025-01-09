@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -93,6 +94,11 @@ public class PostController {
     @GetMapping("comments/{commentId}")
     public ResponseEntity<Comment> getCommentById(@PathVariable int commentId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentById(commentId));
+    }
+
+    @PatchMapping("comments/{commentId}")
+    public ResponseEntity<Comment> patchCommentContentById(@PathVariable int commentId, @RequestBody Comment comment) throws NotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.updateCommentContentById(commentId, comment));
     }
 
     @DeleteMapping("comments/{commentId}")

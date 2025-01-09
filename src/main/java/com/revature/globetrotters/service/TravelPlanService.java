@@ -1,13 +1,15 @@
 package com.revature.globetrotters.service;
 
 import com.revature.globetrotters.entity.Collaborator;
+import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
-import com.revature.globetrotters.entity.TravelPlanLocation;
+import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.CollaboratorRepository;
 import com.revature.globetrotters.repository.CommentRepository;
+import com.revature.globetrotters.repository.FollowRepository;
 import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.revature.globetrotters.utils.SecurityUtil.isModerator;
@@ -28,6 +31,8 @@ public class TravelPlanService {
     private CollaboratorRepository collaboratorRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private FollowRepository followRepository;
     @Autowired
     private PostLikeRepository postLikeRepository;
     @Autowired
@@ -82,25 +87,23 @@ public class TravelPlanService {
         travelPlanRepository.deleteById(travelPlanId);
     }
 
-    //add authorization so only the poster or a moderator can update
-    public TravelPlan updateTravelPlan(TravelPlan travelPlan) {
-        Optional<TravelPlan> existingTravelPlan = travelPlanRepository.findById(travelPlan.getId());
-        if (existingTravelPlan == null) {
-            throw new IllegalArgumentException("Travel plan not found");
+    public TravelPlan updateTravelPlan(TravelPlan travelPlan) throws NotFoundException, UnauthorizedException, BadRequestException {
+        if (travelPlan == null ||
+                travelPlan.getId() == null ||
+                travelPlan.getAccountId() == null ||
+                travelPlan.getIsFavorited() == null ||
+                travelPlan.getIsPublished() == null) {
+            throw new BadRequestException("Invalid travel plan details.");
         }
 
-        TravelPlan updatedTravelPlan = existingTravelPlan.get();
+        TravelPlan plan = travelPlanRepository.findById(travelPlan.getId()).orElseThrow(() ->
+                new NotFoundException("Travel plan not found."));
 
-        if(updatedTravelPlan.getAccountId() != tokenService.getUserAccountId()) {
-            throw new IllegalArgumentException("Unauthorized to update travel plan");
+        if (!Objects.equals(plan.getAccountId(), tokenService.getUserAccountId())) {
+            throw new UnauthorizedException("Unauthorized to update travel plan");
         }
 
-        updatedTravelPlan.setId(travelPlan.getId());
-        updatedTravelPlan.setAccountId(travelPlan.getAccountId());
-        updatedTravelPlan.setIsFavorited(travelPlan.getIsFavorited());
-        updatedTravelPlan.setIsPublished(travelPlan.getIsPublished());
-        
-        return travelPlanRepository.save(updatedTravelPlan);
+        return travelPlanRepository.save(travelPlan);
     }
 
     public List<TravelPlan> findMostRecentPublicTravelPlan(int limit) throws NotFoundException {
@@ -143,5 +146,22 @@ public class TravelPlanService {
 
     public List<TravelPlan> getTravelPlansByAccountId(Integer accountId) {
         return travelPlanRepository.getTravelPlansByAccountId(accountId);
+    }
+
+    public List<TravelPlan> findTravelPlansFromFollowingList() {
+        Integer id = tokenService.getUserAccountId();
+        List<Follow> followList = followRepository.findByFollower(id);
+        List<Integer> idList = followList.stream()
+                .map(follow -> follow.getId().getFollowing())
+                .toList();
+        List<TravelPlan> plans = travelPlanRepository.findByAccountIdIn(idList);
+        for (TravelPlan plan : plans) {
+            try {
+                int postId = postService.findPostIdByTravelPlanId(plan.getId());
+                plan.setPost(postService.findPostByIdIncludingAllFields(postId));
+            } catch (Exception e) {
+            }
+        }
+        return plans;
     }
 }

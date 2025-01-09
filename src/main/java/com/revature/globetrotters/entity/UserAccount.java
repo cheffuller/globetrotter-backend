@@ -1,5 +1,6 @@
 package com.revature.globetrotters.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,6 +38,18 @@ public class UserAccount {
 
     }
 
+    public UserAccount(String address, String city, String country, String email, String firstName, String lastName,
+                       String password, String username) {
+        this.address = address;
+        this.city = city;
+        this.country = country;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.username = username;
+    }
+
     public UserAccount(Integer id, String address, String city, String country, String email, String firstName,
                        String lastName, String password, String username) {
         this.id = id;
@@ -50,10 +63,12 @@ public class UserAccount {
         this.username = username;
     }
 
+    @JsonIgnore
     public boolean isPasswordValid() {
         return password != null && !password.trim().isEmpty();
     }
 
+    @JsonIgnore
     public boolean isUsernameValid() {
         return username != null && !username.trim().isEmpty();
     }
