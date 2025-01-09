@@ -1,6 +1,7 @@
 package com.revature.globetrotters.service;
 
 import com.revature.globetrotters.entity.Collaborator;
+import com.revature.globetrotters.entity.Follow;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.exception.BadRequestException;
@@ -8,6 +9,7 @@ import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.CollaboratorRepository;
 import com.revature.globetrotters.repository.CommentRepository;
+import com.revature.globetrotters.repository.FollowRepository;
 import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.repository.PostRepository;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
@@ -29,6 +31,8 @@ public class TravelPlanService {
     private CollaboratorRepository collaboratorRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private FollowRepository followRepository;
     @Autowired
     private PostLikeRepository postLikeRepository;
     @Autowired
@@ -142,5 +146,22 @@ public class TravelPlanService {
 
     public List<TravelPlan> getTravelPlansByAccountId(Integer accountId) {
         return travelPlanRepository.getTravelPlansByAccountId(accountId);
+    }
+
+    public List<TravelPlan> findTravelPlansFromFollowingList() {
+        Integer id = tokenService.getUserAccountId();
+        List<Follow> followList = followRepository.findByFollower(id);
+        List<Integer> idList = followList.stream()
+                .map(follow -> follow.getId().getFollowing())
+                .toList();
+        List<TravelPlan> plans = travelPlanRepository.findByAccountIdIn(idList);
+        for (TravelPlan plan : plans) {
+            try {
+                int postId = postService.findPostIdByTravelPlanId(plan.getId());
+                plan.setPost(postService.findPostByIdIncludingAllFields(postId));
+            } catch (Exception e) {
+            }
+        }
+        return plans;
     }
 }

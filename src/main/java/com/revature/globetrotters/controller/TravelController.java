@@ -146,5 +146,11 @@ public class TravelController {
         travelPlanLocationService.deleteTravelPlanLocation(travelPlanId, locationId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
+
+    @GetMapping("/following")
+    public ResponseEntity<List<TravelPlan>> findTravelPlansFromFollowingList() {
+        List<TravelPlan> plans = travelPlanService.findTravelPlansFromFollowingList();
+        return ResponseEntity.status(HttpStatus.OK).body(plans);
+    }
 } 
     

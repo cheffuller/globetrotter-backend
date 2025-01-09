@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,4 +34,6 @@ public interface TravelPlanRepository extends JpaRepository<TravelPlan, Integer>
             WHERE tp.isPublished = true
             AND up.isPrivate = false""")
     List<TravelPlan> findRecentPublicTravelPlans(Pageable pageable);
+
+    List<TravelPlan> findByAccountIdIn(List<Integer> followingList);
 }
