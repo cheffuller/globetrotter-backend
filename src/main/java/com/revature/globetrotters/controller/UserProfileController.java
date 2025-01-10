@@ -58,12 +58,14 @@ public class UserProfileController {
     }
 
     @GetMapping("/{username}/profile/display-name")
-    public ResponseEntity<String> getDisplayNameFromUsername(@PathVariable String username) throws NotFoundException {
+    public ResponseEntity<String> getDisplayNameFromUsername(@PathVariable(name = "username") String username)
+            throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findDisplayNameFromUsername(username));
     }
 
     @GetMapping("/{userId}/display-name")
-    public ResponseEntity<String> getDisplayNameFromUserId(@PathVariable Integer userId) throws NotFoundException {
+    public ResponseEntity<String> getDisplayNameFromUserId(@PathVariable(name = "userId") Integer userId)
+            throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(userProfileService.findDisplayNameFromUserId(userId));
     }
 }

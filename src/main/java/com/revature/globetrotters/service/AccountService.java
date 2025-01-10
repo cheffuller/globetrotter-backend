@@ -73,7 +73,7 @@ public class AccountService {
 
         return JwtUtil.generateTokenFromUserName(account.getUsername(), Map.of(
                 JwtConsts.ACCOUNT_ROLE, AccountRole.Customer.getRole(),
-                JwtConsts.ACCOUNT_ID, foundAccount.getId().toString()
+                JwtConsts.ACCOUNT_ID, foundAccount.getId()
         ));
     }
 
