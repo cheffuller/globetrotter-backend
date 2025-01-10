@@ -1,8 +1,12 @@
 package com.revature.globetrotters.service;
 
+import com.revature.globetrotters.entity.Follow;
+import com.revature.globetrotters.entity.FollowRequest;
 import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
+import com.revature.globetrotters.repository.FollowRepository;
+import com.revature.globetrotters.repository.FollowRequestRepository;
 import com.revature.globetrotters.repository.UserAccountRepository;
 import com.revature.globetrotters.repository.UserProfileRepository;
 import org.slf4j.Logger;
@@ -10,8 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserProfileService {
+    @Autowired
+    private FollowRepository followRepository;
+    @Autowired
+    private FollowRequestRepository followRequestRepository;
     @Autowired
     private TokenService tokenService;
     @Autowired
@@ -32,6 +42,14 @@ public class UserProfileService {
         }
 
         userProfileRepository.save(profile);
+
+        if (!profile.getIsPrivate()) {
+            List<FollowRequest> followRequestList = followRequestRepository.findByFollowing(profile.getAccountId());
+            followRequestList.stream().forEach(request -> {
+                followRequestRepository.delete(request);
+                followRepository.save(new Follow(request.getId().getFollower(), request.getId().getFollowing()));
+            });
+        }
     }
 
     public UserProfile findUserProfile(String username) throws NotFoundException {
