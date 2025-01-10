@@ -54,7 +54,6 @@ public class AccountService {
     }
 
     public String login(UserAccount account) throws UnauthorizedException {
-        logger.info("");
         if (!account.isPasswordValid() || !account.isUsernameValid()) {
             throw new UnauthorizedException("Username and password are required.");
         }
@@ -142,7 +141,7 @@ public class AccountService {
         }
 
         UserProfile accountToFollow = userProfileRepository.findById(followingId).get();
-        if (accountToFollow.isPrivate()) {
+        if (accountToFollow.getIsPrivate()) {
             followRequestRepository.save(new FollowRequest(followerId, followingId));
         } else {
             followRepository.save(new Follow(followerId, followingId));
