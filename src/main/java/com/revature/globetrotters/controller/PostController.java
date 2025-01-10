@@ -49,7 +49,7 @@ public class PostController {
     }
 
     @GetMapping("users/{userId}/posts")
-    public ResponseEntity<List<Post>> getAllPostsByUserId(@PathVariable int userId)
+    public ResponseEntity<List<Post>> getAllPostsByUserId(@PathVariable(name = "userId") int userId)
             throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findPostsByUserId(userId));
     }
@@ -61,28 +61,32 @@ public class PostController {
     }
 
     @GetMapping("posts/{postId}")
-    public ResponseEntity<Post> getPostById(@PathVariable int postId) throws NotFoundException {
+    public ResponseEntity<Post> getPostById(@PathVariable(name = "postId") int postId) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findPostByIdIncludingAllFields(postId));
     }
 
     @GetMapping("posts/plans/{travelPlanId}")
-    public ResponseEntity<Integer> getPostIdByTravelPlanId(@PathVariable int travelPlanId) throws NotFoundException {
+    public ResponseEntity<Integer> getPostIdByTravelPlanId(@PathVariable(name = "travelPlanId") int travelPlanId)
+            throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findPostIdByTravelPlanId(travelPlanId));
     }
 
     @DeleteMapping("posts/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable int postId) throws NotFoundException, UnauthorizedException {
+    public ResponseEntity<String> deletePost(@PathVariable(name = "postId") int postId)
+            throws NotFoundException, UnauthorizedException {
         postService.deletePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("posts/{postId}/likes")
-    public ResponseEntity<Long> getNumberOfLikesOnPostById(@PathVariable int postId) throws NotFoundException {
+    public ResponseEntity<Long> getNumberOfLikesOnPostById(@PathVariable(name = "postId") int postId)
+            throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getNumberOfLikesOnPostById(postId));
     }
 
     @GetMapping("posts/{postId}/comments")
-    public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable int postId) throws NotFoundException {
+    public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable(name = "postId") int postId)
+            throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentsByPostId(postId));
     }
 
@@ -92,58 +96,62 @@ public class PostController {
     }
 
     @GetMapping("comments/{commentId}")
-    public ResponseEntity<Comment> getCommentById(@PathVariable int commentId) throws NotFoundException {
+    public ResponseEntity<Comment> getCommentById(@PathVariable(name = "commentId") int commentId)
+            throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findCommentById(commentId));
     }
 
     @PatchMapping("comments/{commentId}")
-    public ResponseEntity<Comment> patchCommentContentById(@PathVariable int commentId, @RequestBody Comment comment) throws NotFoundException {
+    public ResponseEntity<Comment> patchCommentContentById(@PathVariable(name = "commentID") int commentId,
+                                                           @RequestBody Comment comment) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.updateCommentContentById(commentId, comment));
     }
 
     @DeleteMapping("comments/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable int commentId)
+    public ResponseEntity<String> deleteComment(@PathVariable(name = "commentId") int commentId)
             throws NotFoundException, UnauthorizedException {
         postService.deleteComment(commentId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("comments/{commentId}/likes")
-    public ResponseEntity<Integer> getNumberOfLikesOnCommentById(@PathVariable int commentId) throws NotFoundException {
+    public ResponseEntity<Integer> getNumberOfLikesOnCommentById(@PathVariable(name = "commentId") int commentId)
+            throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getNumberOfLikesOnCommentById(commentId));
     }
 
     @PostMapping("comments/{commentId}/likes")
-    public ResponseEntity<?> likeComment(@PathVariable int commentId) throws NotFoundException {
+    public ResponseEntity<?> likeComment(@PathVariable(name = "commentId") int commentId) throws NotFoundException {
         postService.likeComment(commentId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @DeleteMapping("comments/{commentId}/likes")
-    public ResponseEntity<?> unlikeComment(@PathVariable int commentId) {
+    public ResponseEntity<?> unlikeComment(@PathVariable(name = "commentId") int commentId) {
         postService.unlikeComment(commentId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PostMapping("posts/{postId}/likes")
-    public ResponseEntity<?> likePost(@PathVariable int postId) throws NotFoundException {
+    public ResponseEntity<?> likePost(@PathVariable(name = "postId") int postId) throws NotFoundException {
         postService.likePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @DeleteMapping("posts/{postId}/likes")
-    public ResponseEntity<?> unlikePost(@PathVariable int postId) {
+    public ResponseEntity<?> unlikePost(@PathVariable(name = "postId") int postId) {
         postService.unlikePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("posts/{postId}/liked")
-    public ResponseEntity<Boolean> userLikedPost(@PathVariable int postId) throws BadRequestException {
+    public ResponseEntity<Boolean> userLikedPost(@PathVariable(name = "postId") int postId) throws BadRequestException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.userLikedPost(postId));
     }
 
     @GetMapping("comments/{commentId}/liked")
-    public ResponseEntity<Boolean> userLikedComment(@PathVariable int commentId) throws BadRequestException {
+    public ResponseEntity<Boolean> userLikedComment(@PathVariable(name = "commentId") int commentId)
+            throws BadRequestException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.userLikedComment(commentId));
     }
 }

@@ -23,7 +23,7 @@ public class JwtUtil {
     private static final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
 
 
-    public static String generateTokenFromUserName(String username, Map<String, String> claims) {
+    public static String generateTokenFromUserName(String username, Map<String, Object> claims) {
         logger.info("JwtUtil received username: {}", username);
         return Jwts.builder()
                 .subject(username)

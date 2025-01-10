@@ -37,7 +37,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             ON c.userId = ua.id
             WHERE c.id = :id
             """)
-    Optional<Comment> findByIdIncludingUsername(Integer id);
+    Optional<Comment> findByIdIncludingUsername(@Param("id") Integer id);
 
     @Query("""
             SELECT new Comment(
