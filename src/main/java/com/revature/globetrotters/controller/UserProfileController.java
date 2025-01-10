@@ -4,7 +4,6 @@ import com.revature.globetrotters.entity.UserProfile;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
-import com.revature.globetrotters.service.AccountService;
 import com.revature.globetrotters.service.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/users")
