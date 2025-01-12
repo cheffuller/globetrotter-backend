@@ -79,10 +79,10 @@ VALUES
 INSERT INTO travel_plan_location(id, city, country, end_date, start_date, travel_plan_id)
 VALUES (1, 'Sydney', 'Australia', '2018-12-31', '2018-12-01', 1),
     (2, 'New York', 'United States', '2019-12-31', '2019-12-24', 2),
-    (3, 'Paris', 'France', '2020-1-05', '2020-1-15', 3),
-    (4, 'Beijing', 'China', '2021-2-10', '2021-2-28', 4),
-    (5, 'Rio de Janeiro', 'Brazil', '2022-5-18', '2022-5-25', 5),
-    (6, 'Abu Dhabi', 'United Arab Emirates', '2023-8-12', '2023-9-12', 6);
+    (3, 'Paris', 'France', '2020-1-15', '2020-1-05', 3),
+    (4, 'Beijing', 'China', '2021-2-28', '2021-2-10', 4),
+    (5, 'Rio de Janeiro', 'Brazil', '2022-5-25', '2022-5-18', 5),
+    (6, 'Abu Dhabi', 'United Arab Emirates', '2023-9-12', '2023-8-12', 6);
 
 INSERT INTO banned_user(account_id) VALUES (4);
 
