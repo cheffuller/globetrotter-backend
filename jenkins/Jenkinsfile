@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    tools {
+        maven "3.9.9"
+    
+    } 
+    stages {
+        stage('Compile and Clean') {
+            steps {
+                // Run maven on a unix agent
+
+                sh "mvn clean compile"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh "mvn package"
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                echo "Building Docker Image"
+                sh 'ls'
+                sh "docker build -t GlobeTrotters/myapp:${BUILD_NUMBER} -f docker-build/Dockerfile ."
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                withCredentials([string(credentialsId: 'DockerId', variable: 'DockerToken')]) {
+                    sh "docker login -u brandonnguyenn --password-stdin <<< \"${DockerToken}\""
+                }
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                sh "docker push GlobeTrotters/myapp:${BUILD_NUMBER}"
+            }
+        }
+        stage('Docker Deploy') {
+            steps {
+                sh "docker run -itd -p 8081:8080 GlobeTrotters/myapp:${BUILD_NUMBER}"
+            }
+        }
+        stage('Archiving') {
+            steps {
+                archiveArtifacts artifacts: '**/target/*.jar'
+            }
+        }
+    }
+}

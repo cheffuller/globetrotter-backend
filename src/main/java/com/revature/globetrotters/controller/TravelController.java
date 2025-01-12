@@ -79,11 +79,11 @@ public class TravelController {
     }
 
     @PutMapping("/{planId}/locations")
-    public ResponseEntity<TravelPlanLocation> updateTravelPlanLocation(@PathVariable("planId") int travelPlanId, @RequestBody TravelPlanLocation travelPlan) throws NotFoundException, UnauthorizedException, BadRequestException {
+    public ResponseEntity<List<TravelPlanLocation>> updateTravelPlanLocations(@PathVariable("planId") int travelPlanId, @RequestBody List<TravelPlanLocation> travelPlan) throws NotFoundException, UnauthorizedException, BadRequestException {
         // call travel plan service layer to update travel plan by its id
         // and then probably call travel plan location service layer to update travel plan location or times
-        TravelPlanLocation updatedTravelPlan = travelPlanLocationService.updateTravelPlanLocation(travelPlan);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedTravelPlan); // Ensure this is the updated object
+        List<TravelPlanLocation> updatedTravelLocations= travelPlanLocationService.updateTravelPlanLocations(travelPlanId, travelPlan);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedTravelLocations); // Ensure this is the updated object
     }
 
     @DeleteMapping("/{planId}")

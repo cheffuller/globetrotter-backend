@@ -12,6 +12,7 @@ import com.revature.globetrotters.repository.TravelPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -78,27 +79,51 @@ public class TravelPlanLocationService {
                 )));
     }
 
-    public TravelPlanLocation updateTravelPlanLocation(TravelPlanLocation location) throws NotFoundException, UnauthorizedException, BadRequestException {
-        TravelPlanLocation locationFound = travelPlanLocationRepository.findById(location.getId())
-                .orElseThrow(() -> new NotFoundException("Travel plan location not found."));
+    public List<TravelPlanLocation> updateTravelPlanLocations(int travelPlanId, List<TravelPlanLocation> locations) throws NotFoundException, UnauthorizedException, BadRequestException {
+        List<TravelPlanLocation> locationsFound = travelPlanLocationRepository.findAllByTravelPlanId(travelPlanId);
+        if (locationsFound.isEmpty()) {
+            throw new NotFoundException("Travel plan location not found.");
+        }
 
-        TravelPlan plan = travelPlanRepository.findById(locationFound.getTravelPlanId()).orElseThrow(() ->
+        TravelPlan plan = travelPlanRepository.findById(travelPlanId).orElseThrow(() ->
                 new NotFoundException("Travel plan not found."));
 
         if (isNotACollaborator(plan.getId())) {
             throw new UnauthorizedException("User is unauthorized to create a location for this travel plan.");
         }
 
-        if (isInvalidLocation(location)) {
-            throw new BadRequestException("Invalid location details.");
+        for(TravelPlanLocation existingLocation : locationsFound) {
+            boolean isPresent = false;
+            for(TravelPlanLocation location : locations) {
+                if(location.getId() != null && location.getId().equals(existingLocation.getId())) {
+                    isPresent = true;
+                    break;
+                }
+            }
+            if(!isPresent) {
+                travelPlanLocationRepository.deleteById(existingLocation.getId());
+            }
         }
 
-        locationFound.setCity(location.getCity());
-        locationFound.setCountry(location.getCountry());
-        locationFound.setStartDate(location.getStartDate());
-        locationFound.setEndDate(location.getEndDate());
- 
-        return travelPlanLocationRepository.save(locationFound);
+        for(TravelPlanLocation location : locations) {
+            if(location.getId() == null || location.getId() <= 0) {
+                location.setTravelPlanId(travelPlanId);
+                travelPlanLocationRepository.save(location);
+            } else {
+                for (TravelPlanLocation existing : locationsFound) {
+                    if (existing.getId().equals(location.getId())) {
+                        existing.setCity(location.getCity());
+                        existing.setCountry(location.getCountry());
+                        existing.setStartDate(location.getStartDate());
+                        existing.setEndDate(location.getEndDate());
+                        travelPlanLocationRepository.save(existing);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return travelPlanLocationRepository.findAllByTravelPlanId(travelPlanId);
     }
 
     public void deleteTravelPlanLocation(int travelPlanId, int locationId) throws NotFoundException, UnauthorizedException {
