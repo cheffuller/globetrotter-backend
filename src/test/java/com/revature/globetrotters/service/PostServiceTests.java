@@ -1,11 +1,16 @@
 package com.revature.globetrotters.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.revature.globetrotters.GlobeTrottersApplication;
+import com.revature.globetrotters.controller.CommentController;
+import com.revature.globetrotters.controller.PostController;
 import com.revature.globetrotters.entity.Comment;
 import com.revature.globetrotters.entity.Post;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
+import com.revature.globetrotters.repository.CommentLikeRepository;
+import com.revature.globetrotters.repository.PostLikeRepository;
 import com.revature.globetrotters.security.UserAuthenticationToken;
 import com.revature.globetrotters.util.DateArgumentConverter;
 import org.junit.jupiter.api.AfterEach;
@@ -34,6 +39,15 @@ public class PostServiceTests {
     private AuthenticationTokenService authenticationTokenService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private PostController postController;
+    @Autowired
+    private PostLikeRepository postLikeRepository;
+    @Autowired
+    private CommentController commentController;
+    @Autowired
+    private CommentLikeRepository commentLikeRepository;
+
     private ApplicationContext app;
 
     @BeforeEach
@@ -95,21 +109,29 @@ public class PostServiceTests {
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
-    @Test
-    public void likePostTest() throws NotFoundException {
+    @Test void likePostTest() throws NotFoundException, JsonProcessingException {
         setUpSecurityContextHolder("john_doe", authenticationTokenService);
-        postService.likePost(1);
+        postController.likePost(1);
         int expectedLike = 2;
-        Long actualLiked = postService.getNumberOfLikesOnPostById(1);
+        try {
+            Thread.sleep(2000); // Pause for 2 seconds to allow for kafka event to process
+        } catch (InterruptedException e) {
+            System.err.println("Interrupted: " + e.getMessage());
+        }
+        Long actualLiked = postLikeRepository.findNumberOfLikesByPostId(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
-    @Test
-    public void unlikePostTest() throws BadRequestException, NotFoundException {
+    @Test void unlikePostTest() throws BadRequestException, NotFoundException, JsonProcessingException {
         setUpSecurityContextHolder("clark_kent", authenticationTokenService);
-        postService.unlikePost(1);
+        postController.unlikePost(1);
         int expectedLike = 0;
-        Long actualLiked = postService.getNumberOfLikesOnPostById(1);
+        try {
+            Thread.sleep(2000); // Pause for 2 seconds to allow for kafka event to process
+        } catch (InterruptedException e) {
+            System.err.println("Interrupted: " + e.getMessage());
+        }
+        Long actualLiked = postLikeRepository.findNumberOfLikesByPostId(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
@@ -151,21 +173,31 @@ public class PostServiceTests {
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
-    @Test
-    public void likeCommentTest() throws NotFoundException {
+@Test
+    public void likeCommentTest() throws NotFoundException, JsonProcessingException {
         setUpSecurityContextHolder("john_doe", authenticationTokenService);
-        postService.likeComment(1);
+        commentController.likeComment(1);
         int expectedLike = 2;
-        Integer actualLiked = postService.getNumberOfLikesOnCommentById(1);
+        try {
+            Thread.sleep(2000); // Pause for 2 seconds to allow for kafka event to process
+        } catch (InterruptedException e) {
+            System.err.println("Interrupted: " + e.getMessage());
+        }
+        Integer actualLiked = commentLikeRepository.findNumberOfLikesByCommentId(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
     @Test
-    public void unlikeCommentTest() throws BadRequestException, NotFoundException {
+    public void unlikeCommentTest() throws NotFoundException, JsonProcessingException {
         setUpSecurityContextHolder("clark_kent", authenticationTokenService);
-        postService.unlikeComment(1);
+        commentController.unlikeComment(1);
         int expectedLike = 0;
-        Integer actualLiked = postService.getNumberOfLikesOnCommentById(1);
+        try {
+            Thread.sleep(2000); // Pause for 2 seconds to allow for kafka event to process
+        } catch (InterruptedException e) {
+            System.err.println("Interrupted: " + e.getMessage());
+        }
+        Integer actualLiked = commentLikeRepository.findNumberOfLikesByCommentId(1);
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 }
