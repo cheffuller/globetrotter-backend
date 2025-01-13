@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @Controller
-@CrossOrigin(origins = "http://http://globetrotter-revature.s3-website-us-east-1.amazonaws.com")
+@CrossOrigin(origins = "http://globetrotter-revature.s3-website-us-east-1.amazonaws.com")
 public class PostController {
     @Autowired
     private PostService postService;

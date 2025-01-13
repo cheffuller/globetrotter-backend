@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/moderators")
-@CrossOrigin(origins = "http://http://globetrotter-revature.s3-website-us-east-1.amazonaws.com")
+@CrossOrigin(origins = "http://globetrotter-revature.s3-website-us-east-1.amazonaws.com")
 public class ModeratorController {
     @Autowired
     private ModeratorService moderatorService;
