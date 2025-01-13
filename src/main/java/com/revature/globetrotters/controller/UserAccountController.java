@@ -25,7 +25,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/users")
-@CrossOrigin(origins = "http://http://globetrotter-revature.s3-website-us-east-1.amazonaws.com:5173")
+@CrossOrigin(origins = "http://http://globetrotter-revature.s3-website-us-east-1.amazonaws.com")
 public class UserAccountController {
     @Autowired
     private AccountService accountService;
