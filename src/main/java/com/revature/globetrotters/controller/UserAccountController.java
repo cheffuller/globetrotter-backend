@@ -25,7 +25,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/users")
-@CrossOrigin(origins = {"http://localhost:5173/", "http://host.docker.internal:5173/"})
+@CrossOrigin(origins = "http://http://globetrotter-revature.s3-website-us-east-1.amazonaws.com:5173")
 public class UserAccountController {
     @Autowired
     private AccountService accountService;
