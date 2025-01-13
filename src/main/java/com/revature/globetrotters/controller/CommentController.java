@@ -26,7 +26,7 @@ import com.revature.globetrotters.service.PostService;
 import com.revature.globetrotters.service.TokenService;
 
 @Controller
-@CrossOrigin(origins = "http://http://globetrotter-revature.s3-website-us-east-1.amazonaws.com:5173")
+@CrossOrigin(origins = "http://globetrotter-revature.s3-website-us-east-1.amazonaws.com")
 @RequestMapping("comments")
 public class CommentController {
     @Autowired
