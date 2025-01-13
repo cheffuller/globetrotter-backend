@@ -21,7 +21,7 @@ public class SecurityUtils {
     public static String getWebToken(String username, int id) {
         return JwtUtil.generateTokenFromUserName(username, Map.of(
                 JwtConsts.ACCOUNT_ROLE, AccountRole.Customer.getRole(),
-                JwtConsts.ACCOUNT_ID, String.valueOf(id)
+                JwtConsts.ACCOUNT_ID, id
         ));
     }
 
