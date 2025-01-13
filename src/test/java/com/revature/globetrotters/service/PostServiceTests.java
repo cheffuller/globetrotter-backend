@@ -48,11 +48,12 @@ public class PostServiceTests {
     }
 
     @Test
-    public void createPostTest() throws BadRequestException, ParseException, UnauthorizedException, NotFoundException {
+    public void createPostTest() throws BadRequestException, UnauthorizedException, NotFoundException {
         setUpSecurityContextHolder("john_doe", authenticationTokenService);
-        Post post = new Post(convertToDate("2020-01-01"), 1);
-        Post expectedPost = new Post(7, convertToDate("2020-01-01"), 1);
+        Post post = new Post(1);
         Post actualPost = postService.createPost(post);
+        Post expectedPost = new Post(7,1);
+        expectedPost.setPostedDate(actualPost.getPostedDate()); // Since postedDate is set automatically on creation
         Assertions.assertEquals(expectedPost, actualPost);
     }
 

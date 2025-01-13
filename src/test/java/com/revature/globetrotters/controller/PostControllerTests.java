@@ -99,6 +99,7 @@ public class PostControllerTests {
 
         Post actualPost = objectMapper.readValue(response.body(), Post.class);
         Post expectedPost = new Post(actualPost.getId(), date, travelPlanId);
+        expectedPost.setPostedDate(actualPost.getPostedDate());
         Assertions.assertEquals(expectedPost, actualPost);
     }
 
@@ -233,6 +234,7 @@ public class PostControllerTests {
 
         Comment actualComment = objectMapper.readValue(response.body(), Comment.class);
         expectedComment.setId(actualComment.getId());
+        expectedComment.setCommentedDate(actualComment.getCommentedDate());
         Assertions.assertEquals(expectedComment, actualComment);
     }
 
