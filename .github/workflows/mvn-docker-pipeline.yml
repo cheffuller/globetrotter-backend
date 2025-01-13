@@ -35,9 +35,7 @@ jobs:
 
       #Build Docker Image
       - name: Build Docker Image
-        run: |
-        echo "Building Docker Image"
-        docker build -t globetrotters/myapp:${{ github.run_number }} -f docker-build/Dockerfile .
+        run: docker build -t globetrotters/myapp:${{ github.run_number }} -f docker-build/Dockerfile .
 
       #Login to Docker
       - name: Login to Docker
