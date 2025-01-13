@@ -27,7 +27,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/plans")
-@CrossOrigin(origins = {"http://localhost:5173/", "http://host.docker.internal:5173/"})
+@CrossOrigin(origins = "http://globetrotter-revature.s3-website-us-east-1.amazonaws.com")
 public class TravelController {
     @Autowired
     private TravelPlanService travelPlanService;
