@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+      - pipelineTesting
 
 jobs:
   pipeline: 
@@ -31,11 +32,11 @@ jobs:
 
       #Package the JAR
       - name: Maven Package
-        run: mvn package
+        run: mvn package -DskipTests
 
       #Build Docker Image
       - name: Build Docker Image
-        run: docker build -t globetrotters/myapp:${{ github.run_number }} -f docker-build/Dockerfile .
+        run: docker build -t brandonnguyenn/globetrotters:${{github.run_number}} -f docker-build/Dockerfile .
 
       #Login to Docker
       - name: Login to Docker
@@ -46,11 +47,16 @@ jobs:
 
       #Push Docker Image
       - name: Push Docker Image
-        run: docker push globetrotters/myapp:${{ github.run_number }}
+        run: docker push brandonnguyenn/globetrotters:${{github.run_number}} -f docker-build/Dockerfile .
 
       #Run Docker Container
-      - name: Run Docker Container
-        run: docker run -d -p 8081:8080 globetrotters/myapp:${{ github.run_number }}
+      - name: Run Docker Containers
+        # run: docker run -d -p 8081:8080 globetrotters/myapp:${{ github.run_number }}
+        run: docker compose up -d
+
+      #Run Integration Tests
+      - name: Run Integration Tests
+        run: mvn verify
 
       #Archive Artifacts
       - name: Archive Artifacts
