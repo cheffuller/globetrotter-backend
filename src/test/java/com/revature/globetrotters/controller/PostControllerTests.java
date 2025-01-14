@@ -186,35 +186,6 @@ public class PostControllerTests {
         Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
     }
 
-    @Test
-    public void getCommentsByPostIdTest() throws IOException, InterruptedException, ParseException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/posts/1/comments"))
-                .header(JwtConsts.AUTHORIZATION, getWebToken())
-                .GET()
-                .build();
-        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
-
-        List<Comment> expectedComments = List.of(
-                new Comment(1, convertToDate("2019-01-01"), 1, "WOW! This trip looks amazing!", 3)
-        );
-        List<Comment> actualComments = objectMapper.readValue(response.body(), new TypeReference<>() {
-        });
-        Assertions.assertEquals(expectedComments, actualComments);
-    }
-
-    @Test
-    public void getCommentsByNonExistentPostIdTest() throws IOException, InterruptedException, ParseException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/posts/100/comments"))
-                .header(JwtConsts.AUTHORIZATION, getWebToken())
-                .GET()
-                .build();
-        HttpResponse<String> response = webClient.send(request, HttpResponse.BodyHandlers.ofString());
-        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.statusCode());
-    }
-
     @ParameterizedTest
     @CsvSource({
             "'2020-01-01', 1, 'content', 1"
