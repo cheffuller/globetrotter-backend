@@ -9,6 +9,7 @@ import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.repository.BannedUserRepository;
 import com.revature.globetrotters.repository.CommentRepository;
 import com.revature.globetrotters.repository.ModeratorAccountRepository;
+import com.revature.globetrotters.repository.UserAccountRepository;
 import com.revature.globetrotters.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,12 +30,14 @@ public class ModeratorService {
     private CommentRepository commentRepository;
     @Autowired
     private ModeratorAccountRepository moderatorAccountRepository;
+    @Autowired
+    private UserAccountRepository userAccountRepository;
 
     public void banUser(int userId) throws NotFoundException, UnauthorizedException {
         if (!isModerator()) {
             throw new UnauthorizedException("Unauthorized request to ban user.");
         }
-        if (!moderatorAccountRepository.existsById(userId)) {
+        if (!userAccountRepository.existsById(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
         bannedUserRepository.save(new BannedUser(userId));

@@ -26,6 +26,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
+
+      #Set up MySQL
+      - name: Install MySQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-server
+          sudo systemctl start mysql
+          sudo mysql -e "CREATE DATABASE IF NOT EXISTS revature;"
+          sudo mysql -e "CREATE USER IF NOT EXISTS 'revature'@'localhost' IDENTIFIED BY 'p4ssw0rd';"
+          sudo mysql -e "GRANT ALL PRIVILEGES ON revature.* TO 'revature'@'localhost';"
+          sudo mysql -e "FLUSH PRIVILEGES;"
       
       #Set up Maven
       - name: Clean and Compile
@@ -48,11 +59,15 @@ jobs:
 
       #Push Docker Image
       - name: Push Docker Image
-        run: docker push brandonnguyenn/globetrotters:${{github.run_number}} -f docker-build/Dockerfile .
+        run: docker push brandonnguyenn/globetrotters:${{github.run_number}} .
 
       #Run Docker Container
       - name: Run Docker Containers
         # run: docker run -d -p 8081:8080 globetrotters/myapp:${{ github.run_number }}
+        env:
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
         run: docker compose up -d
 
       #Run Integration Tests
