@@ -42,16 +42,14 @@ jobs:
           mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD
         
       # Set up Kafka and Zookeeper
-      - name: Install Kafka and Zookeeper
-        run: |
-          wget https://downloads.apache.org/kafka/3.5.0/kafka_2.13-3.5.0.tgz
-          tar -xvf kafka_2.13-3.5.0.tgz
-          mv kafka_2.13-3.5.0 kafka
-          nohup kafka/bin/zookeeper-server-start.sh kafka/config/zookeeper.properties > /dev/null 2>&1 &
-          nohup kafka/bin/kafka-server-start.sh kafka/config/server.properties > /dev/null 2>&1 &
-          echo "Waiting for Kafka and Zookeeper to start..."
-          sleep 20
-
+      - name: Start Kafka
+        uses: 280780363/kafka-action@v1.0
+        with:
+          kafka version: "latest" # Optional, kafka version
+          zookeeper version: "latest" # Optional, zookeeper version
+          kafka port: 9092 # Optional, kafka port
+          zookeeper port: 2181 # Optional, zookeeper port
+          
       # Run tests
       - name: Run Tests
         env: 

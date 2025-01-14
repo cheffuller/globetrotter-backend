@@ -1,5 +1,6 @@
 package com.revature.globetrotters.service;
 
+import com.revature.globetrotters.controller.UserAccountController;
 import com.revature.globetrotters.entity.Collaborator;
 import com.revature.globetrotters.entity.TravelPlan;
 import com.revature.globetrotters.entity.TravelPlanLocation;
@@ -9,12 +10,17 @@ import com.revature.globetrotters.exception.UnauthorizedException;
 import com.revature.globetrotters.repository.CollaboratorRepository;
 import com.revature.globetrotters.repository.TravelPlanLocationRepository;
 import com.revature.globetrotters.repository.TravelPlanRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+
 
 
 @Service
@@ -27,6 +33,8 @@ public class TravelPlanLocationService {
     private TravelPlanRepository travelPlanRepository;
     @Autowired
     private TravelPlanLocationRepository travelPlanLocationRepository;
+    private static final Logger logger = LoggerFactory.getLogger(TravelPlanLocationService.class);
+
 
     public TravelPlanLocation createTravelPlanLocation(TravelPlanLocation location)
             throws BadRequestException, UnauthorizedException {
@@ -80,9 +88,14 @@ public class TravelPlanLocationService {
     }
 
     public List<TravelPlanLocation> updateTravelPlanLocations(int travelPlanId, List<TravelPlanLocation> locations) throws NotFoundException, UnauthorizedException, BadRequestException {
+        logger.info("Current Locations:");
+        for(TravelPlanLocation location : locations) {
+            logger.info(location.toString());
+        }
         List<TravelPlanLocation> locationsFound = travelPlanLocationRepository.findAllByTravelPlanId(travelPlanId);
-        if (locationsFound.isEmpty()) {
-            throw new NotFoundException("Travel plan location not found.");
+        logger.info("Locations found");
+        for(TravelPlanLocation location : locationsFound) {
+            logger.info(location.toString());
         }
 
         TravelPlan plan = travelPlanRepository.findById(travelPlanId).orElseThrow(() ->
