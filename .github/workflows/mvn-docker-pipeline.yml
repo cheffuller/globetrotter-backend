@@ -33,19 +33,13 @@ jobs:
 
       #Set up MySQL
       - name: Install MySQL
+        env:
+          DB_DATABASE: revature
+          DB_USER: root
+          DB_PASSWORD: root
         run: |
-              sudo apt-get update
-              sudo apt-get install -y mysql-server  
-              sudo systemctl start mysql
-
-              # Reset the root password
-              sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'revature';"
-              sudo mysql -e "FLUSH PRIVILEGES;"
-
-              # Create database and user
-              sudo mysql -u root -p'revature' -e "CREATE DATABASE revature;"
-              sudo mysql -u root -p'revature' -e "GRANT ALL PRIVILEGES ON revature.* TO 'root'@'%';"
-              sudo mysql -u root -p'revature' -e "FLUSH PRIVILEGES;"
+          sudo /etc/init.d/mysql start
+          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD
         
       # Set up Kafka and Zookeeper
       - name: Install Kafka and Zookeeper
