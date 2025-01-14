@@ -300,9 +300,8 @@ public class PostControllerTests {
     @CsvSource({
             "1, 2"
     })
-    public void likeCommentTest(Integer commentId, Integer userId) throws IOException, InterruptedException {
+    public void likeCommentTest(Integer commentId) throws IOException, InterruptedException {
         UserAccount userAccount = new UserAccount();
-        userAccount.setId(userId);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/comments/" + commentId + "/likes"))
                 .header("Content-Type", "application/json")
