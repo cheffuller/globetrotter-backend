@@ -44,14 +44,12 @@ jobs:
       # Set up Kafka and Zookeeper
       - name: Install Kafka and Zookeeper
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://downloads.apache.org/kafka/3.0.0/kafka_2.13-3.0.0.tgz
-          tar -xzf kafka_2.13-3.0.0.tgz
-          cd kafka_2.13-3.0.0
-          nohup bin/zookeeper-server-start.sh config/zookeeper.properties &
-          nohup bin/kafka-server-start.sh config/server.properties &
-          echo "Kafka and Zookeeper are running in the background"
+          wget https://downloads.apache.org/kafka/3.5.0/kafka_2.13-3.5.0.tgz
+          tar -xvf kafka_2.13-3.5.0.tgz
+          mv kafka_2.13-3.5.0 kafka
+          nohup kafka/bin/zookeeper-server-start.sh kafka/config/zookeeper.properties > /dev/null 2>&1 &
+          nohup kafka/bin/kafka-server-start.sh kafka/config/server.properties > /dev/null 2>&1 &
+          echo "Waiting for Kafka and Zookeeper to start..."
           sleep 20
 
       # Run tests
