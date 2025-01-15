@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-      - pipelineTesting
   pull_request:
     branches:
       - main
-      - pipelineTesting
 
 jobs:
   pipeline: 
