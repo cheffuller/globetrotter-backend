@@ -7,7 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +25,7 @@ public class Post {
     private Integer id;
     @Column(name = "created_at")
     @CreationTimestamp
-    private Date postedDate;
+    private LocalDateTime postedDate;
     @Column(name = "travel_plan")
     private Integer travelPlanId;
     @Transient
@@ -49,25 +49,25 @@ public class Post {
         this.travelPlanId = travelPlanId;
     }
 
-    public Post(Date postedDate, Integer travelPlanId) {
+    public Post(LocalDateTime postedDate, Integer travelPlanId) {
         this.postedDate = postedDate;
         this.travelPlanId = travelPlanId;
     }
 
-    public Post(Integer id, Date postedDate, Integer travelPlanId) {
+    public Post(Integer id, LocalDateTime postedDate, Integer travelPlanId) {
         this.id = id;
         this.postedDate = postedDate;
         this.travelPlanId = travelPlanId;
     }
 
-    public Post(Integer id, Date postedDate, Integer travelPlanId, String username) {
+    public Post(Integer id, LocalDateTime postedDate, Integer travelPlanId, String username) {
         this.id = id;
         this.postedDate = postedDate;
         this.travelPlanId = travelPlanId;
         this.username = username;
     }
 
-    public Post(Integer id, Date postedDate, Integer travelPlanId, String username, Long numberOfLikes,
+    public Post(Integer id, LocalDateTime postedDate, Integer travelPlanId, String username, Long numberOfLikes,
                 List<Comment> comments, List<TravelPlanLocation> locations) {
         this.id = id;
         this.postedDate = postedDate;
@@ -86,11 +86,11 @@ public class Post {
         this.id = id;
     }
 
-    public Date getPostedDate() {
+    public LocalDateTime getPostedDate() {
         return postedDate;
     }
 
-    public void setPostedDate(Date postedDate) {
+    public void setPostedDate(LocalDateTime postedDate) {
         this.postedDate = postedDate;
     }
 

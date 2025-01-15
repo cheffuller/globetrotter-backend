@@ -27,10 +27,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.ParseException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
+import static com.revature.globetrotters.util.DateArgumentConverter.convertToLocalDateTime;
 import static com.revature.globetrotters.util.SecurityUtils.setUpSecurityContextHolder;
 
 @SpringBootTest
@@ -74,8 +74,8 @@ public class PostServiceTests {
     @Test
     public void findPostsByUserIdTest() throws NotFoundException, ParseException {
         List<Post> expectedPosts = List.of(
-                new Post(1, convertToDate("2019-01-01"), 1),
-                new Post(5, convertToDate("2019-01-01"), 5));
+                new Post(1, convertToLocalDateTime("2019-01-01"), 1),
+                new Post(5, convertToLocalDateTime("2019-01-01"), 5));
         List<Post> actualPosts = postService.findPostsByUserId(1);
         Assertions.assertEquals(expectedPosts, actualPosts);
     }
@@ -84,7 +84,7 @@ public class PostServiceTests {
     @CsvSource({
             "1, '2019-01-01', 1"
     })
-    public void findPostByIdTest(int id, @ConvertWith(DateArgumentConverter.class) Date date, Integer travelPlanId) throws NotFoundException {
+    public void findPostByIdTest(int id, @ConvertWith(DateArgumentConverter.class) LocalDateTime date, Integer travelPlanId) throws NotFoundException {
         Post expectedPost = new Post(id, date, travelPlanId);
 
         Post actualPost = postService.findPostById(id);
@@ -139,7 +139,7 @@ public class PostServiceTests {
     @Test
     public void findCommentsByPostIdTest() throws NotFoundException, ParseException {
         List<Comment> expectedComments = List.of(
-                new Comment(1, convertToDate("2019-01-01"), 1, "WOW! This trip looks amazing!", 3));
+                new Comment(1, convertToLocalDateTime("2019-01-01"), 1, "WOW! This trip looks amazing!", 3));
         List<Comment> actualComments = postService.findCommentsByPostId(1);
         Assertions.assertEquals(expectedComments, actualComments);
     }
@@ -148,7 +148,7 @@ public class PostServiceTests {
     @CsvSource({
             "1, '2019-01-01', 1, 'WOW! This trip looks amazing!', 3, 'clark_kent'"
     })
-    public void findCommentByIdTest(Integer id, @ConvertWith(DateArgumentConverter.class) Date date, Integer postId,
+    public void findCommentByIdTest(Integer id, @ConvertWith(DateArgumentConverter.class) LocalDateTime date, Integer postId,
                                     String content, Integer userId, String username)
             throws NotFoundException {
         setUpSecurityContextHolder(username, authenticationTokenService);

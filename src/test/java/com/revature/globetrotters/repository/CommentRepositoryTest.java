@@ -14,6 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @SpringBootTest
@@ -37,7 +38,7 @@ public class CommentRepositoryTest {
     @CsvSource({
             "1, '2019-01-01', 1, 'WOW! This trip looks amazing!', 3"
     })
-    public void findPostCommentByIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) Date date,
+    public void findPostCommentByIdTest(Integer commentId, @ConvertWith(DateArgumentConverter.class) LocalDateTime date,
                                     Integer postId, String content, Integer userId) {
         Comment expected = new Comment(commentId, date, postId, content, userId);
         Comment actual = commentRepository.findById(commentId).get();

@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContext;
 import java.text.ParseException;
 import java.util.List;
 
-import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
+import static com.revature.globetrotters.util.DateArgumentConverter.convertToLocalDateTime;
 import static com.revature.globetrotters.util.SecurityUtils.setUpSecurityContextHolder;
 
 @SpringBootTest
@@ -50,8 +50,8 @@ public class TravelPlanLocationServiceTests {
                 null,
                 "New York",
                 "United States",
-                convertToDate("2020-12-31"),
-                convertToDate("2020-12-01"),
+                convertToLocalDateTime("2020-12-31"),
+                convertToLocalDateTime("2020-12-01"),
                 1
         );
 
@@ -59,8 +59,8 @@ public class TravelPlanLocationServiceTests {
                 7,
                 "New York",
                 "United States",
-                convertToDate("2020-12-31"),
-                convertToDate("2020-12-01"),
+                convertToLocalDateTime("2020-12-31"),
+                convertToLocalDateTime("2020-12-01"),
                 1
         );
 
@@ -78,8 +78,8 @@ public class TravelPlanLocationServiceTests {
                         1,
                         "Sydney",
                         "Australia",
-                        convertToDate("2018-12-31"),
-                        convertToDate("2018-12-01"),
+                        convertToLocalDateTime("2018-12-31"),
+                        convertToLocalDateTime("2018-12-01"),
                         1))
         );
         List<TravelPlanLocation> actualResult = travelPlanLocationService.getTravelPlanLocationsByTravelPlanId(1);
@@ -93,8 +93,8 @@ public class TravelPlanLocationServiceTests {
                 1,
                 "Sydney",
                 "Australia",
-                convertToDate("2018-12-31"),
-                convertToDate("2018-12-01"),
+                convertToLocalDateTime("2018-12-31"),
+                convertToLocalDateTime("2018-12-01"),
                 1);
         TravelPlanLocation actualResult = travelPlanLocationService.getTravelPlanLocationByIdAndTravelPlanId(1, 1);
 

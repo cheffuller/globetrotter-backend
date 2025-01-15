@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,8 +21,8 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "commented_date", nullable = false)
-    @CreationTimestamp
-    private Date commentedDate;
+    
+    private LocalDateTime commentedDate;
     @Column(name = "commented_on", nullable = false)
     private Integer postId;
     @Column(name = "content", nullable = false, length = 1000)
@@ -35,13 +35,13 @@ public class Comment {
     public Comment() {
     }
 
-    public Comment(Date commentedDate, Integer postId, String content, Integer userId) {
+    public Comment(LocalDateTime commentedDate, Integer postId, String content, Integer userId) {
         this.postId = postId;
         this.content = content;
         this.userId = userId;
     }
 
-    public Comment(Integer id, Date commentedDate, Integer postId, String content, Integer userId) {
+    public Comment(Integer id, LocalDateTime commentedDate, Integer postId, String content, Integer userId) {
         this.id = id;
         this.commentedDate = commentedDate;
         this.postId = postId;
@@ -49,7 +49,7 @@ public class Comment {
         this.userId = userId;
     }
 
-    public Comment(String username, Integer userId, String content, Integer postId, Date commentedDate, Integer id) {
+    public Comment(String username, Integer userId, String content, Integer postId, LocalDateTime commentedDate, Integer id) {
         this.username = username;
         this.userId = userId;
         this.content = content;
@@ -66,11 +66,11 @@ public class Comment {
         this.id = id;
     }
 
-    public Date getCommentedDate() {
+    public LocalDateTime getCommentedDate() {
         return commentedDate;
     }
 
-    public void setCommentedDate(Date commentedDate) {
+    public void setCommentedDate(LocalDateTime commentedDate) {
         this.commentedDate = commentedDate;
     }
 

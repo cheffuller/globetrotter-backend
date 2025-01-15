@@ -21,7 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
 
-import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
+import static com.revature.globetrotters.util.DateArgumentConverter.convertToLocalDateTime;
 import static com.revature.globetrotters.util.SecurityUtils.getWebToken;
 
 public class TravelPlanControllerTests {
@@ -77,7 +77,7 @@ public class TravelPlanControllerTests {
         TravelPlan actualPlan = objectMapper.readValue(response.body(), TravelPlan.class);
         Assertions.assertEquals(expectedPlan, actualPlan);
 
-        Post expectedPost = new Post(1, convertToDate("2019-01-01"), 1, "john_doe");
+        Post expectedPost = new Post(1, convertToLocalDateTime("2019-01-01"), 1, "john_doe");
         Assertions.assertEquals(expectedPost, actualPlan.getPost());
         Assertions.assertEquals(1, actualPlan.getPost().getNumberOfLikes());
     }

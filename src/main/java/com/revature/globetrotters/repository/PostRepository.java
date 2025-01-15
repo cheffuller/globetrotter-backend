@@ -6,13 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
-    Optional<Post> findByPostedDate(Date date);
+    Optional<Post> findByPostedDate(LocalDateTime date);
 
     Optional<Post> findByTravelPlanId(Integer travelPlanId);
 

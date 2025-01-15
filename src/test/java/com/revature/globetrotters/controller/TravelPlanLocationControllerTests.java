@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static com.revature.globetrotters.util.SecurityUtils.getWebToken;
@@ -53,7 +54,7 @@ public class TravelPlanLocationControllerTests {
     @CsvSource({
             "'New York', 'United States', '2020-12-31', '2020-12-01', 1"
     })
-    public void createTravelPlanLocationTest(String city, String country, @ConvertWith(DateArgumentConverter.class) Date endDate, @ConvertWith(DateArgumentConverter.class) Date startDate, Integer travelPlanId) throws IOException, InterruptedException, JSONException {
+    public void createTravelPlanLocationTest(String city, String country, @ConvertWith(DateArgumentConverter.class) LocalDateTime endDate, @ConvertWith(DateArgumentConverter.class) LocalDateTime startDate, Integer travelPlanId) throws IOException, InterruptedException, JSONException {
         TravelPlanLocation travelPlanLocation = new TravelPlanLocation(
                 city,
                 country,
@@ -103,7 +104,7 @@ public class TravelPlanLocationControllerTests {
             "1, 'Sydney', 'Australia', '2018-12-31', '2018-12-01', 1"
     })
     public void getTravelPlanLocationByIdTest(Integer locationId, String city, String country,
-                                              @ConvertWith(DateArgumentConverter.class) Date endDate, @ConvertWith(DateArgumentConverter.class) Date starDate,
+                                              @ConvertWith(DateArgumentConverter.class) LocalDateTime endDate, @ConvertWith(DateArgumentConverter.class) LocalDateTime starDate,
                                               Integer travelPlanId) throws IOException, InterruptedException, JSONException {
         TravelPlanLocation expected = new TravelPlanLocation(locationId, city, country, endDate, starDate, travelPlanId);
 

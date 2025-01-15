@@ -25,10 +25,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-import static com.revature.globetrotters.util.DateArgumentConverter.convertToDate;
+import static com.revature.globetrotters.util.DateArgumentConverter.convertToLocalDateTime;
 import static com.revature.globetrotters.util.SecurityUtils.getWebToken;
 
 public class PostControllerTests {
@@ -59,8 +60,8 @@ public class PostControllerTests {
         Assertions.assertEquals(HttpStatus.OK.value(), response.statusCode());
 
         List<Post> expectedPosts = List.of(
-                new Post(1, convertToDate("2019-01-01"), 1),
-                new Post(5, convertToDate("2019-01-01"), 5)
+                new Post(1, convertToLocalDateTime("2019-01-01"), 1),
+                new Post(5, convertToLocalDateTime("2019-01-01"), 5)
         );
 
         List<Post> actualPosts = objectMapper.readValue(response.body(), new TypeReference<>() {
@@ -83,7 +84,7 @@ public class PostControllerTests {
     @CsvSource({
             "'2020-01-01', 1"
     })
-    public void postPostTest(@ConvertWith(DateArgumentConverter.class) Date date, Integer travelPlanId)
+    public void postPostTest(@ConvertWith(DateArgumentConverter.class) LocalDateTime date, Integer travelPlanId)
             throws IOException, InterruptedException {
         Post newPost = new Post();
         newPost.setPostedDate(date);
@@ -107,7 +108,7 @@ public class PostControllerTests {
     @CsvSource({
             "1, '2019-01-01', 1"
     })
-    public void getPostByIDTest(Integer postId, @ConvertWith(DateArgumentConverter.class) Date date,
+    public void getPostByIDTest(Integer postId, @ConvertWith(DateArgumentConverter.class) LocalDateTime date,
                                 Integer travelPlanId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/posts/1"))
@@ -191,7 +192,7 @@ public class PostControllerTests {
             "'2020-01-01', 1, 'content', 1"
     })
     public void postCommentTest(
-            @ConvertWith(DateArgumentConverter.class) Date date,
+            @ConvertWith(DateArgumentConverter.class) LocalDateTime date,
             Integer postId, String content, Integer userId) throws IOException, InterruptedException {
         Comment expectedComment = new Comment(date, postId, content, userId);
         HttpRequest request = HttpRequest.newBuilder()
@@ -215,7 +216,7 @@ public class PostControllerTests {
     })
     public void getCommentByIdTest(
             Integer commentId,
-            @ConvertWith(DateArgumentConverter.class) Date date,
+            @ConvertWith(DateArgumentConverter.class) LocalDateTime date,
             Integer postId,
             String content,
             Integer userId)

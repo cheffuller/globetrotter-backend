@@ -6,6 +6,9 @@ import org.junit.jupiter.params.converter.ArgumentConverter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 public class DateArgumentConverter implements ArgumentConverter {
@@ -17,16 +20,16 @@ public class DateArgumentConverter implements ArgumentConverter {
             throw new ArgumentConversionException(source + " is not a string");
         }
         String sourceString = (String) source;
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
         try {
-            return sdf.parse(sourceString);
-        } catch (ParseException e) {
+            return LocalDateTime.parse(sourceString, formatter);
+        } catch (DateTimeParseException e) {
             throw new ArgumentConversionException("Failed to parse date: " + sourceString, e);
         }
     }
 
-    public static Date convertToDate(String source) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        return sdf.parse(source);
+    public static LocalDateTime convertToLocalDateTime(String source) throws DateTimeParseException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+        return LocalDateTime.parse(source, formatter);
     }
 }
