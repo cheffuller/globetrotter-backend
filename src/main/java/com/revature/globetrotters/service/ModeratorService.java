@@ -86,4 +86,12 @@ public class ModeratorService {
                 JwtConsts.ACCOUNT_ID, foundAccount.getId()
         ));
     }
+
+    public boolean isUserBanned(int userId) throws NotFoundException {
+        if (!userAccountRepository.existsById(userId)) {
+            throw new NotFoundException("User account not found.");
+        }
+
+        return bannedUserRepository.existsById(userId) ? true : false;
+    }
 }
