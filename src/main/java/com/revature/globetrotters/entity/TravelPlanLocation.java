@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -25,10 +26,10 @@ public class TravelPlanLocation {
     private String country;
 
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "travel_plan_id")
     private Integer travelPlanId;
@@ -36,7 +37,7 @@ public class TravelPlanLocation {
     public TravelPlanLocation() {
     }
 
-    public TravelPlanLocation(String city, String country, Date endDate, Date startDate, Integer travelPlanId) {
+    public TravelPlanLocation(String city, String country, LocalDateTime endDate, LocalDateTime startDate, Integer travelPlanId) {
         this.city = city;
         this.country = country;
         this.endDate = endDate;
@@ -44,7 +45,7 @@ public class TravelPlanLocation {
         this.travelPlanId = travelPlanId;
     }
 
-    public TravelPlanLocation(Integer id, String city, String country, Date endDate, Date startDate, Integer travelPlanId) {
+    public TravelPlanLocation(Integer id, String city, String country, LocalDateTime endDate, LocalDateTime startDate, Integer travelPlanId) {
         this.id = id;
         this.city = city;
         this.country = country;
@@ -77,19 +78,19 @@ public class TravelPlanLocation {
         this.country = country;
     }
 
-    public Date getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 

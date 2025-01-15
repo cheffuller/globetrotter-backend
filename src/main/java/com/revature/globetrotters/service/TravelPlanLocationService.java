@@ -153,7 +153,7 @@ public class TravelPlanLocationService {
                 location.getCountry().trim().isEmpty() ||
                 location.getStartDate() == null ||
                 location.getEndDate() == null ||
-                location.getEndDate().before(location.getStartDate());
+                location.getEndDate().isBefore(location.getStartDate());
     }
 
     private boolean isNotACollaborator(int planId) {
