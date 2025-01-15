@@ -21,7 +21,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "commented_date", nullable = false)
-    
+    @CreationTimestamp
     private LocalDateTime commentedDate;
     @Column(name = "commented_on", nullable = false)
     private Integer postId;
