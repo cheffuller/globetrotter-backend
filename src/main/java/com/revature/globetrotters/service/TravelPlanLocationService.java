@@ -88,16 +88,7 @@ public class TravelPlanLocationService {
     }
 
     public List<TravelPlanLocation> updateTravelPlanLocations(int travelPlanId, List<TravelPlanLocation> locations) throws NotFoundException, UnauthorizedException, BadRequestException {
-        logger.info("Travel Plan ID: " + travelPlanId);
-        logger.info("Current Locations:");
-        for(TravelPlanLocation location : locations) {
-            logger.info(location.toString());
-        }
         List<TravelPlanLocation> locationsFound = travelPlanLocationRepository.findAllByTravelPlanId(travelPlanId);
-        logger.info("Locations found");
-        for(TravelPlanLocation location : locationsFound) {
-            logger.info(location.toString());
-        }
 
         TravelPlan plan = travelPlanRepository.findById(travelPlanId).orElseThrow(() ->
                 new NotFoundException("Travel plan not found."));
