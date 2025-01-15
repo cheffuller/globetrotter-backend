@@ -66,7 +66,7 @@ public class CommentController {
     }
 
     @PatchMapping("{commentId}")
-    public ResponseEntity<Comment> patchCommentContentById(@PathVariable(name = "commentID") int commentId,
+    public ResponseEntity<Comment> patchCommentContentById(@PathVariable(name = "commentId") int commentId,
                                                            @RequestBody Comment comment) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(postService.updateCommentContentById(commentId, comment));
     }
