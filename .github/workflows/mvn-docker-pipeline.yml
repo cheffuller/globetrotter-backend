@@ -48,7 +48,7 @@ jobs:
 
       #Push Docker Image
       - name: Push Docker Image
-        run: docker push brandonnguyenn/globetrotters:${{github.run_number}} .
+        run: docker push brandonnguyenn/globetrotters:${{github.run_number}}
 
       #Run Docker Container
       - name: Run Docker Containers
