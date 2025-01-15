@@ -174,7 +174,7 @@ public class PostServiceTests {
         Assertions.assertEquals(expectedLike, actualLiked);
     }
 
-@Test
+    @Test
     public void likeCommentTest() throws NotFoundException, JsonProcessingException {
         setUpSecurityContextHolder("john_doe", authenticationTokenService);
         commentController.likeComment(1);
