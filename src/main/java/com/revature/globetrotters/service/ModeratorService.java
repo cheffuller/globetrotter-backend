@@ -80,7 +80,7 @@ public class ModeratorService {
 
         return JwtUtil.generateTokenFromUserName(account.getUsername(), Map.of(
                 JwtConsts.ACCOUNT_ROLE, AccountRole.Moderator.getRole(),
-                JwtConsts.ACCOUNT_ID, foundAccount
+                JwtConsts.ACCOUNT_ID, foundAccount.getId()
         ));
     }
 }
