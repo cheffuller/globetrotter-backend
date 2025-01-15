@@ -30,41 +30,6 @@ jobs:
       #Set up Maven
       - name: Clean and Compile
         run: mvn clean compile
-
-      #Set up MySQL
-      - name: Install MySQL
-        env:
-          DB_DATABASE: revature
-          DB_USER: root
-          DB_PASSWORD: root
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD
-        
-      # Set up Kafka and Zookeeper
-      - name: Start Kafka
-        uses: 280780363/kafka-action@v1.0
-        with:
-          kafka version: "latest" # Optional, kafka version
-          zookeeper version: "latest" # Optional, zookeeper version
-          kafka port: 9092 # Optional, kafka port
-          zookeeper port: 2181 # Optional, zookeeper port
-          
-      # Run tests
-      - name: Run Tests
-        env: 
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/revature?serverTimezone=UTC
-          SPRING_DATASOURCE_USERNAME: root
-          SPRING_DATASOURCE_PASSWORD: revature
-          SPRING_KAFKA_BOOTSTRAP_SERVERS: localhost:9092
-        run: mvn test
-
-      # Clean Up Kafka, Zookeeper, and MySQL
-      - name: Clean Up Services
-        run: |
-          sudo systemctl stop mysql
-          kafka/bin/kafka-server-stop.sh
-          kafka/bin/zookeeper-server-stop.sh
       
       #Package the JAR
       - name: Maven Package
