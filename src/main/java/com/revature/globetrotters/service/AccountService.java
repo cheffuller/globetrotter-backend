@@ -12,6 +12,7 @@ import com.revature.globetrotters.enums.FollowingStatus;
 import com.revature.globetrotters.exception.BadRequestException;
 import com.revature.globetrotters.exception.NotFoundException;
 import com.revature.globetrotters.exception.UnauthorizedException;
+import com.revature.globetrotters.repository.BannedUserRepository;
 import com.revature.globetrotters.repository.FollowRepository;
 import com.revature.globetrotters.repository.FollowRequestRepository;
 import com.revature.globetrotters.repository.PostRepository;
@@ -31,6 +32,8 @@ import java.util.Map;
 
 @Service
 public class AccountService {
+    @Autowired
+    private BannedUserRepository bannedUserRepository;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
@@ -69,6 +72,13 @@ public class AccountService {
                     passwordEncoder.matches(account.getPassword(), foundAccount.getPassword()) +
                     ".\nPassword: " + account.getPassword() +
                     ".\nFound password hash: " + foundAccount.getPassword());
+        }
+
+        if (bannedUserRepository.existsById(foundAccount.getId())) {
+            throw new UnauthorizedException(String.format(
+                    "User with username %s is banned.",
+                    foundAccount.getUsername())
+            );
         }
 
         return JwtUtil.generateTokenFromUserName(account.getUsername(), Map.of(
